@@ -1,0 +1,21 @@
+---
+title: "MAT5314 Project 1"
+author: 
+  - Teng Li(7373086)
+  - Shiya Gao() 
+  - Chuhan Yue()
+  - Xinyue Li()
+output: pdf_document
+header-includes: 
+  - \renewcommand{\and}{\\}
+---
+
+# Introduction
+
+# Method
+
+# Result
+
+# Discussion
+
+# Conclusion
