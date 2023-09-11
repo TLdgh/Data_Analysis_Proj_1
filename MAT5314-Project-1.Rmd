@@ -2,7 +2,7 @@
 title: "MAT5314 Project 1"
 author: 
   - Teng Li(7373086)
-  - Shiya Gao() 
+  - Shiya Gao(300381032) 
   - Chuhan Yue()
   - Xinyue Li()
 output: pdf_document
