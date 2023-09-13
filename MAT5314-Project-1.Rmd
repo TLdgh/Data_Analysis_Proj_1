@@ -1,10 +1,9 @@
 ---
-title: "MAT5314 Project 1"
+title: "MAT5314 Project 1: Data Visualization"
 author: 
   - Teng Li(7373086)
   - Shiya Gao() 
   - Chuhan Yue(300376046)
-  - Xinyue Li()
   - Yang Lyu(8701121)
 output: pdf_document
 header-includes: 
@@ -12,10 +11,27 @@ header-includes:
 ---
 
 # Introduction
+A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.  
 
 # Method
+We use various R packages to present the data set and to plot the graphs.
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(plotly)
+library(tidyverse)
+```
 
 # Result
+We first take a look at the raw data set:
+```{r}
+ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
+head(ElectionPoll)
+```
+
+As we can see, there are a few variables with missing values:
+```{r}
+summary(ElectionPoll)
+```
 
 # Discussion
 
