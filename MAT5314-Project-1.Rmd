@@ -2,7 +2,7 @@
 title: "MAT5314 Project 1: Data Visualization"
 author: 
   - Teng Li(7373086)
-  - Shiya Gao() 
+  - Shiya Gao(300381032) 
   - Chuhan Yue(300376046)
   - Yang Lyu(8701121)
 output: pdf_document
