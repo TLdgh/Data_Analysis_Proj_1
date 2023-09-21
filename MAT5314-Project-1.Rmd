@@ -19,18 +19,257 @@ We use various R packages to present the data set and to plot the graphs.
 knitr::opts_chunk$set(echo = FALSE)
 library(plotly)
 library(tidyverse)
+library(ggplot2)
 ```
-
 # Result
 We first take a look at the raw data set:
 ```{r}
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
 head(ElectionPoll)
+tail(ElectionPoll)
 ```
 
 As we can see, there are a few variables with missing values:
 ```{r}
 summary(ElectionPoll)
+```
+
+We first explore the column name of raw data.
+```{r}
+View(ElectionPoll)
+# Explore column name of raw data
+column_name <- colnames(ElectionPoll)
+print(column_name)
+```
+
+The following is the values in state:
+```{r}
+# Explore values in state
+print(unique(ElectionPoll$state))
+```
+
+Count the missings in state
+```{r}
+# Count the missings in state
+missing_state <- sum(is.na(ElectionPoll$state))
+print(missing_state)
+```
+
+The following is the values in startdate:
+```{r}
+# Explore unique in startdate
+sort(unique(ElectionPoll$startdate))
+```
+
+Count the missings in startdate
+```{r}
+# Count the missings in startdate
+missing_startdate <- sum(is.na(ElectionPoll$startdate))
+print(missing_startdate)
+```
+
+The following is the values in enddate:
+```{r}
+# Explore unique in enddate
+sort(unique(ElectionPoll$enddate))
+```
+
+Count the missings in enddate
+```{r}
+# Count the missings in enddate
+missing_enddate <- sum(is.na(ElectionPoll$enddate))
+print(missing_enddate)
+```
+
+The following is the values in pollster:
+```{r}
+# Explore values in pollster
+print(unique(ElectionPoll$pollster))
+```
+
+Count the missings in pollster
+```{r}
+# Count the missings in pollster
+missing_pollster <- sum(is.na(ElectionPoll$pollster))
+print(missing_pollster)
+```
+
+The following is the values in grade:
+```{r}
+# Explore values in grade
+print(unique(ElectionPoll$grade))
+```
+
+Count the missings in grade
+```{r}
+# Count the missings in grade
+missing_grade <- sum(is.na(ElectionPoll$grade))
+print(missing_grade)
+```
+
+The following is the values in population:
+```{r}
+# Explore values in population
+print(unique(ElectionPoll$population))
+# Count the number
+table(ElectionPoll$population)
+```
+
+Count the missings in population
+```{r}
+# Count the missings in population
+missing_population <- sum(is.na(ElectionPoll$population))
+print(missing_population)
+```
+
+The following is the number of unique and size in rawpoll_clinton:
+```{r}
+# Explore values in rawpoll_clinton
+length(unique(ElectionPoll$rawpoll_clinton))
+# Size of rawpoll_clinton
+length(ElectionPoll$rawpoll_clinton)
+```
+
+Count the missings in rawpoll_clinton
+```{r}
+# Count the missings in rawpoll_clinton
+missing_rawpoll_clinton <- sum(is.na(ElectionPoll$rawpoll_clinton))
+print(missing_rawpoll_clinton)
+```
+
+The following is the number of unique and size in rawpoll_trump:
+```{r}
+# Explore values in rawpoll_trump
+length(unique(ElectionPoll$rawpoll_trump))
+# Size of rawpoll_trump
+length(ElectionPoll$rawpoll_trump)
+```
+
+Count the missings in rawpoll_trump
+```{r}
+# Count the missings in rawpoll_trump
+missing_rawpoll_trump <- sum(is.na(ElectionPoll$rawpoll_trump))
+print(missing_rawpoll_trump)
+```
+
+The following is the number of unique and size in rawpoll_johnson:
+```{r}
+# Explore values in rawpoll_johnson
+length(unique(ElectionPoll$rawpoll_johnson))
+# Size of rawpoll_johnson
+length(ElectionPoll$rawpoll_johnson)
+```
+
+Count the missings in rawpoll_johnson
+```{r}
+# Count the missings in rawpoll_johnson
+missing_rawpoll_johnson <- sum(is.na(ElectionPoll$rawpoll_johnson))
+print(missing_rawpoll_johnson)
+```
+
+The following is the number of unique and size in rawpoll_mcmullin:
+```{r}
+# Explore values in rawpoll_mcmullin
+length(unique(ElectionPoll$rawpoll_mcmullin))
+# Size of rawpoll_mcmullin
+length(ElectionPoll$rawpoll_mcmullin)
+```
+
+Count the missings in rawpoll_mcmullin
+```{r}
+# Count the missings in rawpoll_mcmullin
+missing_rawpoll_mcmullin <- sum(is.na(ElectionPoll$rawpoll_mcmullin))
+print(missing_rawpoll_mcmullin)
+```
+
+The following is the number of unique and size in adjpoll_clinton:
+```{r}
+# Explore values in adjpoll_clinton
+length(unique(ElectionPoll$adjpoll_clinton))
+# Size of adjpoll_clinton
+length(ElectionPoll$adjpoll_clinton)
+```
+
+Count the missings in adjpoll_clinton
+```{r}
+# Count the missings in adjpoll_clinton
+missing_adjpoll_clinton <- sum(is.na(ElectionPoll$adjpoll_clinton))
+print(missing_adjpoll_clinton)
+```
+
+The following is the number of unique and size in adjpoll_trump:
+```{r}
+# Explore values in adjpoll_trump
+length(unique(ElectionPoll$adjpoll_trump))
+# Size of adjpoll_trump
+length(ElectionPoll$adjpoll_trump)
+```
+
+Count the missings in adjpoll_trump
+```{r}
+# Count the missings in adjpoll_trump
+missing_adjpoll_trump <- sum(is.na(ElectionPoll$adjpoll_trump))
+print(missing_adjpoll_trump)
+```
+
+The following is the number of unique and size in adjpoll_Johnson:
+```{r}
+# Explore values in adjpoll_johnson
+length(unique(ElectionPoll$adjpoll_johnson))
+# Size of adjpoll_johnson
+length(ElectionPoll$adjpoll_johnson)
+```
+
+Count the missings in adjpoll_Johnson
+```{r}
+# Count the missings in adjpoll_Johnson
+missing_adjpoll_johnson <- sum(is.na(ElectionPoll$adjpoll_johnson))
+print(missing_adjpoll_johnson)
+```
+
+The following is the number of unique and size in adjpoll_mcmullin:
+```{r}
+# Explore values in adjpoll_mcmullin
+length(unique(ElectionPoll$adjpoll_mcmullin))
+# Size of adjpoll_mcmullin
+length(ElectionPoll$adjpoll_mcmullin)
+```
+
+Count the missings in adjpoll_mcmullin
+```{r}
+# Count the missings in adjpoll_mcmullin
+missing_adjpoll_mcmullin <- sum(is.na(ElectionPoll$rawpoll_mcmullin))
+print(missing_adjpoll_mcmullin)
+```
+
+Data dictionary:  
+* state: The name of the state where the election is held, “U.S.” means national polls  
+* startdate: Start data of poll  
+* enddate: End data of poll  
+* pollster: Organization name that conducts or analyzes opinion polls  
+* grade: Grade assigned by Fivethirtyeight (sometimes as 538, an American website that focuses on opinion poll) to pollster  
+      >"A letter grade from A+ to F that reflects the accuracy of a polling organization's polls and its predictive plus-minus score (a projection of how well we think a pollster's polls will do in the future). Pollsters with a small number of polls get a provisional rating (for example, A/B) rather than a precise letter grade“ (Cite from https://projects.fivethirtyeight.com/pollster-ratings/).  
+* samplesize: Sample size of polls for each pollster  
+* population: Type of population being polled  
+            *1.LV (likely Voters): population whose most likely to participate in 2016 election.  
+            2.RV (Registered Voters): RV includes all eligible and registered voters, whether or not they end up voting.  
+            3.A (Adults): Refers to all persons of legal voting age.  
+            4.V (Voters): Persons who has voted in an election.  
+* rawpoll_clinton: Percentage for Hillary Clinton  
+* rawpoll_trump: Percentage for Donald Trump  
+* rawpoll_johnson: Percentage for Gary Johnson
+* rawpoll_mcmullin: Percentage for Evan Mcmullin
+* adjpoll_clinton: Fivethirtyeight adjusted percentage for Hillary Clinton  
+* adjpoll_trump: Fivethirtyeight adjusted percentage for Donald Trump  
+* adjpoll_johnson: Fivethirtyeight adjusted percentage for Gary Johnson  
+* adjpoll_mcmullin: Fivethirtyeight adjusted percentage for Evan Mcmullin  
+
+```{r}
+ggplot(data = ElectionPoll, mapping = aes(x = grade, y = rawpoll_trump)) +
+    geom_boxplot()
+```
+```{r}
+
 ```
 
 # Discussion
