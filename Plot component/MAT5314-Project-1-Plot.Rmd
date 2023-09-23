@@ -1,10 +1,10 @@
 ---
 title: "Plot"
-author: 
-  - Teng Li(7373086)
-  - Shiya Gao(300381032) 
-  - Chuhan Yue(300376046)
-  - Yang Lyu(8701121)
+author:
+- Teng Li(7373086)
+- Shiya Gao(300381032)
+- Chuhan Yue(300376046)
+- Yang Lyu(8701121)
 output: pdf_document
 header-includes: 
   - \renewcommand{\and}{\\}
@@ -15,7 +15,7 @@ A data set of the 2016 US election polls was given. In this project we aim to un
 
 # Method
 We use various R packages to present the data set and to plot the graphs.
-```{r, include=FALSE}
+```{r}
 knitr::opts_chunk$set(echo = FALSE)
 library(plotly)
 library(dplyr)
@@ -65,8 +65,10 @@ ggplot(poll_by_time, aes(x = end_time)) +
   geom_line(aes(y = prop_raw_mcmullin, color = "Mcmullin")) +
   labs(x = "Date", y = "Proportion of rawpoll") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
-  scale_x_datetime(date_breaks = "2 month")
-  theme_minimal() + ggtitle("Poll Proportion by Time with Missing Values")
+  scale_x_datetime(date_breaks = "2 month") +
+  theme_minimal() + 
+  ggtitle("Poll Proportion by Time 
+          (with Missing Values)")
 
 ```
 
@@ -79,12 +81,13 @@ ggplot(poll_by_time, aes(x = end_time)) +
   geom_smooth(aes(y = prop_raw_mcmullin, color = "Mcmullin")) +
   labs(x = "Date", y = "Proportion of rawpoll") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
-  scale_x_datetime(date_breaks = "2 month")
-  theme_minimal() + ggtitle("Average Poll Proportion by Time (with Missing Values)")
-
+  scale_x_datetime(date_breaks = "2 month") +
+   theme_minimal() + 
+  ggtitle("Average Poll Proportion by Time 
+          (with Missing Values)")
 ```
 
-Remove the missing values:
+Remove the missing values, count the row number of 4 candidates cleaned data:
 ```{r}
 #Remove the missing values
 poll_by_time_clean <- na.omit(poll_by_time)
@@ -98,7 +101,9 @@ prop_raw_trump_clean <- poll_by_time_clean$trump
 prop_raw_johnson_clean <- poll_by_time_clean$johnson
 prop_raw_mcmullin_clean <- poll_by_time_clean$mcmullin
 ```
+
 Using the data with missing values deleted, a trend chart showing the change in the proportion of votes obtained by all four candidates over time is made.
+
 ```{r}
 ggplot(poll_by_time_clean, aes(x = end_time_clean)) +
   geom_line(aes(y = prop_raw_clinton_clean, color = "Clinton")) +
@@ -107,10 +112,13 @@ ggplot(poll_by_time_clean, aes(x = end_time_clean)) +
   geom_line(aes(y = prop_raw_mcmullin_clean, color = "Mcmullin")) +
   labs(x = "Date", y = "Proportion of rawpoll") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
-  theme_minimal() + ggtitle("Poll Proportion by Time (without Missing Values)")
+  theme_minimal() + 
+  ggtitle("Poll Proportion by Time 
+          (without Missing Values)")
 ```
 
 3 candidate's (Clinton, Trump and Johnson) trend by time with cleaned data.
+
 ```{r}
 #Create 3 candidates frame contained time, rawpoll
 poll_by_time_3 <- data.frame( 
@@ -121,10 +129,11 @@ poll_by_time_3 <- data.frame(
   johnson = prop_raw_johnson
 )
 
-print(poll_by_time_3)
+head(poll_by_time_3)
 ```
 
 3 candidates data removing the missing values:
+
 ```{r}
 # Remove the missing values
 poll_by_time_clean_3 <- na.omit(poll_by_time_3)
@@ -143,18 +152,22 @@ prop_raw_johnson_clean_3 <- poll_by_time_clean_3$johnson
 ```
 
 Using the data with missing values deleted, a trend chart showing the change in the proportion of votes obtained by 3 candidates (Clinton, Trump and Johnson) over time is made.
-```{r}
+
+```{r, echo=FALSE}
 ggplot(poll_by_time_clean_3, aes(x = end_time_clean_3)) +
   geom_smooth(aes(y = prop_raw_clinton_clean_3, color = "Clinton")) +
   geom_smooth(aes(y = prop_raw_trump_clean_3, color = "Trump")) +
   geom_smooth(aes(y = prop_raw_johnson_clean_3, color = "Johnson")) +
   labs(x = "Date", y = "Proportion of rawpoll") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green")) +
-  scale_x_datetime(date_breaks = "1 month")
-  theme_minimal() + ggtitle("Clinton vs. Trump vs. Johnson Average Poll Proportion by Time (without Missing Values)")
+  scale_x_datetime(date_breaks = "2 month") +
+  theme_minimal() +
+  ggtitle("Clinton vs. Trump vs. Johnson Average Poll Proportion by Time 
+          (without Missing Values)")
 ```
 
 2 candidate's (Clinton, Trump) trend by time with cleaned data.
+
 ```{r}
 #Create 2 candidates frame contained time, rawpoll
 poll_by_time_2 <- data.frame( 
@@ -164,11 +177,12 @@ poll_by_time_2 <- data.frame(
   trump = prop_raw_trump
 )
 
-print(poll_by_time_2)
+head(poll_by_time_2)
 ```
 
 2 candidates data removing the missing values:
-```{r}
+
+```{r, echo=FALSE}
 # Remove the missing values
 poll_by_time_clean_2 <- na.omit(poll_by_time_2)
 head(poll_by_time_clean_2)
@@ -186,12 +200,15 @@ prop_raw_trump_clean_2 <- poll_by_time_clean_2$trump
 ```
 
 Using the data with missing values deleted, a trend chart showing the change in the proportion of votes obtained by 2 candidates (Clinton vs. Trump) over time is made.
-```{r}
+
+```{r, echo=FALSE}
 ggplot(poll_by_time_clean_2, aes(x = end_time_clean_2)) +
   geom_smooth(aes(y = prop_raw_clinton_clean_2, color = "Clinton")) +
   geom_smooth(aes(y = prop_raw_trump_clean_2, color = "Trump")) +
   labs(x = "Date", y = "Proportion of rawpoll") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red")) +
-  scale_x_datetime(date_breaks = "2 month")
-  theme_minimal() + ggtitle("Clinton vs. Trump Poll Average Proportion by Time (without Missing Values)")
+  scale_x_datetime(date_breaks = "2 month") +
+  theme_minimal() + 
+  ggtitle("Clinton vs. Trump Poll Average Proportion by Time 
+          (without Missing Values)")
 ```
