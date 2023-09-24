@@ -12,3 +12,5 @@ polls_us_election_2016.csv
 
 # Project file 
 Data_Analysis_Proj_1.Rproj
+*.html
+*.png
