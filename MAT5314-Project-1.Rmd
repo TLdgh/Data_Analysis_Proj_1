@@ -19,41 +19,18 @@ We use various R packages to present the data set and to plot the graphs.
 knitr::opts_chunk$set(echo = FALSE)
 library(plotly)
 library(tidyverse)
-library(ggplot2)
-library(kableExtra)
 ```
 
 # Result
+We first take a look at the raw data set:
 ```{r}
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
-DataDict<-data.frame(
-  Variables=colnames(ElectionPoll), Size=nrow(ElectionPoll), 
-  Type=sapply(ElectionPoll, function(x) class(x)),
-  Number.Unique=sapply(ElectionPoll, function(x) length(unique(x))),
-  Number.Missing=sapply(ElectionPoll, function(x) sum(is.na(x))),
-  Comment=c("The name of the state where the election is held, “U.S.” means national polls",
-            "Start date of poll",
-            "End date of poll",
-            "Organization name that conducts or analyzes opinion polls",
-            "Grade assigned by Fivethirtyeight (sometimes as 538, an American website that focuses on opinion poll) to pollster",
-            "Sample size of polls for each pollster",
-            "Type of population being polled",
-            "Percentage for Hillary Clinton",
-            "Percentage for Donald Trump",
-            "Percentage for Gary Johnson",
-            "Percentage for Evan Mcmullin",
-            "Fivethirtyeight adjusted percentage for Hillary Clinton",
-            "Fivethirtyeight adjusted percentage for Donald Trump", 
-            "Fivethirtyeight adjusted percentage for Gary Johnson",  
-            "Fivethirtyeight adjusted percentage for Evan Mcmullin")
-)
+head(ElectionPoll)
 ```
 
-We first create a data variable definition table to give an initial understanding of the data. As we can see, there are a few variables with missing values:
+As we can see, there are a few variables with missing values:
 ```{r}
-DataDict%>%remove_rownames()%>%kable(booktabs = TRUE,caption = "Data Variable Definition")%>%
-  kable_styling(font_size=6,latex_options=c("striped","scale_down","hold_position"))%>%
-  row_spec(0,bold=TRUE)
+summary(ElectionPoll)
 ```
 
 # Discussion
