@@ -122,7 +122,7 @@ plot_geo(df2, lat = ~lat, lon = ~lon)%>%
 
 
 #方案2: 不好
-plot_ly(df, lat = ~lat, lon = ~lon, 
+plot_ly(df2, lat = ~lat, lon = ~lon, 
         marker = list(color = "red"), type = 'scattermapbox',hovertext = df$State)%>%
   layout(
     mapbox = list(
