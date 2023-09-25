@@ -3,7 +3,7 @@ library(janitor)
 library(dplyr)
 require(maps)
 require(viridis)
-poll_data<-read.csv("D:\\2\\project1\\polls_us_election_2016.csv")
+poll_data<-ElectionPoll
 summary(poll_data)
 summ<-tabyl(poll_data,state)
 n_state<-nrow(summ)
@@ -78,10 +78,28 @@ ggplot(states_map, aes(x = long, y = lat)) +
 
 
 
-
-
+##################################Teng's suggestion
+#get example data from a link:
 df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
 df<-distinct(df,State, .keep_all = TRUE)
+df$State<-toupper(df$State)
+
+#get map data:
+states_map <- map_data(map = "state",region =df$State)
+
+#get mean longitude and latitude
+region.lab.data <- states_map %>%
+  group_by(region) %>%
+  summarise(lon = mean(long), lat = mean(lat))
+region.lab.data$region<-toupper(region.lab.data$region)
+
+
+#replace the longitude and latitude from region.lab.data to df
+df2<-left_join(df, region.lab.data, by=join_by(State==region))%>%select(State, Population, lat.y, lon.y)
+colnames(df2)<-c("State", "Population", "lat", "lon")
+df2[which(df2$State=="HAWAII"),]<-df[which(df$State=="HAWAII"),-1]
+df2[which(df2$State=="ALASKA"),]<-df[which(df$State=="ALASKA"),-1]
+tail(df2)
 
 # geo styling
 g <- list(
@@ -96,7 +114,7 @@ g <- list(
 )
 
 #方案1: 最好
-plot_geo(df, lat = ~lat, lon = ~lon)%>%
+plot_geo(df2, lat = ~lat, lon = ~lon)%>%
   add_markers(color = ~State, size=~Population,
               text = ~paste(State, Population, sep = "<br />"),
               symbol = I("square"), hoverinfo = "text")%>% 
