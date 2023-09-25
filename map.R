@@ -73,3 +73,44 @@ ggplot(states_map, aes(x = long, y = lat)) +
   theme(legend.position = "none")
 
 
+
+
+
+
+
+
+
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+df<-distinct(df,State, .keep_all = TRUE)
+
+# geo styling
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showland = TRUE,
+  landcolor = toRGB("gray85"), #the color of the land
+  subunitcolor = toRGB("green"), #the color of the state boundary
+  countrycolor = toRGB("black"), #the 
+  countrywidth = 0.5,
+  subunitwidth = 0.5
+)
+
+#方案1: 最好
+plot_geo(df, lat = ~lat, lon = ~lon)%>%
+  add_markers(color = ~State, size=~Population,
+              text = ~paste(State, Population, sep = "<br />"),
+              symbol = I("square"), hoverinfo = "text")%>% 
+  layout(title = 'plot', geo = g, legend=list(title = list(text="State Name")))
+
+
+#方案2: 不好
+plot_ly(df, lat = ~lat, lon = ~lon, 
+        marker = list(color = "red"), type = 'scattermapbox',hovertext = df$State)%>%
+  layout(
+    mapbox = list(
+      style = 'open-street-map',
+      zoom =2.5,
+      center = list(lon = -88, lat = 34))
+  ) 
+
+
