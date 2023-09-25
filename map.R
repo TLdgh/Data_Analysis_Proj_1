@@ -30,16 +30,16 @@ as.numeric(state_poll[2:58,2:3])
 #state_poll_result[2:58,1]<-state_us
 
 #for(i in 1:n_state){
-  #state_poll[1+i,2]=as.numeric(state_poll[1+i,2])
-  #state_poll[1+i,3]=as.numeric(state_poll[1+i,3])
-  #if(state_poll[1+i,2]<state_poll[1+i,3]){
-    #state_poll_result[i+1,3]<-state_poll[i+1,2]/(state_poll[i+1,2]+state_poll[i+1,3])*100
-    #state_poll_result[i+1,2]<-"C"
-  #}
-  #else{
-    #state_poll_result[i+1,3]<-state_poll[i+1,2]/(state_poll[i+1,2]+state_poll[i+1,3])*100
-    #state_poll_result[i+1,2]<-"T"
-  #}
+#state_poll[1+i,2]=as.numeric(state_poll[1+i,2])
+#state_poll[1+i,3]=as.numeric(state_poll[1+i,3])
+#if(state_poll[1+i,2]<state_poll[1+i,3]){
+#state_poll_result[i+1,3]<-state_poll[i+1,2]/(state_poll[i+1,2]+state_poll[i+1,3])*100
+#state_poll_result[i+1,2]<-"C"
+#}
+#else{
+#state_poll_result[i+1,3]<-state_poll[i+1,2]/(state_poll[i+1,2]+state_poll[i+1,3])*100
+#state_poll_result[i+1,2]<-"T"
+#}
 #}
 #state_poll_result
 
@@ -106,18 +106,18 @@ g <- list(
   scope = 'usa',
   projection = list(type = 'albers usa'),
   showland = TRUE,
-  landcolor = toRGB("gray85"), #the color of the land
+  #landcolor = toRGB("gray85"), #the color of the land
   subunitcolor = toRGB("green"), #the color of the state boundary
-  countrycolor = toRGB("black"), #the 
-  countrywidth = 0.5,
+  #countrycolor = toRGB("black"), #the 
+  #countrywidth = 0.5,
   subunitwidth = 0.5
 )
 
 #方案1: 最好
 plot_geo(df2, lat = ~lat, lon = ~lon)%>%
-  add_markers(color = ~State, size=~Population,
-              text = ~paste(State, Population, sep = "<br />"),
-              symbol = I("square"), hoverinfo = "text")%>% 
+  add_trace(colorscale=~Population, 
+            text = ~paste(State, Population, sep = "<br />"),
+            symbol = I("square"), hoverinfo = "text")%>% 
   layout(title = 'plot', geo = g, legend=list(title = list(text="State Name")))
 
 
@@ -130,5 +130,36 @@ plot_ly(df2, lat = ~lat, lon = ~lon,
       zoom =2.5,
       center = list(lon = -88, lat = 34))
   ) 
+
+
+#方案3: Choropleth Map
+
+#get the code of each State
+df3<-read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df3<-distinct(df3,state, .keep_all = TRUE)
+df3$state<-toupper(df3$state)
+df3<-df3[, 1:2]
+colnames(df3)<-c("Code", "State")
+df3<-rbind(df3, data.frame(Code="DC", State="DISTRICT OF COLUMBIA"))
+
+#merge df and df3 by State name
+df<-merge(df, df3, by.x = "State")
+
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa')
+)
+
+plot_geo(df, locationmode = 'USA-states')%>% 
+  add_trace(
+    z = ~Population, text = ~~paste(State, Population, sep = "<br />"), 
+    locations = ~Code, color = ~Population, colors="Blues")%>% 
+  colorbar(title = "Population")%>%
+  layout(title = 'Population Plot', geo = g)
+
+
+
+
 
 
