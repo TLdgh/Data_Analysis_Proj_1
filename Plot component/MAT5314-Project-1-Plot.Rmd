@@ -110,22 +110,6 @@ print(g_2)
 g_2 + g_1
 ```
 
-```{r}
-# Plot trend with all four candidates's uncleaned data
-ggplot(poll_by_time, aes(x = end_time)) +
-  geom_point(aes(y = prop_raw_clinton, color = "Clinton")) +
-  geom_point(aes(y = prop_raw_trump, color = "Trump")) +
-  geom_point(aes(y = prop_raw_johnson, color = "Johnson")) +
-  geom_point(aes(y = prop_raw_mcmullin, color = "Mcmullin")) +
-  stat_smooth(mapping = NULL, data = poll_by_time, geom = "smooth", position = "identity")
-  labs(x = "Date", y = "Proportion of rawpoll") +
-  scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
-  scale_x_datetime(date_breaks = "2 month") +
-  theme(axis.text.x = element_text(angle = 50, size = 6, vjust = 0.5)) + 
-  ggtitle("Poll Proportion by Time 
-          (with Missing Values)")
-
-```
 
 ```{r}
 # Plot trend with all four candidates's uncleaned data

@@ -265,8 +265,11 @@ Data dictionary:
 * adjpoll_mcmullin: Fivethirtyeight adjusted percentage for Evan Mcmullin  
 
 ```{r}
-ggplot(data = ElectionPoll, mapping = aes(x = grade, y = rawpoll_trump)) +
+g1 <- ggplot(data = ElectionPoll, mapping = aes(x = grade, y = rawpoll_trump)) +
     geom_boxplot()
+g2 <- ggplot(data = ElectionPoll, mapping = aes(x = grade, y = adjpoll_trump)) +
+    geom_boxplot()
+g1 + g2
 ```
 ```{r}
 
