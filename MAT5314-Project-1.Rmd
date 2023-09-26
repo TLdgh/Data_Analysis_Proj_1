@@ -11,26 +11,78 @@ header-includes:
 ---
 
 # Introduction
-A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.  
+A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
+
+The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. 
 
 # Method
 We use various R packages to present the data set and to plot the graphs.
 ```{r, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(plotly)
 library(tidyverse)
+library(kableExtra)
+
 ```
 
 # Result
-We first take a look at the raw data set:
 ```{r}
+#load data set
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
-head(ElectionPoll)
 ```
 
-As we can see, there are a few variables with missing values:
+We first created a data variable definition table to give an initial understanding of the data. As one can see, there were a few variables with missing values:
 ```{r}
-summary(ElectionPoll)
+#create data variable definition
+DataDict<-data.frame(
+  Variables=colnames(ElectionPoll), Size=nrow(ElectionPoll), 
+  Type=sapply(ElectionPoll, function(x) class(x)),
+  Example=sapply(ElectionPoll, function(x) paste(as.character(head(unique(x),3)), collapse = ", ")),
+  Number.Unique=sapply(ElectionPoll, function(x) length(unique(x))),
+  Number.Missing=sapply(ElectionPoll, function(x) sum(is.na(x))),
+  Comment=c("The name of the state (or national) where the election is held",
+            "Start date of poll",
+            "End date of poll",
+            "Organization name that conducts or analyzes opinion polls",
+            "Grade assigned by Fivethirtyeight to pollster",
+            "Sample size of polls for each pollster",
+            "Type of population being polled",
+            "Poll Percentage for Hillary Clinton",
+            "Poll Percentage for Donald Trump",
+            "Poll Percentage for Gary Johnson",
+            "Poll Percentage for Evan Mcmullin",
+            "Adjusted percentage for Hillary Clinton",
+            "Adjusted percentage for Donald Trump", 
+            "Adjusted percentage for Gary Johnson",  
+            "Adjusted percentage for Evan Mcmullin")
+)
+
+DataDict%>%remove_rownames()%>%kable(booktabs = TRUE,caption = "Data Variable Definition")%>%
+  kable_styling(font_size=10, latex_options=c("striped","scale_down","hold_position"))%>%
+  column_spec(4, width = "8em")%>%
+  row_spec(0,bold=TRUE)
+
+Jmiss<-sapply(ElectionPoll[, c("rawpoll_johnson", "adjpoll_johnson")], function(x) round(sum(is.na(x))/nrow(ElectionPoll)*100,2)%>% paste0("%") ) 
+Jmc<-sapply(ElectionPoll[, c("rawpoll_mcmullin", "adjpoll_mcmullin")], function(x) round(sum(is.na(x))/nrow(ElectionPoll)*100,2)%>% paste0("%") ) 
+```
+
+Note that the poll results for Johnson and McMullin had lots of missing values. In particular, Johnson had `r Jmiss[1]` raw poll result and  `r Jmiss[2]` adjusted poll result missing, and McMullin had `r Jmc[1]` and `r Jmc[2]` missing. Due to the fact that these two candidate didn't make to the final election, we chose to ignore their data in some of the analysis. 
+
+Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.   
+```{r}
+ElectionPoll$grade<-replace_na(ElectionPoll$grade, "D-")
+
+fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
+fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
+
+boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
+  layout(yaxis=list(title="Raw Poll Difference"),
+         yaxis2=list(title="Adjusted Poll Difference"),
+         title="Difference between poll_Clinton and poll_Trump",
+         legend = list(title = list(text="Grade")))
+
+htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
+webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
 # Discussion
