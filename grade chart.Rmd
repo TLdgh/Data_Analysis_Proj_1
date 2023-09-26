@@ -1,0 +1,52 @@
+```{r}
+library(dplyr)
+ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
+head(ElectionPoll)
+```
+
+```{r}
+#Extract the "pollster" and "grade" columns from the ElectionPoll to form a new data frame "pollster_grade"
+pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade")))
+pollster_grade
+```
+
+```{r}
+#Merge duplicate rows and delete those with missing data
+pollster_grade <- na.omit(distinct(subset(ElectionPoll, select = c("pollster","grade"))))
+pollster_grade
+```
+
+```{r}
+#Calculate the different grades corresponding to each pollster
+grouped_data <- pollster_grade %>%
+  group_by(pollster) %>%
+  summarise(number_of_grades = n_distinct(grade))
+grouped_data #According to the results, each type of pollster has only one grade
+```
+
+```{r}
+#Rearrange data according to variable "grade"
+summary_data <- pollster_grade %>%
+  group_by(grade, pollster) %>%
+  summarise(count = n(), .groups = 'drop')
+summary_data
+```
+
+From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%. 
+
+```{r}
+category_counts <- table(as.factor(pollster_grade$grade))
+unique_levels <- levels(factor(pollster_grade$grade))
+percentages <- (category_counts / sum(category_counts))*100 #calculate the percentages of different grades
+A <- as.data.frame(percentages)#construct the data frame of two variables:"Var1"(grade) and "Freq"(percentages of grades)
+
+library(ggplot2)
+
+p <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
+p <- p %>% layout(title = "Pie Chart of Pollsters' Grades",
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         legend = list(title = list(text="Grade")))
+
+p
+```
