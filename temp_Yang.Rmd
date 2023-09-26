@@ -1,13 +1,12 @@
 ---
-title: "MAT5314 Project 1: Data Visualization"
-author: 
-  - Teng Li(7373086)
-  - Shiya Gao(300381032) 
-  - Chuhan Yue(300376046)
-  - Yang Lyu(8701121)
+title: 'MAT5314 Project 1: Data Visualization'
+author:
+- Teng Li(7373086)
+- Shiya Gao(300381032)
+- Chuhan Yue(300376046)
+- Yang Lyu(8701121)
 output: pdf_document
-header-includes: 
-  - \renewcommand{\and}{\\}
+header-includes: \renewcommand{\and}{\\}
 ---
 
 # Introduction
@@ -149,8 +148,7 @@ Mcmullin's total raw polls by state are presented in `Mcmullin_state`.
 
 ## Visualization of the poll proportion of the four candidates in each state:
 
-
-```{r g_11, echo=TRUE, fig.cap = "Poll Percentage by States"}
+```{r g_11, echo=TRUE, fig.cap = "Poll Percentage by States."}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
   labs(x = "State", y = "Percentage of Polls", 
@@ -167,8 +165,13 @@ g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate))
 print(g_11)
 ```
 
+Figure \@ref(fig:g_11) shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election.
 
-Figure \@ref(g_11) shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election.
+---
+
+## Poll Distribution
+
+We are eager to observe the distribution of polls among the four candidates. 
 
 # Discussion
 
