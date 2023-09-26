@@ -33,8 +33,7 @@ summary_data <- pollster_grade %>%
 summary_data
 ```
 
-From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B and B-, both at about 15.1%. So, the average grade of pollsters is "B".
-
+From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
 ```{r}
 category_counts <- table(as.factor(pollster_grade$grade))
 unique_levels <- levels(factor(pollster_grade$grade))
@@ -42,38 +41,12 @@ percentages <- (category_counts / sum(category_counts))*100 #calculate the perce
 A <- as.data.frame(percentages)#construct the data frame of two variables:"Var1"(grade) and "Freq"(percentages of grades)
 
 library(ggplot2)
-library(ggforce)
 
-p <- ggplot()+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.ticks = element_blank(), 
-        axis.text.y = element_blank(),
-        axis.text.x = element_blank(),
-        legend.title=element_blank(), 
-        panel.border = element_blank(),
-        panel.background = element_blank())+
-  xlab("")+ylab('')+
-  scale_fill_manual(values = c('#E5D2DD', '#E59CC4', '#AB3282', '#D6E7A3', 
-                               '#53A85F', '#23452F', '#0EF6F2',
-                               '#57C3F3', '#476D87', '#F1BB72'))+ #add colours
-  geom_arc_bar(data=A,
-               stat = "pie",
-               aes(x0=0,y0=0,r0=0.8,r=2,
-                   amount=Freq,fill=Var1) #draw a pie chart
-  )+
-  annotate("text",x=0.6,y=2.2,label="7.9%")+
-  annotate("text",x=1.5,y=1.7,label="9.4%")+
-  annotate("text",x=2.1,y=0.8,label="3.6%")+
-  annotate("text",x=2.15,y=-0.65,label="17.3%")+
-  annotate("text",x=0.4,y=-2.2,label="15.1%")+
-  annotate("text",x=-1.45,y=-1.75,label="15.1%")+
-  annotate("text",x=-2.2,y=-0.35,label="8.6%")+
-  annotate("text",x=-2.1,y=0.65,label="5%")+
-  annotate("text",x=-1.35,y=1.85,label="17.3%")+
-  annotate("text",x=-0.05,y=2.25,label="0.7%")
+p <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
+p <- p %>% layout(title = "Pie Chart of Pollsters' Grades",
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         legend = list(title = list(text="Grade")))
 
-p <- p + labs(title = "Pie Chart of Grades") +
-  theme(plot.title = element_text(size = 20, hjust = 0.5))
 p
 ```
