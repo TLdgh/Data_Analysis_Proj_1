@@ -1,54 +1,23 @@
 ---
-title: "MAT5314 Project 1: Data Visualization"
-author: 
-  - Teng Li(7373086)
-  - Shiya Gao(300381032) 
-  - Chuhan Yue(300376046)
-  - Yang Lyu(8701121)
-output: pdf_document
-header-includes: 
-  - \renewcommand{\and}{\\}
+output:
+  pdf_document:
+    latex_engine: xelatex
+  always_allow_html: true
 ---
-
-# Introduction
-
-A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
-
-# Method
-
-We use various R packages to present the data set and to plot the graphs.
-
-```{r, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-library(plotly)
-library(tidyverse)
-```
-
-# Result
-
-We first take a look at the raw data set:
-
 ```{r}
+library(dplyr)
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
 head(ElectionPoll)
 ```
 
-As we can see, there are a few variables with missing values:
-
+In the second step, we want to look at the percentage of different grades of pollsters. Therefore, we extract the "pollster" and "grade" columns from the original data frame, merge the duplicate rows and re-sort the data according to the grade
 ```{r}
-summary(ElectionPoll)
-```
-
-In the second step, we want to look at the percentage of different grades of pollsters. Therefore, we extract the "pollster" and "grade" columns from the original data frame, merge the duplicate rows and re-sort the data according to the grade.
-```{r}
-#Merge duplicate rows and delete those with missing data
-pollster_grade <- na.omit(distinct(subset(ElectionPoll, select = c("pollster","grade"))))
-#Rearrange data according to variable "grade"
+pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade")))
+pollster_grade$grade <- ifelse(is.na(pollster_grade$grade), "none", pollster_grade$grade)
 summary_data <- pollster_grade %>%
   group_by(grade, pollster) %>%
-  summarise(.groups = 'drop')
+  summarise("number of rating" = n(), .groups = 'drop')
 summary_data
-
 ```
 
 From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
@@ -67,10 +36,8 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          legend = list(title = list(text="Grade")))
 
+piechart
+
 htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
-
-# Discussion
-
-# Conclusion
