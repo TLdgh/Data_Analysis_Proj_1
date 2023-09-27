@@ -122,7 +122,7 @@ htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
-<<<<<<< HEAD
+
 ## Comparison of candidates' polls in each state
 
 First, we would like to give a brief introduction to the U.S. election system, because it is crucial to understand the background of the data. Voters in each state vote to choose the President of the United States. The candidate who wins the majority of the votes will receive all the electoral votes in that state. Then the sum of the electoral votes in each state is calculated. The total number of electoral votes is 538. The candidate who wins half of the votes plus 1 will win and become the new President of the United States. 
@@ -257,9 +257,7 @@ print(g_11)
 Figure \@ref(fig:g_11) shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election.
 
 ---
- 
-=======
->>>>>>> 63821e77a5f4719be1e25622777e575b9ae55a66
+
 # Discussion
 
 # Conclusion
