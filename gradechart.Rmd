@@ -20,6 +20,11 @@ summary_data <- pollster_grade %>%
 summary_data
 ```
 
+```{r}
+subset_data <- summary_data[140:nrow(summary_data), ]
+subset_data$pollster
+```
+
 From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
 
 ```{r}
