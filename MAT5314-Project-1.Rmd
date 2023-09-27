@@ -65,8 +65,6 @@ Jmiss<-sapply(ElectionPoll[, c("rawpoll_johnson", "adjpoll_johnson")], function(
 Jmc<-sapply(ElectionPoll[, c("rawpoll_mcmullin", "adjpoll_mcmullin")], function(x) round(sum(is.na(x))/nrow(ElectionPoll)*100,2)%>% paste0("%") ) 
 ```
 
-<<<<<<< HEAD
-=======
 Note that the poll results for Johnson and McMullin had lots of missing values. In particular, Johnson had `r Jmiss[1]` raw poll result and  `r Jmiss[2]` adjusted poll result missing, and McMullin had `r Jmc[1]` and `r Jmc[2]` missing. Due to the fact that these two candidate didn't make to the final election, we chose to ignore their data in some of the analysis. 
 
 Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.   
@@ -86,7 +84,6 @@ htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
 webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
->>>>>>> main
 # Discussion
 
 # Conclusion
