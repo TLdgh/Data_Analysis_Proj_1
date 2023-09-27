@@ -495,6 +495,29 @@ g_10 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate))
 print(g_10)
 ```
 
+If we ignore U.S., focus on the polls on each state:
+
+```{r}
+NumVoteState_dropUS <- NumVoteState[!NumVoteState$state %in% "U.S.", ]
+
+g_12 <- ggplot(data = NumVoteState_dropUS, mapping = aes( x = state, fill = candidate)) +
+  geom_col(aes(y = PollNumber),position='stack') +
+  labs(x = "State", y = "Number of Polls", 
+       title = "Poll Count by States", 
+       caption = "Data: NumVoteState") +
+  scale_fill_manual(values=c("Clinton" = "blue", "Trump" = "red", 
+                             "Johnson" = "green", "Mcmullin" = "yellow")) +
+  #geom_text(stat='Count',aes(label=after_stat(count)), color = "White", 
+            #size=3, position = position_stack(0.5)) + 
+  theme(axis.text.x = element_text(angle = 50, size = 6, vjust = 0.5)) + 
+  theme(axis.title.x = element_text(size = 9, vjust = 0),
+        axis.title.y = element_text(size = 9, vjust = 3)) + 
+  theme(plot.title = element_text(size = 12, face = "bold", 
+                                  margin = margin(0, 0, 0, 0))) +
+  theme(legend.position = "bottom")
+print(g_12)
+```
+
 
 ```{r}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
