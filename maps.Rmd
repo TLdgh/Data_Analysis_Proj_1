@@ -82,6 +82,9 @@ plot_geo(df, locationmode = 'USA-states')%>%
     )%>%
   colorbar(limits = c(0, 100),title = "Clinton's vote share(%)")%>%
   layout(title = 'Clinton and Trump vote share in 2016(rawpoll)', geo = g)
+
+htmlwidgets::saveWidget(widget = boxchart, file = "mapchart1.html")
+webshot::webshot(url = "mapchart1.html", file = "mapchart1.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
 ```{r}
@@ -146,5 +149,8 @@ plot_geo(df, locationmode = 'USA-states')%>%
     )%>%
   colorbar(limits = c(0, 100),title = "Clinton's vote share(%)")%>%
   layout(title = 'Clinton and Trump vote share in 2016(adjpoll)', geo = g)
+
+htmlwidgets::saveWidget(widget = boxchart, file = "mapchart2.html") 
+webshot::webshot(url = "mapchart2.html", file = "mapchart2.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
