@@ -16,7 +16,9 @@ A data set of the 2016 US election polls was given. In this project we aim to un
 The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. 
 
 # Method
+
 We use various R packages to present the data set and to plot the graphs.
+
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(plotly)
@@ -30,6 +32,7 @@ library(kableExtra)
 #load data set
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
 ```
+
 
 We first created a data variable definition table to give an initial understanding of the data. As one can see, there were a few variables with missing values:
 ```{r}
@@ -85,6 +88,36 @@ htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
 webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
+In the second step, we want to look at the percentage of different grades of pollsters. Therefore, we extract the "pollster" and "grade" columns from the original data frame, merge the duplicate rows and re-sort the data according to the grade.
+```{r}
+#Merge duplicate rows and delete those with missing data
+pollster_grade <- na.omit(distinct(subset(ElectionPoll, select = c("pollster","grade"))))
+#Rearrange data according to variable "grade"
+summary_data <- pollster_grade %>%
+  group_by(grade, pollster) %>%
+  summarise(.groups = 'drop')
+summary_data
+
+```
+
+From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
+
+```{r}
+category_counts <- table(as.factor(pollster_grade$grade))
+unique_levels <- levels(factor(pollster_grade$grade))
+percentages <- (category_counts / sum(category_counts))*100 
+A <- as.data.frame(percentages)
+
+piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
+piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         legend = list(title = list(text="Grade")))
+
+htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
+webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
+```
+ 
 # Discussion
 
 # Conclusion
