@@ -504,7 +504,7 @@ g_12 <- ggplot(data = NumVoteState_dropUS, mapping = aes( x = state, fill = cand
   geom_col(aes(y = PollNumber),position='stack') +
   labs(x = "State", y = "Number of Polls", 
        title = "Poll Count by States", 
-       caption = "Data: NumVoteState") +
+       caption = "Data: NumVoteState_dropUS") +
   scale_fill_manual(values=c("Clinton" = "blue", "Trump" = "red", 
                              "Johnson" = "green", "Mcmullin" = "yellow")) +
   #geom_text(stat='Count',aes(label=after_stat(count)), color = "White", 
