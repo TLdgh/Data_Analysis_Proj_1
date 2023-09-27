@@ -2,11 +2,9 @@
 .Rhistory
 .Rapp.history
 .DS_Store
-
 # Session Data files
 .RData
 polls_us_election_2016.csv
-
 # RStudio files
 .Rproj.user/
 
@@ -14,3 +12,4 @@ polls_us_election_2016.csv
 Data_Analysis_Proj_1.Rproj
 *.html
 *.png
+*.jpeg
