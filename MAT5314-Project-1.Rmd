@@ -11,14 +11,9 @@ header-includes:
 ---
 
 # Introduction
-<<<<<<< HEAD
-
-A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
-=======
 A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
 
 The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. 
->>>>>>> fa14dcd509283f6b277af106747bca4b4e4967da
 
 # Method
 
@@ -113,8 +108,6 @@ unique_levels <- levels(factor(pollster_grade$grade))
 percentages <- (category_counts / sum(category_counts))*100 
 A <- as.data.frame(percentages)
 
-library(plotly)
-
 piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
 piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
@@ -124,7 +117,7 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
 htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
-
+ 
 # Discussion
 
 # Conclusion
