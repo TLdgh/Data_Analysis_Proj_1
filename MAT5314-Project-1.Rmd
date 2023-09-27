@@ -124,7 +124,7 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
 htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
-
+ 
 # Discussion
 
 # Conclusion
