@@ -7,6 +7,14 @@
 polls_us_election_2016.csv
 # RStudio files
 .Rproj.user/
+<<<<<<< HEAD
 # Project file
 Data_Analysis_Proj_1.Rproj
 boxchart.html
+=======
+
+# Project file 
+Data_Analysis_Proj_1.Rproj
+*.html
+*.png
+>>>>>>> fa14dcd509283f6b277af106747bca4b4e4967da
