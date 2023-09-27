@@ -1,0 +1,150 @@
+```{r}
+#packages used
+library(ggplot2)
+library(janitor)
+library(dplyr)
+require(maps)
+require(viridis)
+require(plotly)
+```
+
+```{r}
+poll_data<-read.csv("D:\\2\\project1\\polls_us_election_2016.csv")
+summary(poll_data)
+summ<-tabyl(poll_data,state)
+poll_data$state<-toupper(poll_data$state)
+n_state<-nrow(summ)
+state_us<-summ$state
+state_poll<-matrix(0,58,5)
+state_poll[1,2:5]<-c("raw_clinton","raw_trump","adj_clinton","adj_trump")
+state_poll[2:58,1]<-state_us
+head(poll_data)
+```
+
+```{r}
+state_poll<- poll_data %>%
+  group_by(state) %>%
+  summarise(rawpoll_clinton = mean(rawpoll_clinton), rawpoll_trump = mean(rawpoll_trump))
+head(state_poll)
+```
+
+```{r}
+state_poll$percent_clinton<-100*state_poll$rawpoll_clinton/(state_poll$rawpoll_clinton+state_poll$rawpoll_trump)
+#delete DC12和U.S.的数据
+state_poll<-state_poll[-50,]
+state_poll<-state_poll[-c(31:33),]
+state_poll<-state_poll[-c(21:22),]
+colnames(state_poll)<-c("State","rawpoll_clinton","rawpoll_trump","percent_clinton")
+```
+
+```{r}
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+df<-distinct(df,State, .keep_all = TRUE)
+df$State<-toupper(df$State)
+
+#get map data:
+states_map <- map_data(map = "state",region =df$State)
+
+#get mean longitude and latitude
+region.lab.data <- states_map %>%
+  group_by(region) %>%
+  summarise(lon = mean(long), lat = mean(lat))
+region.lab.data$region<-toupper(region.lab.data$region)
+
+
+df<-df[,-3]
+df<-df[,-1]
+region.lab.data[which(region.lab.data$region=="HAWAII"),]<-df[which(df$State=="HAWAII"),]
+region.lab.data[which(region.lab.data$region=="ALASKA"),]<-df[which(df$State=="ALASKA"),]
+colnames(region.lab.data)<-c("State","lat","lon")
+df_1<-merge(state_poll,df, by.x = "State")
+```
+
+
+```{r}
+df3<-read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df3<-distinct(df3,state, .keep_all = TRUE)
+df3$state<-toupper(df3$state)
+df3<-df3[, 1:2]
+colnames(df3)<-c("Code", "State")
+df3<-rbind(df3, data.frame(Code="DC", State="DISTRICT OF COLUMBIA"))
+df<-merge(df_1, df3, by.x = "State")
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa')
+)
+
+plot_geo(df, locationmode = 'USA-states')%>% 
+  add_trace(
+    z = ~percent_clinton, text = ~~paste(State,percent_clinton , sep = "<br />"), 
+    locations = ~Code, color =~percent_clinton, colors=c('red','white','blue')
+    )%>%
+  colorbar(limits = c(0, 100),title = "Clinton's vote share(%)")%>%
+  layout(title = 'Clinton and Trump vote share in 2016(rawpoll)', geo = g)
+```
+
+```{r}
+#adjpoll
+poll_data<-read.csv("D:\\2\\project1\\polls_us_election_2016.csv")
+summary(poll_data)
+summ<-tabyl(poll_data,state)
+poll_data$state<-toupper(poll_data$state)
+n_state<-nrow(summ)
+state_us<-summ$state
+state_poll<-matrix(0,58,5)
+state_poll[1,2:5]<-c("raw_clinton","raw_trump","adj_clinton","adj_trump")
+state_poll[2:58,1]<-state_us
+head(poll_data)
+state_poll<- poll_data %>%
+  group_by(state) %>%
+  summarise(rawpoll_clinton = mean(adjpoll_clinton), rawpoll_trump = mean(adjpoll_trump))
+head(state_poll)
+state_poll$percent_clinton<-100*state_poll$rawpoll_clinton/(state_poll$rawpoll_clinton+state_poll$rawpoll_trump)
+#delete DC12和U.S.的数据
+state_poll<-state_poll[-50,]
+state_poll<-state_poll[-c(31:33),]
+state_poll<-state_poll[-c(21:22),]
+colnames(state_poll)<-c("State","adjpoll_clinton","adjpoll_trump","percent_clinton")
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+df<-distinct(df,State, .keep_all = TRUE)
+df$State<-toupper(df$State)
+
+#get map data:
+states_map <- map_data(map = "state",region =df$State)
+
+#get mean longitude and latitude
+region.lab.data <- states_map %>%
+  group_by(region) %>%
+  summarise(lon = mean(long), lat = mean(lat))
+region.lab.data$region<-toupper(region.lab.data$region)
+
+df<-df[,-3]
+df<-df[,-1]
+region.lab.data[which(region.lab.data$region=="HAWAII"),]<-df[which(df$State=="HAWAII"),]
+region.lab.data[which(region.lab.data$region=="ALASKA"),]<-df[which(df$State=="ALASKA"),]
+colnames(region.lab.data)<-c("State","lat","lon")
+df_1<-merge(state_poll,df, by.x = "State")
+
+df3<-read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df3<-distinct(df3,state, .keep_all = TRUE)
+df3$state<-toupper(df3$state)
+df3<-df3[, 1:2]
+colnames(df3)<-c("Code", "State")
+df3<-rbind(df3, data.frame(Code="DC", State="DISTRICT OF COLUMBIA"))
+df<-merge(df_1, df3, by.x = "State")
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa')
+)
+
+plot_geo(df, locationmode = 'USA-states')%>% 
+  add_trace(
+    z = ~percent_clinton, text = ~~paste(State,percent_clinton , sep = "<br />"), 
+    locations = ~Code, color =~percent_clinton, colors=c('red','white','blue')
+    )%>%
+  colorbar(limits = c(0, 100),title = "Clinton's vote share(%)")%>%
+  layout(title = 'Clinton and Trump vote share in 2016(adjpoll)', geo = g)
+```
+
