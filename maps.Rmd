@@ -70,15 +70,15 @@ g <- list(
   projection = list(type = 'albers usa')
 )
 
-plot_geo(df3, locationmode = 'USA-states')%>% 
+mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>% 
   add_trace(
     z = ~percent_rawpoll_clinton, text = ~~paste(State,percent_rawpoll_clinton , sep = "<br />"), 
     locations = ~Code, color =~percent_rawpoll_clinton, colors=c('red','white','blue')
-    )%>%
+  )%>%
   colorbar(limits = c(0, 100),title = "Clinton's vote share(%)")%>%
   layout(title = 'Clinton and Trump vote share in 2016(rawpoll)', geo = g)
 
-htmlwidgets::saveWidget(widget = boxchart, file = "mapchart1.html")
+htmlwidgets::saveWidget(widget = mapchart1, file = "mapchart1.html")
 webshot::webshot(url = "mapchart1.html", file = "mapchart1.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
@@ -89,15 +89,15 @@ g <- list(
   projection = list(type = 'albers usa')
 )
 
-plot_geo(df_3, locationmode = 'USA-states')%>% 
+mapchart2<-plot_geo(df_3, locationmode = 'USA-states')%>% 
   add_trace(
     z = ~percent_adjpoll_clinton, text = ~~paste(State,percent_adjpoll_clinton , sep = "<br />"), 
     locations = ~Code, color =~percent_adjpoll_clinton, colors=c('red','white','blue')
-    )%>%
+  )%>%
   colorbar(limits = c(0, 100),title = "Clinton's vote share(%)")%>%
   layout(title = 'Clinton and Trump vote share in 2016(adjpoll)', geo = g)
 
-htmlwidgets::saveWidget(widget = boxchart, file = "mapchart2.html") 
+htmlwidgets::saveWidget(widget = mapchart2, file = "mapchart2.html") 
 webshot::webshot(url = "mapchart2.html", file = "mapchart2.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
