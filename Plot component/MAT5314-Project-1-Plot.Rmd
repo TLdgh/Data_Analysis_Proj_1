@@ -514,3 +514,4 @@ g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate))
   theme(legend.position = "bottom")
 print(g_11)
 ```
+
