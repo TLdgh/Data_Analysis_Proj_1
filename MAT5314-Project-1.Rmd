@@ -13,6 +13,10 @@ header-includes:
 # Introduction
 A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
 
+First, we would like to give a brief introduction to the U.S. election system, because it is crucial to understand the background of the data. Voters in each state vote to choose the President of the United States. The candidate who wins the majority of the votes will receive all the electoral votes in that state. Then the sum of the electoral votes in each state is calculated. The total number of electoral votes is 538. The candidate who wins half of the votes plus 1 will win and become the new President of the United States. 
+
+Secondly, we want to analyze the key factors for the candidate’s victory. Since each state has a different number of electoral votes, it is crucial for electors to win in several key states. The reason is that if a candidate wins a certain state, he will win all the electoral votes in that state. So there will be tight competition in states with more votes.
+
 The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. 
 
 # Method
@@ -24,7 +28,6 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(plotly)
 library(tidyverse)
 library(kableExtra)
-
 ```
 
 # Result
@@ -97,7 +100,6 @@ summary_data <- pollster_grade %>%
   group_by(grade, pollster) %>%
   summarise(.groups = 'drop')
 summary_data
-
 ```
 
 From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
@@ -117,7 +119,123 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
 htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
- 
+
+## Polls trend by time
+
+Using the end date as the standard, we drew a scatter plot of the changes in the support rates of the four candidates over time.
+
+```{r}
+#Create frame contained time, rawpoll
+start_time <- as.POSIXct(ElectionPoll$startdate)
+end_time <- as.POSIXct(ElectionPoll$enddate)
+prop_raw_clinton <- ElectionPoll$rawpoll_clinton
+prop_raw_trump <- ElectionPoll$rawpoll_trump
+prop_raw_johnson <- ElectionPoll$rawpoll_johnson
+prop_raw_mcmullin <- ElectionPoll$rawpoll_mcmullin
+
+poll_by_time <- data.frame( 
+  start_time = start_time,
+  end_time = end_time,
+  clinton = prop_raw_clinton,
+  trump = prop_raw_trump,
+  johnson = prop_raw_johnson,
+  mcmullin = prop_raw_mcmullin
+)
+
+# Order with increasing end_date
+poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
+```
+
+```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time."}
+# Plot trend with all four candidates's uncleaned data
+g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
+  geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
+  geom_point(aes(y = prop_raw_trump, color = "Trump"), size = 1, alpha = 0.3) +
+  geom_point(aes(y = prop_raw_johnson, color = "Johnson"), size = 1, alpha = 0.3) +
+  geom_point(aes(y = prop_raw_mcmullin, color = "Mcmullin"), size = 1, alpha = 0.3) +
+  labs(x = "Date", y = "Proportion of rawpoll (%)", 
+       title = "Raw Poll Proportion by Time", 
+       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin") +
+  scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
+  scale_x_datetime(date_breaks = "2 month") +
+  theme(axis.text.x = element_text(angle = 50, size = 7, vjust = 0.5)) + 
+  theme(axis.title.x = element_text(size = 9, vjust = 0),
+        axis.title.y = element_text(size = 9, vjust = 3)) +
+  theme(plot.title = element_text(size = 12, face = "bold", 
+                                  margin = margin(0, 0, 0, 0))) + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "bottom")
+print(g_2)
+```
+
+Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. A low poll rate for one candidate also implies that other candidates may have received high poll rates. This creates differences in pollsters or states. 
+
+## Comparison of candidates' polls in each state
+
+We want to process the metadata by counting the polls received by each of the four candidates in each state. This result is easier to obtain by multiplying the given size and the proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state although the polls may come from different pollsters. In this case, we treat NA as 0.
+
+```{r}
+#Create frame contained state, poll number for each candidate
+states <- ElectionPoll$state
+prop_raw_clinton <- ElectionPoll$rawpoll_clinton
+prop_raw_trump <- ElectionPoll$rawpoll_trump
+prop_raw_johnson <- ElectionPoll$rawpoll_johnson
+prop_raw_mcmullin <- ElectionPoll$rawpoll_mcmullin
+size <- ElectionPoll$samplesize
+
+poll_by_state <- data.frame(
+  state = states,
+  prop_clinton = prop_raw_clinton,
+  prop_trump = prop_raw_trump,
+  prop_johnson = prop_raw_johnson,
+  prop_mcmullin = prop_raw_mcmullin,
+  size = size,
+  NumVote_clinton = size * (prop_raw_clinton/100),
+  NumVote_trump = size * (prop_raw_trump/100),
+  NumVote_johnson = size * (prop_raw_johnson/100),
+  NumVote_mcmullin = size * (prop_raw_mcmullin/100)
+)
+```
+
+```{r}
+poll_by_state[is.na(poll_by_state)] <- 0
+```
+
+```{r}
+NumVote_State <- cbind(poll_by_state$state, poll_by_state$NumVote_clinton, 
+      poll_by_state$NumVote_trump, poll_by_state$NumVote_johnson, 
+      poll_by_state$NumVote_mcmullin)
+colnames(NumVote_State) <- c("state","Clinton", "Trump", "Johnson", "Mcmullin")
+```
+
+```{r}
+NumVoteState <- as.data.frame(NumVote_State) %>%
+  pivot_longer(cols = -state,
+               names_to = "candidate",
+               values_to = "PollNumber")
+NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
+```
+
+The visualization of the poll proportion of the four candidates in each state as follows.
+
+```{r, fig.cap = "Poll Percentage by States."}
+g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
+  geom_col(aes(y = PollNumber),position='fill') +
+  labs(x = "State", y = "Percentage of Polls", 
+       title = "Poll Percentage by States") +
+  scale_fill_manual(values=c("Clinton" = "blue", "Trump" = "red", 
+                             "Johnson" = "green", "Mcmullin" = "yellow")) +
+  theme(axis.text.x = element_text(angle = 50, size = 6, vjust = 0.5)) + 
+  theme(axis.title.x = element_text(size = 9, vjust = 0),
+        axis.title.y = element_text(size = 9, vjust = 3)) + 
+  theme(plot.title = element_text(size = 12, face = "bold", 
+                                  margin = margin(0, 0, 0, 0))) +
+  theme(legend.position = "bottom")
+print(g_11)
+```
+
+Figure 2 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us tally who would win all of the state's electoral votes.
+
 # Discussion
 
 # Conclusion
