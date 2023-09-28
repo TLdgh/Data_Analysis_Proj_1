@@ -1,51 +1,182 @@
 ---
-title: 'MAT5314 Project 1: Data Visualization'
-author:
-- Teng Li(7373086)
-- Shiya Gao(300381032)
-- Chuhan Yue(300376046)
-- Yang Lyu(8701121)
+title: "MAT5314 Project 1: Data Visualization"
+author: 
+  - Teng Li(7373086)
+  - Shiya Gao(300381032) 
+  - Chuhan Yue(300376046)
+  - Yang Lyu(8701121)
 output: pdf_document
-header-includes: \renewcommand{\and}{\\}
+header-includes: 
+  - \renewcommand{\and}{\\}
 ---
 
 # Introduction
-A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.  
+A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
+
+First, we would like to give a brief introduction to the U.S. election system, because it is crucial to understand the background of the data. Voters in each state vote to choose the President of the United States. The candidate who wins the majority of the votes will receive all the electoral votes in that state. Then the sum of the electoral votes in each state is calculated. The total number of electoral votes is 538. The candidate who wins half of the votes plus 1 will win and become the new President of the United States. 
+
+Secondly, we want to analyze the key factors for the candidate’s victory. Since each state has a different number of electoral votes, it is crucial for electors to win in several key states. The reason is that if a candidate wins a certain state, he will win all the electoral votes in that state. So there will be tight competition in states with more votes.
+
+The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. 
 
 # Method
+
 We use various R packages to present the data set and to plot the graphs.
+
 ```{r, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(plotly)
-library(dplyr)
 library(tidyverse)
-library(ggplot2)
+library(kableExtra)
 library(patchwork)
-library(tidyr)
 library(tinytex)
 ```
 
 # Result
-We first take a look at the raw data set:
 ```{r}
+#load data set
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
-head(ElectionPoll)
 ```
 
-As we can see, there are a few variables with missing values:
+
+We first created a data variable definition table to give an initial understanding of the data. As one can see, there were a few variables with missing values:
 ```{r}
-summary(ElectionPoll)
+#create data variable definition
+DataDict<-data.frame(
+  Variables=colnames(ElectionPoll), Size=nrow(ElectionPoll), 
+  Type=sapply(ElectionPoll, function(x) class(x)),
+  Example=sapply(ElectionPoll, function(x) paste(as.character(head(unique(x),3)), collapse = ", ")),
+  Number.Unique=sapply(ElectionPoll, function(x) length(unique(x))),
+  Number.Missing=sapply(ElectionPoll, function(x) sum(is.na(x))),
+  Comment=c("The name of the state (or national) where the election is held",
+            "Start date of poll",
+            "End date of poll",
+            "Organization name that conducts or analyzes opinion polls",
+            "Grade assigned by Fivethirtyeight to pollster",
+            "Sample size of polls for each pollster",
+            "Type of population being polled",
+            "Poll Percentage for Hillary Clinton",
+            "Poll Percentage for Donald Trump",
+            "Poll Percentage for Gary Johnson",
+            "Poll Percentage for Evan Mcmullin",
+            "Adjusted percentage for Hillary Clinton",
+            "Adjusted percentage for Donald Trump", 
+            "Adjusted percentage for Gary Johnson",  
+            "Adjusted percentage for Evan Mcmullin")
+)
+
+DataDict%>%remove_rownames()%>%kable(booktabs = TRUE,caption = "Data Variable Definition")%>%
+  kable_styling(font_size=10, latex_options=c("striped","scale_down","hold_position"))%>%
+  column_spec(4, width = "8em")%>%
+  row_spec(0,bold=TRUE)
+
+Jmiss<-sapply(ElectionPoll[, c("rawpoll_johnson", "adjpoll_johnson")], function(x) round(sum(is.na(x))/nrow(ElectionPoll)*100,2)%>% paste0("%") ) 
+Jmc<-sapply(ElectionPoll[, c("rawpoll_mcmullin", "adjpoll_mcmullin")], function(x) round(sum(is.na(x))/nrow(ElectionPoll)*100,2)%>% paste0("%") ) 
 ```
+
+Note that the poll results for Johnson and McMullin had lots of missing values. In particular, Johnson had `r Jmiss[1]` raw poll result and  `r Jmiss[2]` adjusted poll result missing, and McMullin had `r Jmc[1]` and `r Jmc[2]` missing. Due to the fact that these two candidate didn't make to the final election, we chose to ignore their data in some of the analysis. 
+
+Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.   
+```{r}
+ElectionPoll$grade<-replace_na(ElectionPoll$grade, "D-")
+
+fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
+fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
+
+boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
+  layout(yaxis=list(title="Raw Poll Difference"),
+         yaxis2=list(title="Adjusted Poll Difference"),
+         title="Difference between poll_Clinton and poll_Trump",
+         legend = list(title = list(text="Grade")))
+
+htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
+webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
+```
+
+In the second step, we want to look at the percentage of different grades of pollsters. Therefore, we extract the "pollster" and "grade" columns from the original data frame, merge the duplicate rows and re-sort the data according to the grade.
+```{r}
+#Merge duplicate rows and delete those with missing data
+pollster_grade <- na.omit(distinct(subset(ElectionPoll, select = c("pollster","grade"))))
+#Rearrange data according to variable "grade"
+summary_data <- pollster_grade %>%
+  group_by(grade, pollster) %>%
+  summarise(.groups = 'drop')
+summary_data
+```
+
+From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
+
+```{r}
+category_counts <- table(as.factor(pollster_grade$grade))
+unique_levels <- levels(factor(pollster_grade$grade))
+percentages <- (category_counts / sum(category_counts))*100 
+A <- as.data.frame(percentages)
+
+piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
+piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         legend = list(title = list(text="Grade")))
+
+htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
+webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
+```
+
+## Polls trend by time
+
+Using the end date as the standard, we drew a scatter plot of the changes in the support rates of the four candidates over time.
+
+```{r}
+#Create frame contained time, rawpoll
+start_time <- as.POSIXct(ElectionPoll$startdate)
+end_time <- as.POSIXct(ElectionPoll$enddate)
+prop_raw_clinton <- ElectionPoll$rawpoll_clinton
+prop_raw_trump <- ElectionPoll$rawpoll_trump
+prop_raw_johnson <- ElectionPoll$rawpoll_johnson
+prop_raw_mcmullin <- ElectionPoll$rawpoll_mcmullin
+
+poll_by_time <- data.frame( 
+  start_time = start_time,
+  end_time = end_time,
+  clinton = prop_raw_clinton,
+  trump = prop_raw_trump,
+  johnson = prop_raw_johnson,
+  mcmullin = prop_raw_mcmullin
+)
+
+# Order with increasing end_date
+poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
+```
+
+```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time."}
+# Plot trend with all four candidates's uncleaned data
+g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
+  geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
+  geom_point(aes(y = prop_raw_trump, color = "Trump"), size = 1, alpha = 0.3) +
+  geom_point(aes(y = prop_raw_johnson, color = "Johnson"), size = 1, alpha = 0.3) +
+  geom_point(aes(y = prop_raw_mcmullin, color = "Mcmullin"), size = 1, alpha = 0.3) +
+  labs(x = "Date", y = "Proportion of rawpoll (%)", 
+       title = "Raw Poll Proportion by Time", 
+       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin") +
+  scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
+  scale_x_datetime(date_breaks = "2 month") +
+  theme(axis.text.x = element_text(angle = 50, size = 7, vjust = 0.5)) + 
+  theme(axis.title.x = element_text(size = 9, vjust = 0),
+        axis.title.y = element_text(size = 9, vjust = 3)) +
+  theme(plot.title = element_text(size = 12, face = "bold", 
+                                  margin = margin(0, 0, 0, 0))) + 
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "bottom")
+print(g_2)
+```
+
+Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. This creates differences in pollsters or states.
 
 ## Comparison of candidates' polls in each state
 
-First, we would like to give a brief introduction to the U.S. election system, because it is crucial to understand the background of the data. Voters in each state vote to choose the President of the United States. The candidate who wins the majority of the votes will receive all the electoral votes in that state. Then the sum of the electoral votes in each state is calculated. The total number of electoral votes is 538. The candidate who wins half of the votes plus 1 will win and become the new President of the United States. 
+We want to process the metadata by counting the polls received by each of the four candidates in each state. This result is easier to obtain by multiplying the given size and the proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state although the polls may come from different pollsters. In this case, we treat NA as 0.
 
-Secondly, we want to analyze the key factors for the candidate’s victory. Since each state has a different number of electoral votes, it is crucial for electors to win in several key states. The reason is that if a candidate wins a certain state, he will win all the electoral votes in that state. So there will be tight competition in states with more votes. 
-
-We want to process the metadata by counting the polls received by each of the four candidates in each state. This result is easier to obtain by multiplying the given size and the proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state although the polls may come from different pollsters. 
-
-```{r, echo=TRUE}
+```{r}
 #Create frame contained state, poll number for each candidate
 states <- ElectionPoll$state
 prop_raw_clinton <- ElectionPoll$rawpoll_clinton
@@ -66,94 +197,34 @@ poll_by_state <- data.frame(
   NumVote_johnson = size * (prop_raw_johnson/100),
   NumVote_mcmullin = size * (prop_raw_mcmullin/100)
 )
-poll_by_state[is.na(poll_by_state)] <- 0
-head(poll_by_state)
 ```
 
-```{r, echo=TRUE}
+```{r}
+poll_by_state[is.na(poll_by_state)] <- 0
+```
+
+```{r}
 NumVote_State <- cbind(poll_by_state$state, poll_by_state$NumVote_clinton, 
       poll_by_state$NumVote_trump, poll_by_state$NumVote_johnson, 
       poll_by_state$NumVote_mcmullin)
 colnames(NumVote_State) <- c("state","Clinton", "Trump", "Johnson", "Mcmullin")
-View(NumVote_State)
 ```
 
-We extracted the variables we were going to use and formed a new data structure  `NumVote_State` with state and four candidates as variables. There are multiple identical values in the State column for a particular state because there are multiple pollsters for each state. In this component, we count the support of each candidate in each state based on the state as the standard, so we ignore the differences in different pollsters in the same state. The combination will take place later.
-
-
-```{r, echo=TRUE}
+```{r}
 NumVoteState <- as.data.frame(NumVote_State) %>%
   pivot_longer(cols = -state,
                names_to = "candidate",
                values_to = "PollNumber")
 NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
-View(NumVoteState)
 ```
 
-We use the `pivot_longer` function to reshape the data and obtain long-format data `NumVoteState`, which is easier to analyze and visualize.
+The visualization of the poll proportion of the four candidates in each state as follows.
 
-We calculate the total polls received by the four candidates in each state respectively. That is, we combine distinct pollsters if they are in the same state for each candidate. The following shows the support of the four candidates in each state.
-
-- Clinton:
-
-```{r, echo=TRUE}
-# Clinton total raw polls by state:
-poll_clinton <- filter(NumVoteState, candidate == "Clinton")
-Clinton_state <- poll_clinton %>%
-  group_by(state) %>%
-  summarize(ClintonPolls = sum(PollNumber))
-head(Clinton_state)
-```
-
-Clinton's total raw polls by state are presented in `Clinton_state`.
-
-- Trump:
-
-```{r, echo=TRUE}
-# Trump total raw polls by state:
-poll_trump <- filter(NumVoteState, candidate == "Trump")
-Trump_state <- poll_trump %>%
-  group_by(state) %>%
-  summarize(TrumpPolls = sum(PollNumber))
-head(Trump_state)
-```
-
-Trump's total raw polls by state are presented in `Trump_state `.
-
-- Johnson: 
-
-```{r, echo=TRUE}
-# Johnson total raw polls by state:
-poll_johnson <- filter(NumVoteState, candidate == "Johnson")
-Johnson_state <- poll_johnson %>%
-  group_by(state) %>%
-  summarize(JohnsonPolls = sum(PollNumber))
-head(Johnson_state)
-```
-
-Johnson's total raw polls by state are presented in `Johnson_state`.
-
-- Mcmullin: 
-
-```{r, echo=TRUE}
-# Mcmullin total raw polls by state:
-poll_mcmullin <- filter(NumVoteState, candidate == "Mcmullin")
-Mcmullin_state <- poll_mcmullin %>%
-  group_by(state) %>%
-  summarize(McmullinPolls = sum(PollNumber))
-head(Mcmullin_state)
-```
-
-Mcmullin's total raw polls by state are presented in `Mcmullin_state`.
-
-## Visualization of the poll proportion of the four candidates in each state:
-
-```{r g_11, echo=TRUE, fig.cap = "Poll Percentage by States."}
+```{r, fig.cap = "Poll Percentage by States."}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
   labs(x = "State", y = "Percentage of Polls", 
-       title = "Poll Percentage by States", 
-       caption = "Data: NumVoteState") +
+       title = "Poll Percentage by States") +
   scale_fill_manual(values=c("Clinton" = "blue", "Trump" = "red", 
                              "Johnson" = "green", "Mcmullin" = "yellow")) +
   theme(axis.text.x = element_text(angle = 50, size = 6, vjust = 0.5)) + 
@@ -165,13 +236,7 @@ g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate))
 print(g_11)
 ```
 
-Figure \@ref(fig:g_11) shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election.
-
----
-
-## Poll Distribution
-
-We are eager to observe the distribution of polls among the four candidates. 
+Figure 2 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us tally who would win all of the state's electoral votes.
 
 # Discussion
 
