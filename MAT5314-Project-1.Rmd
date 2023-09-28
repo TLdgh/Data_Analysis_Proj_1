@@ -221,7 +221,7 @@ The visualization of the poll proportion of the four candidates in each state as
 ```{r, fig.cap = "Poll Percentage by States."}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
-  labs(x = "State", y = "Percentage of Polls", 
+  labs(x = "State", y = "Proportion", 
        title = "Poll Percentage by States") +
   scale_fill_manual(values=c("Clinton" = "blue", "Trump" = "red", 
                              "Johnson" = "green", "Mcmullin" = "yellow")) +
