@@ -170,7 +170,7 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
 print(g_2)
 ```
 
-Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. This creates differences in pollsters or states.
+Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. A low poll rate for one candidate also implies that other candidates may have received high poll rates. This creates differences in pollsters or states. 
 
 ## Comparison of candidates' polls in each state
 
