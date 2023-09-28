@@ -88,25 +88,55 @@ htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
 webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
-In the second step, we want to look at the percentage of different grades of pollsters. Therefore, we extract the "pollster" and "grade" columns from the original data frame, merge the duplicate rows and re-sort the data according to the grade.
-```{r}
-#Merge duplicate rows and delete those with missing data
-pollster_grade <- na.omit(distinct(subset(ElectionPoll, select = c("pollster","grade"))))
-#Rearrange data according to variable "grade"
-summary_data <- pollster_grade %>%
-  group_by(grade, pollster) %>%
-  summarise(.groups = 'drop')
-summary_data
 
+We notice that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. And we cannot just delete them, because it will cause a lot of missing data in other columns. We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website. Here is the link: https://projects.fivethirtyeight.com/pollster-ratings/.
+
+According to the fivethirtyeight website, we found that 26 pollsters with no grade in the origin data set actually have the grades like "A/B", "B/C", "C/D", "B", "B-"; otherwise, the rest 31 pollsters without grades haven't been scored yet. Based on these information, we updated the "grade" column of the origin data set. We replace "NA" with the actual grades and none.
+
+```{r}
+pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade"))) #Extract two columns:"pollster" and "grade" from the Electionpoll
+pollster_grade$grade[is.na(pollster_grade$grade)] <- "none" #Replace NA in the "grade" column with none
+condition1 <- pollster_grade$pollster %in% c("Associated Industries of Florida", "BK Strategies", "Baldwin Wallace University", "Bendixen & Amandi International", "Centre College", "Craciun Research", "Data Targeting", "Hickman Analytics", "HighGround", "Insights West", "Mercyhurst University", "Meredith College", "Ogden & Fry", "Praecones Analytica", "Saguaro Strategies", "Starboard Communications", "Strategic National", "Strategy Research", "University of Colorado") #Replace the right grades with none
+pollster_grade$grade[condition1] <- "B/C"
+condition2 <- pollster_grade$pollster %in% c("Data Orbital", "Echelon Insights", "Michigan State University", "Public Religion Research Institute")
+pollster_grade$grade[condition2] <- "A/B"
+condition3 <- pollster_grade$pollster %in% c("Morning Consult")
+pollster_grade$grade[condition3] <- "B-"
+condition4 <- pollster_grade$pollster %in% c("Remington")
+pollster_grade$grade[condition4] <- "B"
+condition5 <- pollster_grade$pollster %in% c("University of Wyoming")
+pollster_grade$grade[condition5] <- "C/D"
+A <- pollster_grade[pollster_grade$grade == "A/B" | pollster_grade$grade == "B/C" | pollster_grade$grade == "C/D" | pollster_grade$pollster == "Morning Consult" | pollster_grade$pollster == "Remington", ]
+kable(A, format = "markdown", 
+      caption = "Updating the missing data",
+      align = c("l", "c", "c")) %>%
+  kable_styling(full_width = FALSE)
 ```
 
-From the "Pie Chart of Grades" below, we could see that the pollsters with B grades account for nearly 50% of the total, C and A grades account for about 30% and 25% respectively. Pollsters rated D only account for less than 1%. Furthermore, grade B and C+ have the largest proportions, at about 17.3%, followed by B+ and B-, both at about 15.1%.
+
+Because some pollsters are repeated in different rows of the data set, so we want to verify that each pollster corresponds to only one kind of grade. 
+The result is as follow:
+```{r}
+#Calculate the different grades corresponding to each pollster
+grouped_data <- pollster_grade %>%
+  group_by(pollster) %>%
+  summarise(number_of_grades = n_distinct(grade))
+unique_values <- unique(grouped_data$number_of_grades)
+if (length(unique_values) == 1) {
+  cat("the column of number_of_grades only contains one type of value:", unique_values, "\n")
+} else {
+  cat("the column of number_of_grades contains different types of values.\n")
+}
+```
+
+
+From the "Pie Chart of Pollsters' Grades" below, we could see that the unrated pollsters make up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" account for the second and third most, 12.8% and 12.2% respectively; "D" grade has the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", are around 34.7%, almost one-third of the total; C-level and A-level grades are about 21.89% and 14.79% respectively. For those without explicit grades, whose grades are "A/B", "B/C" and "C/D", they account only for 12.24%, "B" grade pollsters make up the majority of this part especially, almost 9.69%.
 
 ```{r}
 category_counts <- table(as.factor(pollster_grade$grade))
-unique_levels <- levels(factor(pollster_grade$grade))
-percentages <- (category_counts / sum(category_counts))*100 
-A <- as.data.frame(percentages)
+unique_levels <- levels(factor(pollster_grade$grade)) 
+percentages <- (category_counts / sum(category_counts))*100 #calculate the percentages of different grades
+A <- as.data.frame(percentages)#construct the data frame of two variables:"Var1"(grade) and "Freq"(percentages of grades)
 
 piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
 piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
