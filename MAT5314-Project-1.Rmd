@@ -28,6 +28,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(plotly)
 library(tidyverse)
 library(kableExtra)
+library(maps)
 ```
 
 # Result
@@ -112,9 +113,9 @@ A <- as.data.frame(percentages)
 
 piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
 piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
-         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-         legend = list(title = list(text="Grade")))
+                                xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                                yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                                legend = list(title = list(text="Grade")))
 
 htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
@@ -203,8 +204,8 @@ poll_by_state[is.na(poll_by_state)] <- 0
 
 ```{r}
 NumVote_State <- cbind(poll_by_state$state, poll_by_state$NumVote_clinton, 
-      poll_by_state$NumVote_trump, poll_by_state$NumVote_johnson, 
-      poll_by_state$NumVote_mcmullin)
+                       poll_by_state$NumVote_trump, poll_by_state$NumVote_johnson, 
+                       poll_by_state$NumVote_mcmullin)
 colnames(NumVote_State) <- c("state","Clinton", "Trump", "Johnson", "Mcmullin")
 ```
 
@@ -235,6 +236,116 @@ print(g_11)
 ```
 
 Figure 2 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us tally who would win all of the state's electoral votes.
+
+To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. Since the other candidates are polling far behind Clinton and Trump, we select the Clinton and Trump polls and ignore the other candidates' polls. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the more overwhelming the proportions. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
+```{r}
+#fill a matrix
+ElectionPoll$state<-toupper(ElectionPoll$state)
+state_poll<- ElectionPoll %>%
+  group_by(state) %>%
+  summarise(rawpoll_clinton = mean(rawpoll_clinton), rawpoll_trump = mean(rawpoll_trump),adjpoll_clinton = mean(adjpoll_clinton), adjpoll_trump = mean(adjpoll_trump))
+#delete useless data
+state_poll<-state_poll[-50,]
+state_poll<-state_poll[-c(31:33),]
+state_poll<-state_poll[-c(21:22),]
+colnames(state_poll)<-c("State","rawpoll_clinton","rawpoll_trump","adjpoll_clinton","adjpoll_trump","percent_rawpoll_clinton","percent_adjpoll_clinton")
+```
+
+```{r}
+state_rawpoll<-data.frame(state_poll[,1:3])
+state_adjpoll<-data.frame(state_poll[,1],state_poll[,4:5])
+#add percent
+state_rawpoll$percent_rawpoll_clinton<-100*state_poll$rawpoll_clinton/(state_poll$rawpoll_clinton+state_poll$rawpoll_trump)
+state_adjpoll$percent_adjpoll_clinton<-100*state_poll$adjpoll_clinton/(state_poll$adjpoll_clinton+state_poll$adjpoll_trump)
+```
+
+```{r}
+#get map data:
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+df<-distinct(df,State, .keep_all = TRUE)
+df$State<-toupper(df$State)
+df<-df[,-3]
+df<-df[,-1]
+states_map <- map_data(map = "state",region =df$State)
+
+#get mean longitude and latitude
+region.lab.data <- states_map %>%
+  group_by(region) %>%
+  summarise(lon = mean(long), lat = mean(lat))
+region.lab.data$region<-toupper(region.lab.data$region)
+
+region.lab.data[which(region.lab.data$region=="HAWAII"),]<-df[which(df$State=="HAWAII"),]
+region.lab.data[which(region.lab.data$region=="ALASKA"),]<-df[which(df$State=="ALASKA"),]
+colnames(region.lab.data)<-c("State","lat","lon")
+
+df1<-merge(state_rawpoll,df, by.x = "State")
+df_1<-merge(state_adjpoll,df, by.x = "State")
+```
+
+
+```{r}
+#add code
+df2<-read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+df2<-distinct(df2,state, .keep_all = TRUE)
+df2$state<-toupper(df2$state)
+df2<-df2[, 1:2]
+colnames(df2)<-c("Code", "State")
+df2<-rbind(df2, data.frame(Code="DC", State="DISTRICT OF COLUMBIA"))
+
+df3<-merge(df1, df2, by.x = "State")
+df_3<-merge(df_1, df2, by.x = "State")
+```
+
+```{r}
+#choropleth plot
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa')
+)
+
+mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>% 
+  add_trace(z = ~percent_rawpoll_clinton, locations = ~Code, color =~percent_rawpoll_clinton, colors=c('red','white','blue'),
+            colorbar=list(limits = c(0, 100),title = "Clinton's vote share(%)",x = 1, y = 0.9))%>%
+  add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
+            text = ~Code, mode = "text", textfont = list(size = 10))%>%
+  layout(geo = g)
+
+
+#adjpoll
+mapchart2<-plot_geo(df_3, locationmode = 'USA-states')%>% 
+  add_trace(z = ~percent_adjpoll_clinton, locations = ~Code, color =~percent_adjpoll_clinton, colors=c('red','white','blue'),showscale=FALSE)%>%
+  add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
+            text = ~Code, mode = "text", textfont = list(size = 10))%>%
+  layout(geo = g)
+
+mapchart<-subplot(mapchart1, mapchart2)%>%
+  layout(title = 'Clinton and Trump vote share in 2016',
+         annotations=list( 
+           list( 
+             x = 0.2,  
+             y = 0.85,  
+             text = "Raw Poll", 
+             font=list(size = 25),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",  
+             showarrow = FALSE 
+           ),  
+           list( 
+             x = 0.75,  
+             y = 0.85,  
+             text = "Adjusted Poll",  
+             font=list(size = 25),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",
+             showarrow = FALSE 
+           )), showlegend=FALSE)
+
+
+htmlwidgets::saveWidget(widget = mapchart, file = "mapchart.html") 
+webshot::webshot(url = "mapchart.html", file = "mapchart.png", delay = 1, zoom = 4, vheight = 600)
+```
 
 # Discussion
 
