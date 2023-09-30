@@ -378,6 +378,94 @@ htmlwidgets::saveWidget(widget = mapchart, file = "mapchart.html")
 webshot::webshot(url = "mapchart.html", file = "mapchart.png", delay = 1, zoom = 4, vheight = 600)
 ```
 
+
+```{r}
+#Calculate cumulative mean
+rMean<-function(df){
+  rMeans<-df%>%group_by(enddate) %>%
+    summarize(mean_trump = mean(rawpoll_trump), mean_clinton=mean(rawpoll_clinton))%>%
+    transmute(enddate=enddate, rMean_trump=cummean(mean_trump), rMean_clinton=cummean(mean_clinton))%>%
+    gather(key="Candidate", value="val", rMean_trump:rMean_clinton)
+  return(data.frame(rMeans))
+}
+
+#Plot cumulative mean for a State
+PlotCMean<-function(state){
+  p<-plot_ly(Navg_lst[[state]], x=~enddate, y=~val, color=~Candidate, name = ~paste(state, ":", Candidate))%>%add_lines()%>%
+    layout(title="plot",
+           xaxis=list(tickfont = list(size = 8)),
+           legend = list(font=list(size = 8))
+    )
+  return(p)
+}
+
+#Clean the data
+ElectionPoll[which(ElectionPoll$state=="Maine CD-1"),"state"]<-"Maine"
+ElectionPoll[which(ElectionPoll$state=="Maine CD-2"),"state"]<-"Maine"
+ElectionPoll[which(ElectionPoll$state=="Nebraska CD-1"),"state"]<-"Nebraska"
+ElectionPoll[which(ElectionPoll$state=="Nebraska CD-2"),"state"]<-"Nebraska"
+ElectionPoll[which(ElectionPoll$state=="Nebraska CD-3"),"state"]<-"Nebraska"
+
+#apply rMean to all states
+Navg_lst<-ElectionPoll%>%select(state, enddate, rawpoll_trump, rawpoll_clinton)%>%arrange(.by=enddate, decreasing=FALSE)%>%split(.$state)
+Navg_lst<-purrr::map(Navg_lst, rMean)
+
+#sample a few states
+set.seed(100)
+state_i<-sample(names(Navg_lst), size=3, replace = FALSE)
+
+#make subplot
+cMeanchart<-subplot(PlotCMean("U.S."),PlotCMean(state_i[1]),PlotCMean(state_i[2]),PlotCMean(state_i[3]),nrows = 2)%>%
+  layout(title="Time Series of Cumulative Mean of Trump and Clinton Poll Result",
+         annotations=list( 
+           list( 
+             x = 0.2,  
+             y = 0.85,  
+             text = "U.S.", 
+             font=list(size = 12),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",  
+             showarrow = FALSE 
+           ),  
+           list( 
+             x = 0.75,  
+             y = 0.85,  
+             text = state_i[1],  
+             font=list(size = 12),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",
+             showarrow = FALSE 
+           ),
+           list( 
+             x = 0.2,  
+             y = 0.3,  
+             text = state_i[2],  
+             font=list(size = 12),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",
+             showarrow = FALSE 
+           ),
+           list( 
+             x = 0.75,  
+             y = 0.3,  
+             text = state_i[3],  
+             font=list(size = 12),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",
+             showarrow = FALSE 
+           )
+         ),
+         showlegend = TRUE
+  )
+
+htmlwidgets::saveWidget(widget = cMeanchart, file = "cMeanchart.html") 
+webshot::webshot(url = "cMeanchart.html", file = "cMeanchart.png", delay = 1, zoom = 4, vheight = 600)
+```
+
 # Discussion
 
 # Conclusion
