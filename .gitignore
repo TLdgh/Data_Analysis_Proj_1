@@ -2,8 +2,6 @@
 .Rhistory
 .Rapp.history
 .DS_Store
-*.log
-*.pdf
 
 # Session Data files
 .RData
@@ -16,5 +14,7 @@ polls_us_election_2016.csv
 # Project file
 Data_Analysis_Proj_1.Rproj
 *.html
-*.png
-*.jpeg
+*.log
+*.pdf
+
+Figures/*_files/
