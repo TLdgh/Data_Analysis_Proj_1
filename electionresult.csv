@@ -1,0 +1,53 @@
+State,Number,Result
+California,55,C
+Texas,38,T
+Florida,29,T
+New York,29,C
+Illinois,20,C
+Pennsylvania,20,T
+Ohio,18,T
+Georgia,16,T
+North Carolina,16,T
+Michigan,15,T
+New Jersey,14,C
+Virginia,13,C
+Washington,12,C
+Arizona,11,T
+Indiana,11,T
+Massachusetts,11,C
+Tennessee,11,T
+Colorado,9,C
+Maryland,10,C
+Minnesota,10,C
+Missouri,10,T
+Wisconsin,10,T
+Alabama,9,T
+South Carolina,9,T
+Kentucky,8,T
+Louisiana,8,T
+Oregon,7,C
+Connecticut,7,C
+Oklahoma,7,T
+Arkansas,6,T
+Iowa,6,T
+Kansas,6,T
+Mississippi,6,T
+Nevada,6,C
+Utah,6,T
+Nebraska,5,T
+New Mexico,5,C
+Hawaii,4,C
+Idaho,4,T
+Maine,4,C
+Montana,3,T
+New Hampshire,4,C
+Rhode Island,4,C
+West Virginia,5,T
+Alaska,3,T
+Delaware,3,C
+District of Columbia,3,C
+North Dakota,3,T
+South Dakota,3,T
+Vermont,3,C
+Wyoming,3,T
+,538,
