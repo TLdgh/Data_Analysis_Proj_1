@@ -13,15 +13,12 @@ header-includes:
 # Introduction
 A data set of the 2016 US election polls was given. In this project we aim to understand the data structure by creating various visualizations.
 
-First, we would like to give a brief introduction to the U.S. election system, because it is crucial to understand the background of the data. Voters in each state vote to choose the President of the United States. The candidate who wins the majority of the votes will receive all the electoral votes in that state. Then the sum of the electoral votes in each state is calculated. The total number of electoral votes is 538. The candidate who wins half of the votes plus 1 will win and become the new President of the United States. 
+First, we would like to give a brief introduction to the U.S. election system as it is crucial to understand the background of the data. Voters in each state vote to choose the President of the United States. The candidate who wins the majority of the votes will receive all the electoral votes in that state. Then the sum of the electoral votes in each state is calculated. The total number of electoral votes is 538. The candidate who wins half of the votes plus 1 will win and become the new President of the United States. Since each state has a different number of electoral votes, it is crucial for electors to win in several key states. The reason is that if a candidate wins a certain state, he will win all the electoral votes in that state. Texas, for example, counts for 38 electoral votes during the election, it is therefore a tight competition in states with more votes. 
 
-Secondly, we want to analyze the key factors for the candidate’s victory. Since each state has a different number of electoral votes, it is crucial for electors to win in several key states. The reason is that if a candidate wins a certain state, he will win all the electoral votes in that state. So there will be tight competition in states with more votes.
-
-The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. 
+Analysis on poll result can be very difficult due to the fact that carrying out a public opinion poll is generally difficult. The experimental design plays a profound rule in these surveys, as sometimes it is hard to achieve an unbiased sample. On the other hand, one might not be able to obtain the final result that can be compared with the poll result. Finally it can be very expensive to carry out a qualitative poll under budget constrains. However, election poll result is a desirable measurement we can study. Large institutions design the survey and gather public opinions. Moreover, we immediately know with high accuracy and details on who wins the election at the end. It is therefore worthy to analyze the poll results and make some inferences, perhaps even compare results between each election. Thus, we want to analyze some of the key factors given by our poll result data and compare with the actual election result for the candidate’s victory.
 
 # Method
-
-We use various R packages to present the data set and to plot the graphs.
+The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. We first analyzed key individual variables in the data, then we sought to draw conclusions on the relationship between some of the key variables. To achieve this, we use various R packages to present the data set and to plot the graphs.
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
@@ -31,14 +28,14 @@ library(kableExtra)
 library(maps)
 ```
 
-# Result
+# Section 1: Data Dictionary
 ```{r}
 #load data set
 ElectionPoll<-read.csv("polls_us_election_2016.csv", header = TRUE)
 ```
 
+We first created a data variable definition table to give an initial understanding of the data. We formed the table by collecting each variable from the data, listed in the Variables column. We then looked at the size and the data type of each variable to understand its nature. An example consisting of a few variable values was given to illustrate what the variable might look like. We then calculated the number of unique and missing values in each variable. As one can see, there were a few variables with high percentage of missing values, for which we have discussed further in details in the subsequent sections. Finally, we gave a comment for each variable to briefly explains what it means and what it represents. The data dictionary is listed in Table 1:
 
-We first created a data variable definition table to give an initial understanding of the data. As one can see, there were a few variables with missing values:
 ```{r}
 #create data variable definition
 DataDict<-data.frame(
@@ -73,29 +70,28 @@ Jmiss<-sapply(ElectionPoll[, c("rawpoll_johnson", "adjpoll_johnson")], function(
 Jmc<-sapply(ElectionPoll[, c("rawpoll_mcmullin", "adjpoll_mcmullin")], function(x) round(sum(is.na(x))/nrow(ElectionPoll)*100,2)%>% paste0("%") ) 
 ```
 
-Note that the poll results for Johnson and McMullin had lots of missing values. In particular, Johnson had `r Jmiss[1]` raw poll result and  `r Jmiss[2]` adjusted poll result missing, and McMullin had `r Jmc[1]` and `r Jmc[2]` missing. Due to the fact that these two candidate didn't make to the final election, we chose to ignore their data in some of the analysis. 
+Note that the poll results for Johnson and McMullin had lots of missing values. In particular, Johnson had `r Jmiss[1]` raw poll result and  `r Jmiss[2]` adjusted poll result missing, and McMullin had `r Jmc[1]` and `r Jmc[2]` missing. Due to the fact that these two candidate didn't make to the final election, and the percentage of missing values is too high to be considered in the analysis, we chose to ignore their data in some of the analysis. 
 
-Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.   
+# Section 2: Variable Exploration
+We first took an initial look at each variable.
+
+The state variable consists of each state in the U.S., but it also contains the national value named "U.S." and some of other values like "":
+
 ```{r}
-ElectionPoll$grade<-replace_na(ElectionPoll$grade, "D-")
-
-fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
-fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
-
-boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
-  layout(yaxis=list(title="Raw Poll Difference"),
-         yaxis2=list(title="Adjusted Poll Difference"),
-         title="Difference between poll_Clinton and poll_Trump",
-         legend = list(title = list(text="Grade")))
-
-htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
-webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
+unique(ElectionPoll$state)
 ```
 
+The startdate and enddate variables correspond to the dates on which the public opinion poll was initiated and finalized respectively. Individual pollster might start or end their poll at different date than other pollsters.
 
-We notice that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. And we cannot just delete them, because it will cause a lot of missing data in other columns. We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website. Here is the link: https://projects.fivethirtyeight.com/pollster-ratings/.
+We then took a look at the grade variable. We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
 
-According to the fivethirtyeight website, we found that 26 pollsters with no grade in the origin data set actually have the grades like "A/B", "B/C", "C/D", "B", "B-"; otherwise, the rest 31 pollsters without grades haven't been scored yet. Based on these information, we updated the "grade" column of the origin data set. We replace "NA" with the actual grades and none.
+```{r}
+head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), ])
+```
+
+We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website: https://projects.fivethirtyeight.com/pollster-ratings/.
+
+According to the fivethirtyeight website, we found that 26 pollsters with no grade in the origin data set actually have the grades like "A/B", "B/C", "C/D", "B", "B-"; otherwise, the rest 31 pollsters without grades haven't been scored yet. Based on these information, we updated the "grade" column of the origin data set. We replace "NA" with the actual grades and none. The result is shown in Table 2:
 
 ```{r}
 pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade"))) #Extract two columns:"pollster" and "grade" from the Electionpoll
@@ -117,9 +113,8 @@ kable(A, format = "markdown",
   kable_styling(full_width = FALSE)
 ```
 
+Because some pollsters are repeated in different rows of the data set, so we want to verify that each pollster corresponds to only one kind of grade. The result is as follow:
 
-Because some pollsters are repeated in different rows of the data set, so we want to verify that each pollster corresponds to only one kind of grade. 
-The result is as follow:
 ```{r}
 #Calculate the different grades corresponding to each pollster
 grouped_data <- pollster_grade %>%
@@ -133,6 +128,7 @@ if (length(unique_values) == 1) {
 }
 ```
 
+After cleaning the missing values for the grade variable and checked its uniqueness for each pollster to make sure there was no error in data entry, we plotted a pie chart to gain initial understanding of the grade variable.
 
 From the "Pie Chart of Pollsters' Grades" below, we could see that the unrated pollsters make up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" account for the second and third most, 12.8% and 12.2% respectively; "D" grade has the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", are around 34.7%, almost one-third of the total; C-level and A-level grades are about 21.89% and 14.79% respectively. For those without explicit grades, whose grades are "A/B", "B/C" and "C/D", they account only for 12.24%, "B" grade pollsters make up the majority of this part especially, almost 9.69%.
 
@@ -152,9 +148,13 @@ htmlwidgets::saveWidget(widget = piechart, file = "piechart.html")
 webshot::webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
-## Polls trend by time
 
-Using the end date as the standard, we drew a scatter plot of the changes in the support rates of the four candidates over time.
+### plot for samplesize
+
+### plot for population
+
+
+We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
 ```{r}
 #Create frame contained time, rawpoll
@@ -200,11 +200,9 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
 print(g_2)
 ```
 
-Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. A low poll rate for one candidate also implies that other candidates may have received high poll rates. This creates differences in pollsters or states. 
+Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. A low poll rate for one candidate also implies that other candidates may have received high poll rates. This creates differences in each state. Therefore, we tried to compare each candidate's poll result in each state. 
 
-## Comparison of candidates' polls in each state
-
-We want to process the metadata by counting the polls received by each of the four candidates in each state. This result is easier to obtain by multiplying the given size and the proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state although the polls may come from different pollsters. In this case, we treat NA as 0.
+We processed the metadata by counting the polls received by each of the four candidates in each state. This result was easier to obtain by multiplying the given sample size and the proportion. Regardless of the various pollsters, we combined the number of polls for each candidate received in each state although the polls may come from different pollsters. In this case, we treated NA as 0.
 
 ```{r}
 #Create frame contained state, poll number for each candidate
@@ -227,20 +225,14 @@ poll_by_state <- data.frame(
   NumVote_johnson = size * (prop_raw_johnson/100),
   NumVote_mcmullin = size * (prop_raw_mcmullin/100)
 )
-```
 
-```{r}
 poll_by_state[is.na(poll_by_state)] <- 0
-```
 
-```{r}
 NumVote_State <- cbind(poll_by_state$state, poll_by_state$NumVote_clinton, 
                        poll_by_state$NumVote_trump, poll_by_state$NumVote_johnson, 
                        poll_by_state$NumVote_mcmullin)
 colnames(NumVote_State) <- c("state","Clinton", "Trump", "Johnson", "Mcmullin")
-```
 
-```{r}
 NumVoteState <- as.data.frame(NumVote_State) %>%
   pivot_longer(cols = -state,
                names_to = "candidate",
@@ -248,7 +240,7 @@ NumVoteState <- as.data.frame(NumVote_State) %>%
 NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 ```
 
-The visualization of the poll proportion of the four candidates in each state as follows.
+The visualization of the poll proportion of the four candidates in each state was presented below:
 
 ```{r, fig.cap = "Poll Percentage by States."}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
@@ -269,6 +261,7 @@ print(g_11)
 Figure 2 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us tally who would win all of the state's electoral votes.
 
 To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. Since the other candidates are polling far behind Clinton and Trump, we select the Clinton and Trump polls and ignore the other candidates' polls. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the more overwhelming the proportions. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
+
 ```{r}
 #fill a matrix
 ElectionPoll$state<-toupper(ElectionPoll$state)
@@ -280,9 +273,7 @@ state_poll<-state_poll[-50,]
 state_poll<-state_poll[-c(31:33),]
 state_poll<-state_poll[-c(21:22),]
 colnames(state_poll)<-c("State","rawpoll_clinton","rawpoll_trump","adjpoll_clinton","adjpoll_trump","percent_rawpoll_clinton","percent_adjpoll_clinton")
-```
 
-```{r}
 state_rawpoll<-data.frame(state_poll[,1:3])
 state_adjpoll<-data.frame(state_poll[,1],state_poll[,4:5])
 #add percent
@@ -311,10 +302,7 @@ colnames(region.lab.data)<-c("State","lat","lon")
 
 df1<-merge(state_rawpoll,df, by.x = "State")
 df_1<-merge(state_adjpoll,df, by.x = "State")
-```
 
-
-```{r}
 #add code
 df2<-read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
 df2<-distinct(df2,state, .keep_all = TRUE)
@@ -325,9 +313,7 @@ df2<-rbind(df2, data.frame(Code="DC", State="DISTRICT OF COLUMBIA"))
 
 df3<-merge(df1, df2, by.x = "State")
 df_3<-merge(df_1, df2, by.x = "State")
-```
 
-```{r}
 #choropleth plot
 g <- list(
   scope = 'usa',
@@ -378,6 +364,8 @@ htmlwidgets::saveWidget(widget = mapchart, file = "mapchart.html")
 webshot::webshot(url = "mapchart.html", file = "mapchart.png", delay = 1, zoom = 4, vheight = 600)
 ```
 
+We obtained the final election result from https://www.nytimes.com/elections/2016/results/president and compared it with our poll prediction result:
+
 ```{r}
 #election result in the end
 electionresult<-read.csv("electionresult.csv")
@@ -403,6 +391,41 @@ mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>%
 htmlwidgets::saveWidget(widget = mapchart3, file = "mapchart3.html") 
 webshot::webshot(url = "mapchart3.html", file = "mapchart3.png", delay = 1, zoom = 4, vheight = 600)
 ```
+
+We now look at the time series of the adjusted poll proportion:
+```{r}
+
+```
+
+We immediately noticed that some of the poll rate fell below zero. 
+
+
+Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
+
+```{r}
+ElectionPoll$grade<-replace_na(ElectionPoll$grade, "D-")
+
+fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
+fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
+
+boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
+  layout(yaxis=list(title="Raw Poll Difference"),
+         yaxis2=list(title="Adjusted Poll Difference"),
+         title="Difference between poll_Clinton and poll_Trump",
+         legend = list(title = list(text="Grade")))
+
+htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
+webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
+```
+
+We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
+
+However, due to the fact that FiveThirtyEight's adjustment to the poll result yields negative values, we think it is therefore unreasonable to do such adjustment. It gives the reader a difficulty in interpreting this adjustment.
+
+
+
+
+
 # Discussion
 
 # Conclusion
