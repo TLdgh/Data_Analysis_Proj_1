@@ -266,9 +266,6 @@ We now look at the time series of the adjusted poll proportion:
 poll_by_time <- ElectionPoll%>%transmute(end_time=as.POSIXct(enddate),
                                          clinton=adjpoll_clinton, trump=adjpoll_trump, johnson=adjpoll_johnson, mcmullin=adjpoll_mcmullin )%>%arrange(end_time)
   
-# Order with increasing end_date
-poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
-
 # Plot trend with all four candidates's uncleaned data
 g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_line(aes(y = clinton, color = "Clinton"), alpha = 0.6) +
