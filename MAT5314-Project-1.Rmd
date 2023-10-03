@@ -146,10 +146,11 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
                                 yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
                                 legend = list(title = list(text="Grade")))
 
-saveWidget(widget = piechart, file = "piechart.html")
-webshot(url = "piechart.html", file = "piechart.png", delay = 1, zoom = 4, vheight = 500)
+saveWidget(widget = piechart, file = "./Figures/piechart.html")
+shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
+![Pollster's Grade distribution](./Figures/piechart.png)
 
 ### plot for samplesize
 
@@ -308,9 +309,11 @@ boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
          title="Difference between poll_Clinton and poll_Trump",
          legend = list(title = list(text="Grade")))
 
-saveWidget(widget = boxchart, file = "boxchart.html")
-webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
+saveWidget(widget = boxchart, file = "./Figures/boxchart.html")
+shots<-webshot(url = "./Figures/boxchart.html", file = "./Figures/boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
+
+![Boxchart of Difference between Polls](./Figures/boxchart.png)
 
 We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
 
@@ -337,13 +340,14 @@ PlotCMean<-function(state){
   return(p)
 }
 #Clean the data
-ElectionPoll[which(ElectionPoll$state=="Maine CD-1"),"state"]<-"Maine"
-ElectionPoll[which(ElectionPoll$state=="Maine CD-2"),"state"]<-"Maine"
-ElectionPoll[which(ElectionPoll$state=="Nebraska CD-1"),"state"]<-"Nebraska"
-ElectionPoll[which(ElectionPoll$state=="Nebraska CD-2"),"state"]<-"Nebraska"
-ElectionPoll[which(ElectionPoll$state=="Nebraska CD-3"),"state"]<-"Nebraska"
+CMeanData<-ElectionPoll
+CMeanData[which(CMeanData$state=="Maine CD-1"),"state"]<-"Maine"
+CMeanData[which(CMeanData$state=="Maine CD-2"),"state"]<-"Maine"
+CMeanData[which(CMeanData$state=="Nebraska CD-1"),"state"]<-"Nebraska"
+CMeanData[which(CMeanData$state=="Nebraska CD-2"),"state"]<-"Nebraska"
+CMeanData[which(CMeanData$state=="Nebraska CD-3"),"state"]<-"Nebraska"
 #apply rMean to all states
-Navg_lst<-ElectionPoll%>%select(state, enddate, rawpoll_trump, rawpoll_clinton)%>%arrange(.by=enddate, decreasing=FALSE)%>%split(.$state)
+Navg_lst<-CMeanData%>%select(state, enddate, rawpoll_trump, rawpoll_clinton)%>%arrange(.by=enddate, decreasing=FALSE)%>%split(.$state)
 Navg_lst<-purrr::map(Navg_lst, rMean)
 #sample a few states
 set.seed(100)
@@ -395,9 +399,11 @@ cMeanchart<-subplot(PlotCMean("U.S."),PlotCMean(state_i[1]),PlotCMean(state_i[2]
          ),
          showlegend = TRUE
   )
-saveWidget(widget = cMeanchart, file = "cMeanchart.html") 
-webshot(url = "cMeanchart.html", file = "cMeanchart.png", delay = 1, zoom = 4, vheight = 600)
+saveWidget(widget = cMeanchart, file = "./Figures/cMeanchart.html") 
+shots<-webshot(url = "./Figures/cMeanchart.html", file = "./Figures/cMeanchart.png", delay = 1, zoom = 4, vheight = 600)
 ```
+
+![Cumulative Mean of Raw Poll Result](./Figures/cMeanchart.png)
 
 From the plot above we see that the overal national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
 
@@ -501,9 +507,11 @@ mapchart<-subplot(mapchart1, mapchart2)%>%
            )), showlegend=FALSE)
 
 
-saveWidget(widget = mapchart, file = "mapchart.html") 
-webshot(url = "mapchart.html", file = "mapchart.png", delay = 3, zoom = 2, vheight = 600)
+saveWidget(widget = mapchart, file = "./Figures/mapchart.html") 
+shots<-webshot(url = "./Figures/mapchart.html", file = "./Figures/mapchart.png", delay = 3, zoom = 2, vheight = 600)
 ```
+
+![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart.png)
 
 We obtained the final election result from https://www.nytimes.com/elections/2016/results/president and compared it with our poll prediction result:
 
@@ -521,9 +529,11 @@ mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>%
   layout(geo = g)%>%
   layout(title = '2016 Presidential Election Results')
 
-saveWidget(widget = mapchart3, file = "mapchart3.html") 
-webshot(url = "mapchart3.html", file = "mapchart3.png", delay = 3, zoom = 2, vheight = 600)
+saveWidget(widget = mapchart3, file = "./Figures/mapchart3.html") 
+shots<-webshot(url = "./Figures/mapchart3.html", file = "./Figures/mapchart3.png", delay = 3, zoom = 2, vheight = 600)
 ```
+
+![Map Chart of Election Result 2016](./Figures/mapchart3.png)
 
 # Discussion
 
