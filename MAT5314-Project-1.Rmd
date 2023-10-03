@@ -6,6 +6,7 @@ author:
   - Chuhan Yue(300376046)
   - Yang Lyu(8701121)
 output: pdf_document
+fontsize: 12pt
 header-includes: 
   - \renewcommand{\and}{\\}
 ---
@@ -153,19 +154,40 @@ shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png",
 ![Pollster's Grade distribution](./Figures/piechart.png)
 
 ### plot for samplesize
-We take a look at the distribution of the sample size with regards to the grade:
+Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade:
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.cap = "Distribution of Sample Size for Grades", fig.width=4, fig.height=4}
 GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
 
 sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
-  geom_bar(stat="identity")+labs(title="Distribution of Sample Size for Grades", x="Sample Size", y="Frequency")
+  geom_bar(stat="identity")+labs(title="Sample Size VS Grades", x="Grade", y="Sample Size")+
+  scale_y_continuous(labels=scales::number_format(scale = 1, accuracy = 1))
 
-ggplotly(sampleDist)
+print(sampleDist)
 ```
 
 ### plot for population
+We now take a look at the population type for which the poll was sampled.
 
+```{r, warning=FALSE}
+GradeVsPop<-ElectionPoll%>%select(grade, population, samplesize)%>%
+  group_by(grade, population)%>%summarise(Size=sum(samplesize), .groups = "drop")%>%na.omit()
+
+popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population, 
+               type = 'scatter', mode = 'markers', 
+               size = ~Size, color = ~Size, colors = 'Blues',
+               marker = list(symbol="circle", sizemode = 'diameter', line = list(width = 2, color = 'black')))%>%
+  layout(title = 'Population Type VS Grade',
+         xaxis = list(showgrid = FALSE),
+         showlegend = TRUE,
+         paper_bgcolor = 'lightgrey',
+         plot_bgcolor = 'lightgrey')
+
+saveWidget(widget = popChart, file = "./Figures/popChart.html")
+shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 4)
+```
+
+![Population Type with Size for Grades](./Figures/popChart.png){width=50%}
 
 We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
@@ -191,7 +213,7 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time."}
+```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time.", fig.width=6, fig.height=4}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -255,7 +277,7 @@ NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 
 The visualization of the poll proportion of the four candidates in each state was presented below:
 
-```{r, fig.cap = "Poll Percentage by States."}
+```{r, fig.cap = "Poll Percentage by States.", fig.width=6, fig.height=4}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
   labs(x = "State", y = "Percentage of Polls", 
@@ -275,7 +297,7 @@ Figure 2 shows the poll proportions of the four candidates in each state disting
 
 We now look at the time series of the adjusted poll proportion:
 
-```{r, fig.cap = "Adjusted Poll Percentage by States"}
+```{r, fig.cap = "Adjusted Poll Percentage by States", fig.width=6, fig.height=4}
 #Create frame contained time, rawpoll
 poll_by_time <- ElectionPoll%>%transmute(end_time=as.POSIXct(enddate),
                                          clinton=adjpoll_clinton, trump=adjpoll_trump, johnson=adjpoll_johnson, mcmullin=adjpoll_mcmullin )%>%arrange(end_time)
@@ -323,7 +345,7 @@ saveWidget(widget = boxchart, file = "./Figures/boxchart.html")
 shots<-webshot(url = "./Figures/boxchart.html", file = "./Figures/boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
-![Boxchart of Difference between Polls](./Figures/boxchart.png)
+![Boxchart of Difference between Polls](./Figures/boxchart.png){width=70%}
 
 We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
 
@@ -543,7 +565,7 @@ saveWidget(widget = mapchart3, file = "./Figures/mapchart3.html")
 shots<-webshot(url = "./Figures/mapchart3.html", file = "./Figures/mapchart3.png", delay = 3, zoom = 2, vheight = 600)
 ```
 
-![Map Chart of Election Result 2016](./Figures/mapchart3.png)
+![Map Chart of Election Result 2016](./Figures/mapchart3.png){width=70%, height=70%}
 
 # Discussion
 
