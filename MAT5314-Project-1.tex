@@ -1,0 +1,379 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\newenvironment{cols}[1][]{}{}
+
+\newenvironment{col}[1]{\begin{minipage}{#1}\ignorespaces}{%
+\end{minipage}
+\ifhmode\unskip\fi
+\aftergroup\useignorespacesandallpars}
+
+\def\useignorespacesandallpars#1\ignorespaces\fi{%
+#1\fi\ignorespacesandallpars}
+
+\makeatletter
+\def\ignorespacesandallpars{%
+  \@ifnextchar\par
+    {\expandafter\ignorespacesandallpars\@gobble}%
+    {}%
+}
+\makeatother
+\renewcommand{\and}{\\}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={MAT5314 Project 1: Data Visualization},
+  pdfauthor={Teng Li(7373086); Shiya Gao(300381032); Chuhan Yue(300376046); Yang Lyu(8701121)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{MAT5314 Project 1: Data Visualization}
+\author{Teng Li(7373086) \and Shiya Gao(300381032) \and Chuhan
+Yue(300376046) \and Yang Lyu(8701121)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+A data set of the 2016 US election polls was given. In this project we
+aim to understand the data structure by creating various visualizations.
+
+First, we would like to give a brief introduction to the U.S. election
+system, because it is crucial to understand the background of the data.
+Voters in each state vote to choose the President of the United States.
+The candidate who wins the majority of the votes will receive all the
+electoral votes in that state. Then the sum of the electoral votes in
+each state is calculated. The total number of electoral votes is 538.
+The candidate who wins half of the votes plus 1 will win and become the
+new President of the United States.
+
+Secondly, we want to analyze the key factors for the candidate's
+victory. Since each state has a different number of electoral votes, it
+is crucial for electors to win in several key states. The reason is that
+if a candidate wins a certain state, he will win all the electoral votes
+in that state. So there will be tight competition in states with more
+votes.
+
+The data set was published by FiveThirtyEight to illustrate the
+reliability and quality of each pollster to which a letter grade ranging
+from A+ to D- was given.
+
+\hypertarget{method}{%
+\section{Method}\label{method}}
+
+We use various R packages to present the data set and to plot the
+graphs.
+
+\hypertarget{result}{%
+\section{Result}\label{result}}
+
+We first created a data variable definition table to give an initial
+understanding of the data. As one can see, there were a few variables
+with missing values:
+
+\begin{table}[!h]
+
+\caption{\label{tab:unnamed-chunk-3}Data Variable Definition}
+\centering
+\resizebox{\linewidth}{!}{
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{lrl>{\raggedright\arraybackslash}p{8em}rrl}
+\toprule
+\textbf{Variables} & \textbf{Size} & \textbf{Type} & \textbf{Example} & \textbf{Number.Unique} & \textbf{Number.Missing} & \textbf{Comment}\\
+\midrule
+\cellcolor{gray!6}{state} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{U.S., New Mexico, Virginia} & \cellcolor{gray!6}{57} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{The name of the state (or national) where the election is held}\\
+startdate & 4208 & character & 2016/11/3, 2016/11/1, 2016/11/2 & 352 & 0 & Start date of poll\\
+\cellcolor{gray!6}{enddate} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{2016/11/6, 2016/11/7, 2016/11/5} & \cellcolor{gray!6}{345} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{End date of poll}\\
+pollster & 4208 & character & ABC News/Washington Post, Google Consumer Surveys, Ipsos & 196 & 0 & Organization name that conducts or analyzes opinion polls\\
+\cellcolor{gray!6}{grade} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{A+, B, A-} & \cellcolor{gray!6}{11} & \cellcolor{gray!6}{429} & \cellcolor{gray!6}{Grade assigned by Fivethirtyeight to pollster}\\
+\addlinespace
+samplesize & 4208 & integer & 2220, 26574, 2195 & 1767 & 1 & Sample size of polls for each pollster\\
+\cellcolor{gray!6}{population} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{lv, rv, a} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{Type of population being polled}\\
+rawpoll\_clinton & 4208 & numeric & 47, 38.03, 42 & 1312 & 0 & Poll Percentage for Hillary Clinton\\
+\cellcolor{gray!6}{rawpoll\_trump} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{numeric} & \cellcolor{gray!6}{43, 35.69, 39} & \cellcolor{gray!6}{1385} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{Poll Percentage for Donald Trump}\\
+rawpoll\_johnson & 4208 & numeric & 4, 5.46, 6 & 585 & 1409 & Poll Percentage for Gary Johnson\\
+\addlinespace
+\cellcolor{gray!6}{rawpoll\_mcmullin} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{numeric} & \cellcolor{gray!6}{NA, 24, 27.6} & \cellcolor{gray!6}{17} & \cellcolor{gray!6}{4178} & \cellcolor{gray!6}{Poll Percentage for Evan Mcmullin}\\
+adjpoll\_clinton & 4208 & numeric & 45.20163, 43.34557, 42.02638 & 4200 & 0 & Adjusted percentage for Hillary Clinton\\
+\cellcolor{gray!6}{adjpoll\_trump} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{numeric} & \cellcolor{gray!6}{41.7243, 41.21439, 38.8162} & \cellcolor{gray!6}{4204} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{Adjusted percentage for Donald Trump}\\
+adjpoll\_johnson & 4208 & numeric & 4.626221, 5.175792, 6.844734 & 2211 & 1409 & Adjusted percentage for Gary Johnson\\
+\cellcolor{gray!6}{adjpoll\_mcmullin} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{numeric} & \cellcolor{gray!6}{NA, 24, 27.70142} & \cellcolor{gray!6}{31} & \cellcolor{gray!6}{4178} & \cellcolor{gray!6}{Adjusted percentage for Evan Mcmullin}\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Note that the poll results for Johnson and McMullin had lots of missing
+values. In particular, Johnson had 33.48\% raw poll result and 33.48\%
+adjusted poll result missing, and McMullin had 99.29\% and 99.29\%
+missing. Due to the fact that these two candidate didn't make to the
+final election, we chose to ignore their data in some of the analysis.
+
+Since the final two candidates in Election 2016 are Clinton and Trump,
+we plotted box plots of the difference of their poll results, one for
+the raw poll and one for the adjusted poll. We saw that there's little
+difference between the distribution of the raw and the adjusted data.
+However, the mean of each grade of the adjusted poll result was a little
+closer to zero than that of the raw poll result. This indicated that the
+adjustment that FiveThirtyEight made was an improvement because the raw
+poll difference of each grade was mostly above zero, which clearly
+showed that the poll result was more in favour of Clinton yet Trump was
+the final winner of the election.\\
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-4-1.png}
+
+\begin{cols}
+
+\begin{col}{0.55\textwidth}
+We notice that there are 57 pollsters (almost 30\% of the total number
+of pollsters) whose grades are missing in this data set. And we cannot
+just delete them, because it will cause a lot of missing data in other
+columns. We suppose that there are two possible reasons for these
+missing data: one is that there are some errors of data in the original
+file; the other is that fivethirtyeight has not rated these pollsters
+yet. So we searched online and found a more detailed and authoritative
+file about the pollsters' grade from the fivethirtyeight website. Here
+is the link:
+\url{https://projects.fivethirtyeight.com/pollster-ratings/}.
+
+\vspace{18pt}
+
+According to the fivethirtyeight website, we found that 26 pollsters
+with no grade in the origin data set actually have the grades like
+``A/B'', ``B/C'', ``C/D'', ``B'', ``B-''; otherwise, the rest 31
+pollsters without grades haven't been scored yet. Based on these
+information, we updated the ``grade'' column of the origin data set. We
+replace ``NA'' with the actual grades and none.
+
+\end{col}
+
+\begin{col}{0.05\textwidth}
+~
+
+\end{col}
+
+\begin{col}{0.4\textwidth}
+
+\begin{longtable}[]{@{}llc@{}}
+\caption{Updating the missing data}\tabularnewline
+\toprule\noalign{}
+& pollster & grade \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& pollster & grade \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+23 & Remington & B \\
+27 & Morning Consult & B- \\
+35 & Saguaro Strategies & B/C \\
+37 & Insights West & B/C \\
+44 & BK Strategies & B/C \\
+59 & Data Orbital & A/B \\
+65 & Starboard Communications & B/C \\
+69 & Strategic National & B/C \\
+84 & Bendixen \& Amandi International & B/C \\
+86 & Associated Industries of Florida & B/C \\
+97 & Centre College & B/C \\
+98 & Public Religion Research Institute & A/B \\
+101 & Praecones Analytica & B/C \\
+106 & Craciun Research & B/C \\
+108 & University of Colorado & B/C \\
+112 & Baldwin Wallace University & B/C \\
+122 & University of Wyoming & C/D \\
+131 & HighGround & B/C \\
+133 & Michigan State University & A/B \\
+140 & Echelon Insights & A/B \\
+152 & Meredith College & B/C \\
+155 & Mercyhurst University & B/C \\
+167 & Strategy Research & B/C \\
+176 & Hickman Analytics & B/C \\
+184 & Data Targeting & B/C \\
+196 & Ogden \& Fry & B/C \\
+\end{longtable}
+
+\end{col}
+
+\end{cols}
+
+\vspace{18pt}
+
+Because some pollsters are repeated in different rows of the data set,
+so we want to verify that each pollster corresponds to only one kind of
+grade. The result is as follow:
+
+\begin{verbatim}
+## the column of number_of_grades only contains one type of value: 1
+\end{verbatim}
+
+From the ``Pie Chart of Pollsters' Grades'' below, we could see that the
+unrated pollsters make up the largest percentage, about 15.8\% of the
+total; pollsters with grades ``B'' and ``C+'' account for the second and
+third most, 12.8\% and 12.2\% respectively; ``D'' grade has the smallest
+percentage of pollsters, only about 0.51\%. Besides, B-level grades,
+including ``B+'', ``B'' and ``B-'', are around 34.7\%, almost one-third
+of the total; C-level and A-level grades are about 21.89\% and 14.79\%
+respectively. For those without explicit grades, whose grades are
+``A/B'', ``B/C'' and ``C/D'', they account only for 12.24\%, ``B'' grade
+pollsters make up the majority of this part especially, almost 9.69\%.
+
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-7-1.png}
+
+\hypertarget{polls-trend-by-time}{%
+\subsection{Polls trend by time}\label{polls-trend-by-time}}
+
+Using the end date as the standard, we drew a scatter plot of the
+changes in the support rates of the four candidates over time.
+
+\begin{figure}
+\centering
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-9-1.pdf}
+\caption{Raw Poll Proportion by Time.}
+\end{figure}
+
+Figure 1 indicates that Clinton and Trump's approval ratings are
+significantly higher than those of Johnson and Mcmullin at the overall
+level. Another interesting demonstration is the divergence of support as
+the vote draws to a close. This shows that as the voting deadline
+approaches, people's intentions are more inclined to one of Clinton or
+Trump. Voting is also more polarized. A low poll rate for one candidate
+also implies that other candidates may have received high poll rates.
+This creates differences in pollsters or states.
+
+\hypertarget{comparison-of-candidates-polls-in-each-state}{%
+\subsection{Comparison of candidates' polls in each
+state}\label{comparison-of-candidates-polls-in-each-state}}
+
+We want to process the metadata by counting the polls received by each
+of the four candidates in each state. This result is easier to obtain by
+multiplying the given size and the proportion. Regardless of the various
+pollsters, we combine the number of polls for each candidate received in
+each state although the polls may come from different pollsters. In this
+case, we treat NA as 0.
+
+The visualization of the poll proportion of the four candidates in each
+state as follows.
+
+\begin{figure}
+\centering
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-14-1.pdf}
+\caption{Poll Percentage by States.}
+\end{figure}
+
+Figure 2 shows the poll proportions of the four candidates in each state
+distinguished by colors. We can clearly observe which candidate is
+likely to win all the electoral votes in each state, which is helpful in
+estimating the outcome of the presidential election. From the chart
+above, we conclude that Clinton and Trump are clearly ahead of Johnson
+and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in
+California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey,
+New York, Oregon, Rhode Island, Vermont, and Washington. Another side,
+in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana,
+Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma,
+South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia,
+Wyoming, Trump clearly leads Clinton. This helps us tally who would win
+all of the state's electoral votes.
+
+To make state-by-state polling results more visible, we've reflected the
+candidates' polling shares on a map of the United States. Since the
+other candidates are polling far behind Clinton and Trump, we select the
+Clinton and Trump polls and ignore the other candidates' polls. In the
+contour plot below, blue indicates that Clinton is polling
+proportionally greater than Trump, and red indicates that Trump is
+polling proportionally greater than Clinton. The darker the color, the
+more overwhelming the proportions. For states that are nearly white, the
+margin of victory is nearly half between Trump and Clinton.
+
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-19-1.png}
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
+
+\end{document}
