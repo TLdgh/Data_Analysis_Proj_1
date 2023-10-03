@@ -153,6 +153,16 @@ shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png",
 ![Pollster's Grade distribution](./Figures/piechart.png)
 
 ### plot for samplesize
+We take a look at the distribution of the sample size with regards to the grade:
+
+```{r, warning=FALSE}
+GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
+
+sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
+  geom_bar(stat="identity")+labs(title="Distribution of Sample Size for Grades", x="Sample Size", y="Frequency")
+
+ggplotly(sampleDist)
+```
 
 ### plot for population
 
