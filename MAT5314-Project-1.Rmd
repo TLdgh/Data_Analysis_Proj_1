@@ -262,10 +262,36 @@ Figure 2 shows the poll proportions of the four candidates in each state disting
 
 We now look at the time series of the adjusted poll proportion:
 ```{r}
+#Create frame contained time, rawpoll
+poll_by_time <- ElectionPoll%>%transmute(end_time=as.POSIXct(enddate),
+                                         clinton=adjpoll_clinton, trump=adjpoll_trump, johnson=adjpoll_johnson, mcmullin=adjpoll_mcmullin )%>%arrange(end_time)
+  
+# Order with increasing end_date
+poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 
+# Plot trend with all four candidates's uncleaned data
+g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
+  geom_line(aes(y = clinton, color = "Clinton"), alpha = 0.6) +
+  geom_line(aes(y = trump, color = "Trump"), alpha = 0.6) +
+  geom_line(aes(y = johnson, color = "Johnson"), alpha = 0.6) +
+  geom_line(aes(y = mcmullin, color = "Mcmullin"), alpha = 0.6) +
+  labs(x = "Date", y = "Proportion of rawpoll (%)", 
+       title = "Raw Poll Proportion by Time",
+       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin",
+       caption = "Data: poll_by_time (with missing values)") +
+  scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
+  scale_x_datetime(date_breaks = "2 month") +
+  theme(axis.text.x = element_text(angle = 50, size = 7, vjust = 0.5)) + 
+  theme(axis.title.x = element_text(size = 9, vjust = 0),
+        axis.title.y = element_text(size = 9, vjust = 3)) +
+  theme(plot.title = element_text(size = 12, face = "bold", 
+                                  margin = margin(0, 0, 0, 0))) +
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "bottom")
+print(g_1)
 ```
 
-We immediately noticed that some of the poll rate fell below zero. 
+We immediately noticed that some of the poll rate for Johnson fell below zero. 
 
 
 Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
