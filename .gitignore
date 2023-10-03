@@ -8,6 +8,7 @@
 # Session Data files
 .RData
 polls_us_election_2016.csv
+electionresult.csv
 
 # RStudio files
 .Rproj.user/

@@ -335,7 +335,7 @@ g <- list(
 )
 
 mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>% 
-  add_trace(z = ~percent_rawpoll_clinton, locations = ~Code, color =~percent_rawpoll_clinton, colors=c('red','white','blue'),
+  add_trace(z = ~percent_rawpoll_clinton, locations = ~Code, color =~percent_rawpoll_clinton, colors=c('indianred','white','skyblue'),
             colorbar=list(limits = c(0, 100),title = "Clinton's vote share(%)",x = 1, y = 0.9))%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
             text = ~Code, mode = "text", textfont = list(size = 10))%>%
@@ -344,7 +344,7 @@ mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>%
 
 #adjpoll
 mapchart2<-plot_geo(df_3, locationmode = 'USA-states')%>% 
-  add_trace(z = ~percent_adjpoll_clinton, locations = ~Code, color =~percent_adjpoll_clinton, colors=c('red','white','blue'),showscale=FALSE)%>%
+  add_trace(z = ~percent_adjpoll_clinton, locations = ~Code, color =~percent_adjpoll_clinton, colors=c('indianred','white','skyblue'),showscale=FALSE)%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
             text = ~Code, mode = "text", textfont = list(size = 10))%>%
   layout(geo = g)
@@ -378,6 +378,31 @@ htmlwidgets::saveWidget(widget = mapchart, file = "mapchart.html")
 webshot::webshot(url = "mapchart.html", file = "mapchart.png", delay = 1, zoom = 4, vheight = 600)
 ```
 
+```{r}
+#election result in the end
+electionresult<-read.csv("electionresult.csv")
+electionresult$State<-toupper(electionresult$State)
+df_4<-merge(df_3,electionresult,by.x="State")
+bin<-matrix(0,nrow(df_4),1)
+df_4<-cbind(df_4,bin)
+for(i in 1:nrow(df_4)){
+  if(df_4[i,9]=="C"){
+    df_4[i,10]<-0
+  }
+  else{
+    df_4[i,10]<-100
+  }
+}
+mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>% 
+  add_trace(z = ~bin, locations = ~Code, color =~bin, colors=c('indianred','white','skyblue'),
+           colorbar=list(limits = c(0, 100),title = "cliton win in this state",x = 1, y = 0.9))%>%
+  add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
+            text = ~Number, mode = "text",textfont = list(size = 10))%>%
+  layout(geo = g)%>%
+  layout(title = '2016 Presidential Election Results')
+htmlwidgets::saveWidget(widget = mapchart3, file = "mapchart3.html") 
+webshot::webshot(url = "mapchart3.html", file = "mapchart3.png", delay = 1, zoom = 4, vheight = 600)
+```
 # Discussion
 
 # Conclusion
