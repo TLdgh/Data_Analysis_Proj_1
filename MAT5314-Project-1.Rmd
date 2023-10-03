@@ -260,7 +260,122 @@ print(g_11)
 
 Figure 2 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us tally who would win all of the state's electoral votes.
 
-To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. Since the other candidates are polling far behind Clinton and Trump, we select the Clinton and Trump polls and ignore the other candidates' polls. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the more overwhelming the proportions. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
+We now look at the time series of the adjusted poll proportion:
+```{r}
+
+```
+
+We immediately noticed that some of the poll rate fell below zero. 
+
+
+Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
+
+```{r}
+ElectionPoll$grade<-replace_na(ElectionPoll$grade, "D-")
+
+fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
+fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
+
+boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
+  layout(yaxis=list(title="Raw Poll Difference"),
+         yaxis2=list(title="Adjusted Poll Difference"),
+         title="Difference between poll_Clinton and poll_Trump",
+         legend = list(title = list(text="Grade")))
+
+htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
+webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
+```
+
+We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
+
+However, due to the fact that FiveThirtyEight's adjustment to the poll result yields negative values, we think it is therefore unreasonable to do such adjustment. It gives the reader a difficulty in interpreting this adjustment.
+
+Finally we plot the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignore the other candidates' poll since the other candidates are polling far behind Clinton and Trump.
+
+```{r}
+ #Calculate cumulative mean
+ rMean<-function(df){
+   rMeans<-df%>%group_by(enddate) %>%
+     summarize(mean_trump = mean(rawpoll_trump), mean_clinton=mean(rawpoll_clinton))%>%
+     transmute(enddate=enddate, rMean_trump=cummean(mean_trump), rMean_clinton=cummean(mean_clinton))%>%
+     gather(key="Candidate", value="val", rMean_trump:rMean_clinton)
+   return(data.frame(rMeans))
+ }
+ #Plot cumulative mean for a State
+ PlotCMean<-function(state){
+   p<-plot_ly(Navg_lst[[state]], x=~enddate, y=~val, color=~Candidate, name = ~paste(state, ":", Candidate))%>%add_lines()%>%
+     layout(title="plot",
+            xaxis=list(tickfont = list(size = 8)),
+            legend = list(font=list(size = 8))
+     )
+   return(p)
+ }
+ #Clean the data
+ ElectionPoll[which(ElectionPoll$state=="Maine CD-1"),"state"]<-"Maine"
+ ElectionPoll[which(ElectionPoll$state=="Maine CD-2"),"state"]<-"Maine"
+ ElectionPoll[which(ElectionPoll$state=="Nebraska CD-1"),"state"]<-"Nebraska"
+ ElectionPoll[which(ElectionPoll$state=="Nebraska CD-2"),"state"]<-"Nebraska"
+ ElectionPoll[which(ElectionPoll$state=="Nebraska CD-3"),"state"]<-"Nebraska"
+ #apply rMean to all states
+ Navg_lst<-ElectionPoll%>%select(state, enddate, rawpoll_trump, rawpoll_clinton)%>%arrange(.by=enddate, decreasing=FALSE)%>%split(.$state)
+ Navg_lst<-purrr::map(Navg_lst, rMean)
+ #sample a few states
+ set.seed(100)
+ state_i<-sample(names(Navg_lst), size=3, replace = FALSE)
+ #make subplot
+ cMeanchart<-subplot(PlotCMean("U.S."),PlotCMean(state_i[1]),PlotCMean(state_i[2]),PlotCMean(state_i[3]),nrows = 2)%>%
+   layout(title="Time Series of Cumulative Mean of Trump and Clinton Poll Result",
+          annotations=list( 
+            list( 
+              x = 0.2,  
+              y = 0.85,  
+              text = "U.S.", 
+              font=list(size = 12),
+              xref = "paper",  
+              yref = "paper",  
+              xanchor = "center",  
+              showarrow = FALSE 
+            ),  
+            list( 
+              x = 0.75,  
+              y = 0.85,  
+              text = state_i[1],  
+              font=list(size = 12),
+              xref = "paper",  
+              yref = "paper",  
+              xanchor = "center",
+              showarrow = FALSE 
+            ),
+            list( 
+              x = 0.2,  
+              y = 0.3,  
+              text = state_i[2],  
+              font=list(size = 12),
+              xref = "paper",  
+              yref = "paper",  
+              xanchor = "center",
+              showarrow = FALSE 
+            ),
+            list( 
+              x = 0.75,  
+              y = 0.3,  
+              text = state_i[3],  
+              font=list(size = 12),
+              xref = "paper",  
+              yref = "paper",  
+              xanchor = "center",
+              showarrow = FALSE 
+            )
+          ),
+          showlegend = TRUE
+   )
+ htmlwidgets::saveWidget(widget = cMeanchart, file = "cMeanchart.html") 
+ webshot::webshot(url = "cMeanchart.html", file = "cMeanchart.png", delay = 1, zoom = 4, vheight = 600)
+```
+
+From the plot above we see that the overal national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
+
+To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the more overwhelming the proportions. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
 
 ```{r}
 #fill a matrix
@@ -391,40 +506,6 @@ mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>%
 htmlwidgets::saveWidget(widget = mapchart3, file = "mapchart3.html") 
 webshot::webshot(url = "mapchart3.html", file = "mapchart3.png", delay = 1, zoom = 4, vheight = 600)
 ```
-
-We now look at the time series of the adjusted poll proportion:
-```{r}
-
-```
-
-We immediately noticed that some of the poll rate fell below zero. 
-
-
-Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
-
-```{r}
-ElectionPoll$grade<-replace_na(ElectionPoll$grade, "D-")
-
-fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
-fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
-
-boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
-  layout(yaxis=list(title="Raw Poll Difference"),
-         yaxis2=list(title="Adjusted Poll Difference"),
-         title="Difference between poll_Clinton and poll_Trump",
-         legend = list(title = list(text="Grade")))
-
-htmlwidgets::saveWidget(widget = boxchart, file = "boxchart.html")
-webshot::webshot(url = "boxchart.html", file = "boxchart.png", delay = 1, zoom = 4, vheight = 500)
-```
-
-We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
-
-However, due to the fact that FiveThirtyEight's adjustment to the poll result yields negative values, we think it is therefore unreasonable to do such adjustment. It gives the reader a difficulty in interpreting this adjustment.
-
-
-
-
 
 # Discussion
 
