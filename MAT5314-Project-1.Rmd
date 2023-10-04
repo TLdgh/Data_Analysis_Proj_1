@@ -469,9 +469,10 @@ g <- list(
 
 mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>% 
   add_trace(z = ~percent_rawpoll_clinton, locations = ~Code, color =~percent_rawpoll_clinton, colors=c('indianred','white','skyblue'),
-            colorbar=list(limits = c(0, 100),title = "Clinton's vote share(%)",x = 1, y = 0.9))%>%
+            colorbar=list(limits = c(0, 100),title = list(text="Clinton's vote share(%)", font=list(size=8)),
+                          x = 1,y = 0.7,len = 0.4))%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Code, mode = "text", textfont = list(size = 10))%>%
+            text = ~Code, mode = "text", textfont = list(size = 6))%>%
   layout(geo = g)
 
 
@@ -479,27 +480,29 @@ mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>%
 mapchart2<-plot_geo(df_3, locationmode = 'USA-states')%>% 
   add_trace(z = ~percent_adjpoll_clinton, locations = ~Code, color =~percent_adjpoll_clinton, colors=c('indianred','white','skyblue'),showscale=FALSE)%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Code, mode = "text", textfont = list(size = 10))%>%
+            text = ~Code, mode = "text", textfont = list(size = 6))%>%
   layout(geo = g, showlegend=FALSE)
 
-mapchart_1_2<-subplot(mapchart1, mapchart2)%>%
-  layout(title = 'Clinton and Trump Predicted Vote Share in 2016 Election',
+mapchart_1_2<-subplot(mapchart1, mapchart2, nrows = 2)%>%
+  layout(margin=list(l=0, r=0, b=0, t=20),
+         title=list(text="Clinton and Trump Predicted Vote Share in 2016 Election", 
+                     font=list(size=10)),
          annotations=list( 
            list( 
-             x = 0.2,  
-             y = 0.85,  
+             x = 0.5,  
+             y = 1,  
              text = "Raw Poll", 
-             font=list(size = 25),
+             font=list(size = 10),
              xref = "paper",  
              yref = "paper",  
              xanchor = "center",  
              showarrow = FALSE 
            ),  
            list( 
-             x = 0.75,  
-             y = 0.85,  
+             x = 0.5,  
+             y = 0.5,  
              text = "Adjusted Poll",  
-             font=list(size = 25),
+             font=list(size = 10),
              xref = "paper",  
              yref = "paper",  
              xanchor = "center",
@@ -508,7 +511,7 @@ mapchart_1_2<-subplot(mapchart1, mapchart2)%>%
 
 
 saveWidget(widget = mapchart_1_2, file = "./Figures/mapchart_1_2.html") 
-shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 3, zoom = 2, vheight = 600)
+shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
 ```
 
 ![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart_1_2.png)
@@ -551,7 +554,7 @@ poll_gap[which(poll_gap$state %in% c("MAINE CD-1", "MAINE CD-2")),"state"]<-"MAI
 poll_gap[which(poll_gap$state %in% c("NEBRASKA CD-1", "NEBRASKA CD-2", "NEBRASKA CD-3")),"state"]<-"NEBRASKA"
 
 poll_gap<-poll_gap%>%group_by(state)%>%summarize(gap=sum(gap))%>%
-  transmute(State=state, PredictedResult=ifelse(gap>0, "T", "C"))
+  transmute(State=state, PredictedResult=ifelse(gap>0, "C", "T"))
 
 #election result in the end
 electionresult<-read.csv("electionresult.csv")
@@ -561,9 +564,11 @@ df_4<-inner_join(df_4, poll_gap, by="State")%>%mutate(Predictedbin=ifelse(Predic
 
 mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>% 
   add_trace(z = ~bin, locations = ~Code, color =~bin, colors=c("skyblue", 'white', 'red'),
-            colorbar=list(limits = c(0, 100),title = "Trump wins in this state",x = 1, y = 0.9))%>%
+            colorbar=list(limits = c(0, 100),title = list(text="Trump wins in this state", font=list(size=8)),
+                          x = 1,y = 0.7,len = 0.4)
+            )%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Number, mode = "text",textfont = list(size = 10))%>%
+            text = ~Number, mode = "text",textfont = list(size = 6))%>%
   layout(geo = g)
 
 
@@ -571,36 +576,39 @@ mapchart4<-plot_geo(df_4, locationmode = 'USA-states')%>%
   add_trace(z = ~Predictedbin, locations = ~Code, color =~Predictedbin, 
             colors=c("skyblue", 'white', 'red'), showscale=FALSE)%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Number, mode = "text",textfont = list(size = 10))%>%
+            text = ~Number, mode = "text",textfont = list(size = 6))%>%
   layout(geo = g, showlegend=FALSE)
 
-mapchart_3_4<-subplot(mapchart3, mapchart4)%>%
-  layout(title = 'Clinton and Trump Vote Share in 2016 Election',
+mapchart_3_4<-subplot(mapchart3, mapchart4, nrows=2)%>%
+  layout(margin=list(l=0, r=0, b=0, t=20),
+         title =list(text="Clinton and Trump Vote Share in 2016 Election", 
+                     font=list(size=10)),
          annotations=list( 
            list( 
-             x = 0.2,  
-             y = 0.85,  
+             x = 0.5,  
+             y = 1,  
              text = "2016 Final Presidential Election Results", 
-             font=list(size = 12),
+             font=list(size = 8),
              xref = "paper",  
              yref = "paper",  
              xanchor = "center",  
              showarrow = FALSE 
            ),  
            list( 
-             x = 0.75,  
-             y = 0.85,  
+             x = 0.5,  
+             y = 0.5,  
              text = "2016 Predicted Presidential Election Results",  
-             font=list(size = 12),
+             font=list(size = 8),
              xref = "paper",  
              yref = "paper",  
              xanchor = "center",
              showarrow = FALSE 
-           )), showlegend=FALSE)
+           )), 
+         showlegend=FALSE)
 
 
 saveWidget(widget = mapchart_3_4, file = "./Figures/mapchart_3_4.html") 
-shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3_4.png", delay = 4, zoom = 2, vheight = 600)
+shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3_4.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
 ```
 
 ![Map Chart of Election Result 2016](./Figures/mapchart_3_4.png)
