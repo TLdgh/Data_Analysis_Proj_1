@@ -6,6 +6,7 @@ author:
   - Chuhan Yue(300376046)
   - Yang Lyu(8701121)
 output: pdf_document
+fontsize: 12pt
 header-includes: 
   - \renewcommand{\and}{\\}
 ---
@@ -77,14 +78,17 @@ Note that the poll results for Johnson and McMullin had lots of missing values. 
 # Section 2: Variable Exploration
 We first took an initial look at each variable.
 
-The state variable consists of each state in the U.S., but it also contains the national value named "U.S." and some of other values like "":
+### State
+The state variable consists of each state in the U.S., but it also contains the national value named "U.S." and some of other values like "Maine CD-1":
 
 ```{r}
 unique(ElectionPoll$state)
 ```
 
+### Start and End Date
 The startdate and enddate variables correspond to the dates on which the public opinion poll was initiated and finalized respectively. Individual pollster might start or end their poll at different date than other pollsters.
 
+### Grade
 We then took a look at the grade variable. We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
 
 ```{r}
@@ -152,11 +156,43 @@ shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png",
 
 ![Pollster's Grade distribution](./Figures/piechart.png)
 
-### plot for samplesize
+### Sample Size
+Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade:
 
-### plot for population
+```{r, warning=FALSE, fig.cap = "Distribution of Sample Size for Grades", fig.width=4, fig.height=4}
+GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
 
+sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
+  geom_bar(stat="identity")+labs(title="Sample Size VS Grades", x="Grade", y="Sample Size")+
+  scale_y_continuous(labels=scales::number_format(scale = 1, accuracy = 1))
 
+print(sampleDist)
+```
+
+### Population
+We now take a look at the population type for which the poll was sampled.
+
+```{r, warning=FALSE}
+GradeVsPop<-ElectionPoll%>%select(grade, population, samplesize)%>%
+  group_by(grade, population)%>%summarise(Size=sum(samplesize), .groups = "drop")%>%na.omit()
+
+popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population, 
+               type = 'scatter', mode = 'markers', 
+               size = ~Size, color = ~Size, colors = 'Blues',
+               marker = list(symbol="circle", sizemode = 'diameter', line = list(width = 2, color = 'black')))%>%
+  layout(title = 'Population Type VS Grade',
+         xaxis = list(showgrid = FALSE),
+         showlegend = TRUE,
+         paper_bgcolor = 'lightgrey',
+         plot_bgcolor = 'lightgrey')
+
+saveWidget(widget = popChart, file = "./Figures/popChart.html")
+shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 4)
+```
+
+![Population Type with Size for Grades](./Figures/popChart.png){width=50%}
+
+### Poll Rate
 We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
 ```{r}
@@ -181,7 +217,7 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time.", fig.pos="H"}
+```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time.", fig.width=6, fig.height=4, fig.pos="H"}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -245,7 +281,7 @@ NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 
 The visualization of the poll proportion of the four candidates in each state was presented below:  
 
-```{r, fig.cap = "Poll Percentage by States.", fig.pos="H"}
+```{r, fig.cap = "Poll Percentage by States.", fig.width=6, fig.height=4, fig.pos="H"}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
   labs(x = "State", y = "Proportion", 
@@ -265,7 +301,7 @@ Figure 2 shows the poll proportions of the four candidates in each state disting
 
 We now look at the time series of the adjusted poll proportion:
 
-```{r, fig.cap = "Adjusted Poll Percentage by States"}
+```{r, fig.cap = "Adjusted Poll Percentage by States", fig.width=6, fig.height=4}
 #Create frame contained time, rawpoll
 poll_by_time <- ElectionPoll%>%transmute(end_time=as.POSIXct(enddate),
                                          clinton=adjpoll_clinton, trump=adjpoll_trump, johnson=adjpoll_johnson, mcmullin=adjpoll_mcmullin )%>%arrange(end_time)
@@ -313,7 +349,7 @@ saveWidget(widget = boxchart, file = "./Figures/boxchart.html")
 shots<-webshot(url = "./Figures/boxchart.html", file = "./Figures/boxchart.png", delay = 1, zoom = 4, vheight = 500)
 ```
 
-![Boxchart of Difference between Polls](./Figures/boxchart.png)
+![Boxchart of Difference between Polls](./Figures/boxchart.png){width=70%}
 
 We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was an improvement because the raw poll difference of each grade was mostly above zero, which clearly showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
 
@@ -407,6 +443,7 @@ shots<-webshot(url = "./Figures/cMeanchart.html", file = "./Figures/cMeanchart.p
 
 From the plot above we see that the overal national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
 
+### Map Chart of Data
 To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the more overwhelming the proportions. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
 
 ```{r}
@@ -614,7 +651,5 @@ shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3
 ![Map Chart of Election Result 2016](./Figures/mapchart_3_4.png)
 
 From the above plots we can see that the actual final election outcome was almost the entire opposite to the predicted result.
-
-# Discussion
 
 # Conclusion
