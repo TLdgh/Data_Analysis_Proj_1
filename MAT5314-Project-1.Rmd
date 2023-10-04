@@ -78,14 +78,17 @@ Note that the poll results for Johnson and McMullin had lots of missing values. 
 # Section 2: Variable Exploration
 We first took an initial look at each variable.
 
-The state variable consists of each state in the U.S., but it also contains the national value named "U.S." and some of other values like "":
+### State
+The state variable consists of each state in the U.S., but it also contains the national value named "U.S." and some of other values like "Maine CD-1":
 
 ```{r}
 unique(ElectionPoll$state)
 ```
 
+### Start and End Date
 The startdate and enddate variables correspond to the dates on which the public opinion poll was initiated and finalized respectively. Individual pollster might start or end their poll at different date than other pollsters.
 
+### Grade
 We then took a look at the grade variable. We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
 
 ```{r}
@@ -153,7 +156,7 @@ shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png",
 
 ![Pollster's Grade distribution](./Figures/piechart.png)
 
-### plot for samplesize
+### Sample Size
 Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade:
 
 ```{r, warning=FALSE, fig.cap = "Distribution of Sample Size for Grades", fig.width=4, fig.height=4}
@@ -166,7 +169,7 @@ sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
 print(sampleDist)
 ```
 
-### plot for population
+### Population
 We now take a look at the population type for which the poll was sampled.
 
 ```{r, warning=FALSE}
@@ -189,6 +192,7 @@ shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png",
 
 ![Population Type with Size for Grades](./Figures/popChart.png){width=50%}
 
+### Poll Rate
 We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
 ```{r}
@@ -213,7 +217,7 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time.", fig.width=6, fig.height=4}
+```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time.", fig.width=6, fig.height=4, fig.pos="H"}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -275,16 +279,16 @@ NumVoteState <- as.data.frame(NumVote_State) %>%
 NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 ```
 
-The visualization of the poll proportion of the four candidates in each state was presented below:
+The visualization of the poll proportion of the four candidates in each state was presented below:  
 
-```{r, fig.cap = "Poll Percentage by States.", fig.width=6, fig.height=4}
+```{r, fig.cap = "Poll Percentage by States.", fig.width=6, fig.height=4, fig.pos="H"}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
-  labs(x = "State", y = "Percentage of Polls", 
+  labs(x = "State", y = "Proportion", 
        title = "Poll Percentage by States") +
   scale_fill_manual(values=c("Clinton" = "blue", "Trump" = "red", 
                              "Johnson" = "green", "Mcmullin" = "yellow")) +
-  theme(axis.text.x = element_text(angle = 50, size = 6, vjust = 0.5)) + 
+  theme(axis.text.x = element_text(angle = 90, size = 6, vjust = 0.5)) + 
   theme(axis.title.x = element_text(size = 9, vjust = 0),
         axis.title.y = element_text(size = 9, vjust = 3)) + 
   theme(plot.title = element_text(size = 12, face = "bold", 
@@ -439,6 +443,7 @@ shots<-webshot(url = "./Figures/cMeanchart.html", file = "./Figures/cMeanchart.p
 
 From the plot above we see that the overal national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
 
+### Map Chart of Data
 To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the more overwhelming the proportions. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
 
 ```{r}
@@ -501,9 +506,10 @@ g <- list(
 
 mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>% 
   add_trace(z = ~percent_rawpoll_clinton, locations = ~Code, color =~percent_rawpoll_clinton, colors=c('indianred','white','skyblue'),
-            colorbar=list(limits = c(0, 100),title = "Clinton's vote share(%)",x = 1, y = 0.9))%>%
+            colorbar=list(limits = c(0, 100),title = list(text="Clinton's vote share(%)", font=list(size=8)),
+                          x = 1,y = 0.7,len = 0.4))%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Code, mode = "text", textfont = list(size = 10))%>%
+            text = ~Code, mode = "text", textfont = list(size = 6))%>%
   layout(geo = g)
 
 
@@ -511,27 +517,29 @@ mapchart1<-plot_geo(df3, locationmode = 'USA-states')%>%
 mapchart2<-plot_geo(df_3, locationmode = 'USA-states')%>% 
   add_trace(z = ~percent_adjpoll_clinton, locations = ~Code, color =~percent_adjpoll_clinton, colors=c('indianred','white','skyblue'),showscale=FALSE)%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Code, mode = "text", textfont = list(size = 10))%>%
-  layout(geo = g)
+            text = ~Code, mode = "text", textfont = list(size = 6))%>%
+  layout(geo = g, showlegend=FALSE)
 
-mapchart<-subplot(mapchart1, mapchart2)%>%
-  layout(title = 'Clinton and Trump vote share in 2016',
+mapchart_1_2<-subplot(mapchart1, mapchart2, nrows = 2)%>%
+  layout(margin=list(l=0, r=0, b=0, t=20),
+         title=list(text="Clinton and Trump Predicted Vote Share in 2016 Election", 
+                     font=list(size=10)),
          annotations=list( 
            list( 
-             x = 0.2,  
-             y = 0.85,  
+             x = 0.5,  
+             y = 1,  
              text = "Raw Poll", 
-             font=list(size = 25),
+             font=list(size = 10),
              xref = "paper",  
              yref = "paper",  
              xanchor = "center",  
              showarrow = FALSE 
            ),  
            list( 
-             x = 0.75,  
-             y = 0.85,  
+             x = 0.5,  
+             y = 0.5,  
              text = "Adjusted Poll",  
-             font=list(size = 25),
+             font=list(size = 10),
              xref = "paper",  
              yref = "paper",  
              xanchor = "center",
@@ -539,34 +547,109 @@ mapchart<-subplot(mapchart1, mapchart2)%>%
            )), showlegend=FALSE)
 
 
-saveWidget(widget = mapchart, file = "./Figures/mapchart.html") 
-shots<-webshot(url = "./Figures/mapchart.html", file = "./Figures/mapchart.png", delay = 3, zoom = 2, vheight = 600)
+saveWidget(widget = mapchart_1_2, file = "./Figures/mapchart_1_2.html") 
+shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
 ```
 
-![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart.png)
+![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart_1_2.png)
+
+Furthermore, we want to find out exactly the states which Clinton or Trump captured all of the electoral votes. The visualization below shows the net polls generated by each state for Clinton and Trump. 
+
+```{r, fig.cap = "Net Polls by States.", fig.pos="H"}
+# Calculate net polls
+poll_gap <- NumVoteState%>%filter(candidate %in% c("Clinton", "Trump"))%>%
+  group_by(state, candidate)%>%summarize(numP=sum(PollNumber), .groups="drop")%>%
+  spread(key=candidate, value=numP)%>%transmute(state=state, gap=Clinton-Trump)
+
+# plot net polls by state(remove "U.S.")
+poll_gap$pos <- poll_gap$gap > 0
+poll_gap$pos[poll_gap$pos == TRUE] <- "Clinton exceeds Trump"
+poll_gap$pos[poll_gap$pos == FALSE] <- "Trump exceeds Clinton"
+poll_gap <- poll_gap %>%filter(state != "U.S.")
+
+g_13 <- ggplot(data = poll_gap, aes(x = state, y = gap, fill = pos)) + 
+  geom_bar(stat="identity") + 
+  labs(x = "State", y = "Poll gap", fill = "Leading",
+       title = "Net Polls by States") +
+  scale_fill_manual(values=c("Clinton exceeds Trump" = "blue", "Trump exceeds Clinton" = "red")) +
+  theme(axis.text.x = element_text(angle = 90, size = 6, vjust = 0.5)) + 
+  theme(axis.title.x = element_text(size = 9, vjust = 0),
+        axis.title.y = element_text(size = 9, vjust = 3)) + 
+  theme(plot.title = element_text(size = 12, face = "bold", 
+                                  margin = margin(0, 0, 0, 0))) +
+  theme(legend.position = c(1, 1), legend.justification = c(1, 1))
+g_13
+```
+
+It is not difficult to see from Figure 3 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes, and the remaining electoral votes will be allocated to the presidential candidate who wins each district. Moreover, DC have three electoral votes as an independent district. Based on RawPoll data, the chart above shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska.
 
 We obtained the final election result from https://www.nytimes.com/elections/2016/results/president and compared it with our poll prediction result:
 
 ```{r}
+poll_gap$state<-toupper(poll_gap$state)
+poll_gap[which(poll_gap$state %in% c("MAINE CD-1", "MAINE CD-2")),"state"]<-"MAINE"
+poll_gap[which(poll_gap$state %in% c("NEBRASKA CD-1", "NEBRASKA CD-2", "NEBRASKA CD-3")),"state"]<-"NEBRASKA"
+
+poll_gap<-poll_gap%>%group_by(state)%>%summarize(gap=sum(gap))%>%
+  transmute(State=state, PredictedResult=ifelse(gap>0, "C", "T"))
+
 #election result in the end
 electionresult<-read.csv("electionresult.csv")
 electionresult$State<-toupper(electionresult$State)
 df_4<-merge(df_3,electionresult,by.x="State")%>%mutate(bin=ifelse(Result=="C", 0, 100))
+df_4<-inner_join(df_4, poll_gap, by="State")%>%mutate(Predictedbin=ifelse(PredictedResult=="C", 0, 100))
 
 mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>% 
   add_trace(z = ~bin, locations = ~Code, color =~bin, colors=c("skyblue", 'white', 'red'),
-            colorbar=list(limits = c(0, 100),title = "Trump wins in this state",x = 1, y = 0.9))%>%
+            colorbar=list(limits = c(0, 100),title = list(text="Trump wins in this state", font=list(size=8)),
+                          x = 1,y = 0.7,len = 0.4)
+            )%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
-            text = ~Number, mode = "text",textfont = list(size = 10))%>%
-  layout(geo = g)%>%
-  layout(title = '2016 Presidential Election Results')
+            text = ~Number, mode = "text",textfont = list(size = 6))%>%
+  layout(geo = g)
 
-saveWidget(widget = mapchart3, file = "./Figures/mapchart3.html") 
-shots<-webshot(url = "./Figures/mapchart3.html", file = "./Figures/mapchart3.png", delay = 3, zoom = 2, vheight = 600)
+
+mapchart4<-plot_geo(df_4, locationmode = 'USA-states')%>% 
+  add_trace(z = ~Predictedbin, locations = ~Code, color =~Predictedbin, 
+            colors=c("skyblue", 'white', 'red'), showscale=FALSE)%>%
+  add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
+            text = ~Number, mode = "text",textfont = list(size = 6))%>%
+  layout(geo = g, showlegend=FALSE)
+
+mapchart_3_4<-subplot(mapchart3, mapchart4, nrows=2)%>%
+  layout(margin=list(l=0, r=0, b=0, t=20),
+         title =list(text="Clinton and Trump Vote Share in 2016 Election", 
+                     font=list(size=10)),
+         annotations=list( 
+           list( 
+             x = 0.5,  
+             y = 1,  
+             text = "2016 Final Presidential Election Results", 
+             font=list(size = 8),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",  
+             showarrow = FALSE 
+           ),  
+           list( 
+             x = 0.5,  
+             y = 0.5,  
+             text = "2016 Predicted Presidential Election Results",  
+             font=list(size = 8),
+             xref = "paper",  
+             yref = "paper",  
+             xanchor = "center",
+             showarrow = FALSE 
+           )), 
+         showlegend=FALSE)
+
+
+saveWidget(widget = mapchart_3_4, file = "./Figures/mapchart_3_4.html") 
+shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3_4.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
 ```
 
-![Map Chart of Election Result 2016](./Figures/mapchart3.png){width=70%, height=70%}
+![Map Chart of Election Result 2016](./Figures/mapchart_3_4.png)
 
-# Discussion
+From the above plots we can see that the actual final election outcome was almost the entire opposite to the predicted result.
 
 # Conclusion
