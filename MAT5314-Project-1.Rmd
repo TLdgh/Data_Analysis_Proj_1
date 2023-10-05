@@ -184,16 +184,19 @@ unique_levels <- levels(factor(pollster_grade$grade))
 percentages <- (category_counts / sum(category_counts))*100 #calculate the percentages of different grades
 A <- as.data.frame(percentages)#construct the data frame of two variables:"Var1"(grade) and "Freq"(percentages of grades)
 
-piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie")
-piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
-                                xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                                yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                                legend = list(title = list(text="Grade")))
+piechart <- plot_ly(A, labels=~Var1, values=~Freq, type="pie", width = 500, height = 400)%>% 
+  layout(margin=list(l=0, r=0, b=0, t=20),
+         title = list(text="Pie Chart of Pollsters' Grades", font=list(size=10)),
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         legend = list(title = list(text="Grade"),font=list(size=10))
+  )
 
 saveWidget(widget = piechart, file = "./Figures/piechart.html")
-shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 4, vheight = 500)
+shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 2, vheight = 400, vwidth = 500)
 ```
-![Pollster's Grade Distribution](./Figures/piechart.png){width=70%, height=60%}
+
+![Pollster's Grade Distribution](./Figures/piechart.png){width=40%, height=30%}
 
 ### Sample Size
 Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade. We sum up the sample size based on each grade level and made a bar plot:
@@ -222,17 +225,17 @@ GradeVsPop<-ElectionPoll%>%select(grade, population, samplesize)%>%
   group_by(grade, population)%>%summarise(Size=sum(samplesize), .groups = "drop")%>%na.omit()
 
 popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population, 
-               type = 'scatter', mode = 'markers', 
-               size = ~Size, color = ~Size, colors = 'Blues',
-               marker = list(symbol="circle", sizemode = 'diameter', line = list(width = 2, color = 'black')))%>%
-  layout(title = 'Population Type VS Grade',
+                    type = 'scatter', mode = 'markers', color = ~Size, colors = 'Blues',
+                    marker = list(symbol="circle", sizemode = 'diameter', size = ~Size/10000, line = list(width = 2, color = 'black')))%>%
+  layout(margin=list(l=0, r=0, b=0, t=40),
+         title = 'Population Type VS Grade',
          xaxis = list(showgrid = FALSE),
          showlegend = TRUE,
          paper_bgcolor = 'lightgrey',
          plot_bgcolor = 'lightgrey')
 
 saveWidget(widget = popChart, file = "./Figures/popChart.html")
-shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 4)
+shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 1, vheight = 400, vwidth = 950)
 ```
 
 ![Population Type with Size for Grades](./Figures/popChart.png)
@@ -240,7 +243,7 @@ shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png",
 ### Poll Rate
 We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
-```{r}
+```{r,out.width="70%"}
 #Create frame contained time, rawpoll
 start_time <- as.POSIXct(ElectionPoll$startdate)
 end_time <- as.POSIXct(ElectionPoll$enddate)
@@ -575,7 +578,7 @@ mapchart2<-plot_geo(df_3, locationmode = 'USA-states')%>%
 mapchart_1_2<-subplot(mapchart1, mapchart2, nrows = 2)%>%
   layout(margin=list(l=0, r=0, b=0, t=20),
          title=list(text="Clinton and Trump Predicted Vote Share in 2016 Election", 
-                     font=list(size=10)),
+                    font=list(size=10)),
          annotations=list( 
            list( 
              x = 0.5,  
@@ -667,7 +670,7 @@ mapchart3<-plot_geo(df_4, locationmode = 'USA-states')%>%
   add_trace(z = ~bin, locations = ~Code, color =~bin, colors=c("skyblue", 'white', 'red'),
             colorbar=list(limits = c(0, 100),title = list(text="Trump wins in this state", font=list(size=8)),
                           x = 1,y = 0.7,len = 0.4)
-            )%>%
+  )%>%
   add_trace(type = "scattergeo", locationmode = 'USA-states', locations = ~Code, 
             text = ~Number, mode = "text",textfont = list(size = 6))%>%
   layout(geo = g)
