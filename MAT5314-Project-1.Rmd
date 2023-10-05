@@ -246,11 +246,10 @@ popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population,
          xaxis = list(showgrid = FALSE),
          showlegend = TRUE,
          paper_bgcolor = 'lightgrey',
-         plot_bgcolor = 'lightgrey',
-         height = 500)
+         plot_bgcolor = 'lightgrey')
 
 saveWidget(widget = popChart, file = "./Figures/popChart.html")
-shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 1, vheight = 400, vwidth = 950)
+shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 1, vheight = 350, vwidth = 950)
 ```
 
 ![Population Type with Size for Grades](./Figures/popChart.png)
@@ -258,7 +257,7 @@ shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png",
 ### Poll Rate
 We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
-```{r,out.width="70%"}
+```{r}
 #Create frame contained time, rawpoll
 start_time <- as.POSIXct(ElectionPoll$startdate)
 end_time <- as.POSIXct(ElectionPoll$enddate)
@@ -280,8 +279,7 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-\begin{minipage}[t]{0.7\textwidth}
-```{r, warning=FALSE, out.width="100%", fig.cap = "Raw Poll Proportion by Time"}
+```{r, warning=FALSE, out.width="100%", out.height="30%", fig.cap = "Raw Poll Proportion by Time"}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -293,7 +291,7 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
        subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
   scale_x_datetime(date_breaks = "2 month") +
-  theme(axis.text.x = element_text(angle = 50, size = 7, vjust = 0.5)) + 
+  theme(axis.text.x = element_text(angle = 0, size = 7, vjust = 0.5)) + 
   theme(axis.title.x = element_text(size = 9, vjust = 0),
         axis.title.y = element_text(size = 9, vjust = 3)) +
   theme(plot.title = element_text(size = 12, face = "bold", 
@@ -302,9 +300,7 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   theme(legend.position = "bottom")
 print(g_2)
 ```
-\end{minipage}
-\begin{minipage}[t]{0.3\textwidth}
-\vspace{0pt}
+
 Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each 
 \end{minipage}
 state. Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
