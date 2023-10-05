@@ -114,23 +114,25 @@ head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), ], 3)
 
 :::::: {.cols data-latex=""}
 
-::: {.col data-latex="{0.45\textwidth}"}
+::: {.col data-latex="{0.53\textwidth}"}
 We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website.[@MissingD]
+
+\vspace{13pt}
 
 If one had omitted the NA from the grade by rows, then the available data from other variables would be omitted as well, which affects the final result and may yield incorrect inference to the data. Therefore, we will only delete a variable entirely if it has most of its values missing. Dividing the variable (column) will not affect values in other variables like omitting NA by rows.
 
-\vspace{18pt} 
+\vspace{13pt}
 
 According to the fivethirtyeight website, we found that 26 pollsters with no grade in the origin data set actually have the grades like "A/B", "B/C", "C/D", "B", "B-"; otherwise, the rest 31 pollsters without grades haven't been scored yet. Based on these information, we updated the "grade" column of the origin data set. We replace "NA" with the actual grades and "none". The result was presented in Table 2.
 :::
 
-::: {.col data-latex="{0.05\textwidth}"}
+::: {.col data-latex="{0.02\textwidth}"}
 \ 
 <!-- an empty Div (with a white space), serving as
 a column separator -->
 :::
 
-::: {.col data-latex="{0.5\textwidth}"}
+::: {.col data-latex="{0.45\textwidth}"}
 
 ```{r, results='asis'}
 ElectionPoll$grade[is.na(ElectionPoll$grade)] <- "none" #Replace NA in the "grade" column with none
@@ -154,12 +156,10 @@ kable(A, format = "markdown",
 :::
 ::::::
 
-
 \vspace{18pt} 
 
 Because some pollsters are repeated in different rows of the data set, so we want to verify that each pollster corresponds to only one kind of grade. 
 The result is as follow:
-
 ```{r}
 #Calculate the different grades corresponding to each pollster
 pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade"))) #Extract two columns:"pollster" and "grade" from the Electionpoll
@@ -176,8 +176,19 @@ if (length(unique_values) == 1) {
 
 After cleaning the missing values for the grade variable and checked its uniqueness for each pollster to make sure there was no error in data entry, we plotted a pie chart to gain initial understanding of the grade variable.
 
-From Figure 1: Pollster's Grade Distribution below, we could see that the unrated pollsters make up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" account for the second and third most, 12.8% and 12.2% respectively; "D" grade has the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", are around 34.7%, almost one-third of the total; C-level and A-level grades are about 21.89% and 14.79% respectively. For those without explicit grades, whose grades are "A/B", "B/C" and "C/D", they account only for 12.24%, "B" grade pollsters make up the majority of this part especially, almost 9.69%.
+:::::: {.cols data-latex=""}
 
+::: {.col data-latex="{0.48\textwidth}"}
+From Figure 1: Pollster's Grade Distribution below, we could see that the unrated pollsters make up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" account for the second and third most, 12.8% and 12.2% respectively; "D" grade has the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", are around 34.7%, almost one-third of the total; C-level and A-level grades are about 21.89% and 14.79% respectively. For those without explicit grades, whose grades are "A/B", "B/C" and "C/D", they account only for 12.24%, "B" grade pollsters make up the majority of this part especially, almost 9.69%.
+:::
+
+::: {.col data-latex="{0.02\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.5\textwidth}"}
 ```{r}
 category_counts <- table(as.factor(pollster_grade$grade))
 unique_levels <- levels(factor(pollster_grade$grade)) 
@@ -191,13 +202,15 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
                                 legend = list(title = list(text="Grade")))
 
 saveWidget(widget = piechart, file = "./Figures/piechart.html")
-shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 4, vheight = 500)
+shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 6, vheight = 800)
 ```
 ![Pollster's Grade Distribution](./Figures/piechart.png){width=70%, height=60%}
+:::
+::::::
 
 ### Sample Size
 Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade. We sum up the sample size based on each grade level and made a bar plot:
-\begin{minipage}[t]{0.5\textwidth}
+\begin{minipage}[t]{0.55\textwidth}
 ```{r, warning=FALSE, out.width="100%", fig.cap = "Distribution of Sample Size for Grades"}
 GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
 GradeVsSize$grade<-factor(GradeVsSize$grade, levels=c("A+", "A", "A-", "A/B", "B+", "B", "B-", "B/C", "C+", "C", "C-", "C/D", "D", "none"))
@@ -209,11 +222,12 @@ sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
 print(sampleDist)
 ```
 \end{minipage}
-\begin{minipage}[t]{0.5\textwidth}
+\begin{minipage}[t]{0.45\textwidth}
 \vspace{0pt}
-As one can see, grade A-, B, C- have the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who has its own sample size. Due to the fact that we sum up the sample size, we can conclude that the proportion of the pollsters who receive grade A-, B and C- are greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore does not contribute towards the rating of pollsters. We think that this can reflect the efficiency of the poll. A low portion of the sample size for the grade "none" indicates that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
+As one can see, grade A-, B, C- have the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who has its own sample size. Due to the fact that we sum up the sample size, we can conclude that the proportion of the pollsters who receive grade A-, B and C- are greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore does not contribute towards the rating of pollsters. We think that this can reflect the efficiency of the poll. A low portion of the sample size 
 \end{minipage}
-
+for the grade "none" indicates that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
+ 
 ### Population
 We now take a look at the population type for which the poll was sampled. We saw that the population type "lv", which stands for likely voters, count for most of the sample sizes. This is in accordence with FiveThirtyEight's explanation in their website "Because the database covers the final three weeks of the campaign and almost all polling firms publish likely voter polls by that time, almost all polls in the database should be likely voter surveys.".
 
@@ -229,7 +243,8 @@ popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population,
          xaxis = list(showgrid = FALSE),
          showlegend = TRUE,
          paper_bgcolor = 'lightgrey',
-         plot_bgcolor = 'lightgrey')
+         plot_bgcolor = 'lightgrey',
+         height = 500)
 
 saveWidget(widget = popChart, file = "./Figures/popChart.html")
 shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 4)
@@ -287,9 +302,9 @@ print(g_2)
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state.
+Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each 
 \end{minipage}
-Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
+state. Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
 
 ```{r}
 #Create frame contained state, poll number for each candidate
