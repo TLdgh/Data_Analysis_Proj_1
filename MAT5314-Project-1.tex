@@ -541,7 +541,7 @@ and one for the adjusted poll.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth,height=\textheight]{./Figures/boxchart.png}
+\includegraphics{./Figures/boxchart.png}
 \caption{Boxchart of Difference between Polls}
 \end{figure}
 
@@ -561,7 +561,11 @@ this adjustment.
 Finally we plot the cumulative mean of the raw poll result for the final
 two candidates, Trump and Clinton. We selected the Clinton and Trump
 polls and ignore the other candidates' poll since the other candidates
-are polling far behind Clinton and Trump.
+are polling far behind Clinton and Trump. From Figure 7 below we see
+that the overall national poll result indicates that Clinton should be
+the winner of the election. However, some of the individual states
+resulted the opposite conclusion. It it therefore hard to tell which
+candidate is leading by examining the individual state poll result.
 
 \begin{figure}
 \centering
@@ -569,28 +573,32 @@ are polling far behind Clinton and Trump.
 \caption{Cumulative Mean of Raw Poll Result}
 \end{figure}
 
-From the plot above we see that the overall national poll result
-indicates that Clinton should be the winner of the election. However,
-some of the individual states resulted the opposite conclusion. It it
-therefore hard to tell which candidate is leading by examining the
-individual state poll result.
-
 \hypertarget{map-chart-of-data}{%
 \subsubsection{Map Chart of Data}\label{map-chart-of-data}}
 
 To make state-by-state polling results more visible, we've reflected the
-candidates' polling shares on a map of the United States. In the contour
-plot below, blue indicates that Clinton is polling proportionally
-greater than Trump, and red indicates that Trump is polling
-proportionally greater than Clinton. The darker the color, the higher
-the proportions are. For states that are nearly white, the margin of
-victory is nearly half between Trump and Clinton.
+candidates' polling shares on a map of the United States.
 
-\begin{figure}
-\centering
+\begin{cols}
+
+\begin{col}{0.6\textwidth}
 \includegraphics{./Figures/mapchart_1_2.png}
-\caption{Map Chart of Vote Shares of Candidates by States}
-\end{figure}
+
+\end{col}
+
+\begin{col}{0.02\textwidth}
+~
+
+\end{col}
+
+\begin{col}{0.38\textwidth}
+In the contour plot Figure 9 on the left, blue indicates that Clinton is
+polling proportionally greater than Trump, and red indicates that Trump
+is polling proportionally greater than Clinton. The darker the color,
+the higher the proportions are. For states that are nearly white, the
+margin of victory is nearly half between Trump and Clinton.
+
+\vspace{13pt}
 
 We again saw that there was little difference between the results using
 the raw poll data and the adjusted poll data, which further support our
@@ -598,6 +606,10 @@ opinion that the adjustment made by FiveThirtyEight must be carefully
 justified by readers because of its negative values. We then saw from
 the map in Figure 9 that Clinton seems to dominate the public opinions
 because the colors of states are a bit closer to white and pale red.
+
+\end{col}
+
+\end{cols}
 
 Furthermore, we want to find out exactly the states which Clinton or
 Trump captured all of the electoral votes. The visualization below shows
@@ -650,12 +662,19 @@ swing opinion.
 We obtained the final election result from
 (\protect\hyperlink{ref-Final}{2017}).
 
-\begin{figure}
-\centering
-\includegraphics{./Figures/mapchart_3_4.png}
-\caption{Map Chart of Election Result 2016}
-\end{figure}
+\begin{cols}
 
+\begin{col}{0.6\textwidth}
+\includegraphics{./Figures/mapchart_3_4.png}
+
+\end{col}
+
+\begin{col}{0.02\textwidth}
+~
+
+\end{col}
+
+\begin{col}{0.38\textwidth}
 From the Figure 11 we can see that the actual final election outcome was
 almost the entire opposite to the predicted result. In 2016, Trump won
 304 votes compared to 227 votes for Hillary Clinton, which was not
@@ -666,6 +685,10 @@ the previous analysis in Figure 1, we were also able to find out that
 over half of the pollster ratings were between B+ to C and none. This
 might suggests that public opinion polls are not as reliable as one
 would expect due to the quality of the pollsters.
+
+\end{col}
+
+\end{cols}
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}

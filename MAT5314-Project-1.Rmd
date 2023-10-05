@@ -394,7 +394,7 @@ g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
 g_1<-ggplotly(g_1)%>%layout(margin=list(l=0, r=0, b=0, t=30))
 
 saveWidget(widget = g_1, file = "./Figures/TsChart.html")
-shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", delay = 1, zoom = 2, vheight = 280)
+shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", delay = 1, zoom = 2, vheight = 290)
 ```
 
 ![Adjusted Poll Percentage by Time](./Figures/TsChart.png)
@@ -408,22 +408,24 @@ fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~
 fig2<-ElectionPoll%>%mutate(Diffs=adjpoll_clinton - adjpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box",showlegend=FALSE)
 
 boxchart<-subplot(fig1, fig2, nrows = 2, shareX = TRUE)%>%
-  layout(yaxis=list(title="Raw Poll Difference"),
+  layout(margin=list(l=0, r=0, b=0, t=30),
+         yaxis=list(title="Raw Poll Difference"),
          yaxis2=list(title="Adjusted Poll Difference"),
          title="Difference between poll_Clinton and poll_Trump",
          legend = list(title = list(text="Grade")))
 
 saveWidget(widget = boxchart, file = "./Figures/boxchart.html")
-shots<-webshot(url = "./Figures/boxchart.html", file = "./Figures/boxchart.png", delay = 1, zoom = 4, vheight = 500)
+shots<-webshot(url = "./Figures/boxchart.html", file = "./Figures/boxchart.png", delay = 1, zoom = 2, vheight = 500)
 ```
 
-![Boxchart of Difference between Polls](./Figures/boxchart.png){width=70%}
+![Boxchart of Difference between Polls](./Figures/boxchart.png)
 
 We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was a slight improvement because the raw poll difference of each grade was mostly above zero, which showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
 
 However, due to the fact that FiveThirtyEight's adjustment to the poll result yields negative values, we think it is therefore unreasonable to do such adjustment. It gives the reader a difficulty in interpreting this adjustment.
 
-Finally we plot the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignore the other candidates' poll since the other candidates are polling far behind Clinton and Trump.
+Finally we plot the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignore the other candidates' poll since the other candidates are polling far behind Clinton and Trump. From Figure 7 below we see that the overall national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
+
 
 ```{r}
 #Calculate cumulative mean
@@ -458,7 +460,8 @@ set.seed(100)
 state_i<-sample(names(Navg_lst), size=3, replace = FALSE)
 #make subplot
 cMeanchart<-subplot(PlotCMean("U.S."),PlotCMean(state_i[1]),PlotCMean(state_i[2]),PlotCMean(state_i[3]),nrows = 2)%>%
-  layout(title="Time Series of Cumulative Mean of Trump and Clinton Poll Result",
+  layout(margin=list(l=0, r=0, b=0, t=30),
+         title="Time Series of Cumulative Mean of Trump and Clinton Poll Result",
          annotations=list( 
            list( 
              x = 0.2,  
@@ -504,15 +507,12 @@ cMeanchart<-subplot(PlotCMean("U.S."),PlotCMean(state_i[1]),PlotCMean(state_i[2]
          showlegend = TRUE
   )
 saveWidget(widget = cMeanchart, file = "./Figures/cMeanchart.html") 
-shots<-webshot(url = "./Figures/cMeanchart.html", file = "./Figures/cMeanchart.png", delay = 1, zoom = 4, vheight = 600)
+shots<-webshot(url = "./Figures/cMeanchart.html", file = "./Figures/cMeanchart.png", delay = 1, zoom = 2, vheight = 400)
 ```
 
 ![Cumulative Mean of Raw Poll Result](./Figures/cMeanchart.png)
 
-From the plot above we see that the overall national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
-
 ### Map Chart of Data
-To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. In the contour plot below, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the higher the proportions are. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
 
 ```{r}
 #fill a matrix
@@ -533,6 +533,11 @@ state_rawpoll$percent_rawpoll_clinton<-100*state_poll$rawpoll_clinton/(state_pol
 state_adjpoll$percent_adjpoll_clinton<-100*state_poll$adjpoll_clinton/(state_poll$adjpoll_clinton+state_poll$adjpoll_trump)
 ```
 
+To make state-by-state polling results more visible, we've reflected the candidates' polling shares on a map of the United States. 
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.6\textwidth}"}
 ```{r}
 #get map data:
 df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
@@ -614,14 +619,27 @@ mapchart_1_2<-subplot(mapchart1, mapchart2, nrows = 2)%>%
              showarrow = FALSE 
            )), showlegend=FALSE)
 
-
 saveWidget(widget = mapchart_1_2, file = "./Figures/mapchart_1_2.html") 
-shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
+shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 2, zoom = 2, vheight = 600, vwidth = 500)
 ```
 
 ![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart_1_2.png)
+:::
+
+::: {.col data-latex="{0.02\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.38\textwidth}"}
+In the contour plot Figure 9 on the left, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the higher the proportions are. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
+
+\vspace{13pt}
 
 We again saw that there was little difference between the results using the raw poll data and the adjusted poll data, which further support our opinion that the adjustment made by FiveThirtyEight must be carefully justified by readers because of its negative values. We then saw from the map in Figure 9 that Clinton seems to dominate the public opinions because the colors of states are a bit closer to white and pale red.
+:::
+::::::
 
 Furthermore, we want to find out exactly the states which Clinton or Trump captured all of the electoral votes. The visualization below shows the net polls generated by each state for Clinton and Trump. 
 \begin{minipage}[t]{0.7\textwidth}
@@ -665,6 +683,8 @@ To win the U.S. presidential election, a candidate must secure a majority of the
 
 We obtained the final election result from [@Final]. 
 
+:::::: {.cols data-latex=""}
+::: {.col data-latex="{0.6\textwidth}"}
 ```{r}
 poll_gap$state<-toupper(poll_gap$state)
 poll_gap[which(poll_gap$state %in% c("MAINE CD-1", "MAINE CD-2")),"state"]<-"MAINE"
@@ -723,14 +743,24 @@ mapchart_3_4<-subplot(mapchart3, mapchart4, nrows=2)%>%
            )), 
          showlegend=FALSE)
 
-
 saveWidget(widget = mapchart_3_4, file = "./Figures/mapchart_3_4.html") 
 shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3_4.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
 ```
 
 ![Map Chart of Election Result 2016](./Figures/mapchart_3_4.png)
+:::
 
+::: {.col data-latex="{0.02\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.38\textwidth}"}
 From the Figure 11 we can see that the actual final election outcome was almost the entire opposite to the predicted result. In 2016, Trump won 304 votes compared to 227 votes for Hillary Clinton, which was not predicted by the election poll result. Therefore, readers must be careful about the election poll. There have been some criticisms on the usefulness of these polls [@Critic, @Critic2]. From the previous analysis in Figure 1, we were also able to find out that over half of the pollster ratings were between B+ to C and none. This might suggests that public opinion polls are not as reliable as one would expect due to the quality of the pollsters.
+:::
+::::::
+
 
 # Conclusion
 
