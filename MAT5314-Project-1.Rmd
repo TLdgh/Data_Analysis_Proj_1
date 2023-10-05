@@ -764,7 +764,22 @@ From the Figure 11 we can see that the actual final election outcome was almost 
 
 
 # Conclusion
-We want to find some interesting conclusions in the data of US presidential election poll data in 2016. To achieve the aim, we use pie charts, bar charts, map charts, box charts, scatter charts, and line charts to visualize the data and find the relationship between different variables.  
+In the visual analysis, the following key observations and conclusions were made:
 
-First, we give a variables dictionary which helps readers to understand data easily and clearly. When analyzing the relationship between pollsters and grades, we use a pie chart. Pie charts are effective for showing the composition of whole grades in terms of their parts. After that, we try to find out the relationship between sample size and grade. Bar charts are excellent for comparing the sample sizes of different grades. In addition, bar charts can be easily customized to show data in different ways, such as grouped bars, stacked bars, or horizontal bars. Therefore, we use the stacked bar chart to show the votes of 4 candidates in each state. Since the votes of the other 2 candidates are so small, we can ignore them in subsequent analysis. Then Using the line charts, we create the lines of cumulative mean for the 2 candidates. This chart is excellent for showing trends and changes over time, making it suitable for time series data. Finally, we create map charts to show Clinton’s and Trump’s vote share in each state, and we also use map charts to compare the predicted results and final results. Because map charts allow for easy comparison of data across different geographical areas. From this map chart, we can find the results of 6 states are different from the prediction.
+1. Regarding the overall prediction results, grades ranging from A+ to B- accounted for nearly half of the total, while samples with no ratings constituted just over 15%. This indicates a reasonably distributed outcome across different grade levels in the predictions.
+
+2. The sample size alone does not determine the quality of predictions. Other factors, such as data quality and analysis methods, also play a crucial role in prediction accuracy.
+
+3. The analysis revealed that the support rates for Clinton and Trump were significantly higher than those for Johnson and McMullin. Consequently, the subsequent analysis focused on the top two candidates.
+
+4. The mean of the adjusted voting results was closer to zero than that of the raw voting results. This suggests that data adjustments can reduce biases and enhance the accuracy of the analysis.
+
+5. The majority of predictions across different states in the U.S. indicated a likely victory for Clinton, reflecting a prevailing trend in the forecasts.
+
+6. When examining the adjusted data, it was found that states predicting a Trump victory showed a clear advantage for Trump in the actual voting results. Similarly, states predicting a Clinton victory reflected a narrow win for Clinton in the actual vote.
+
+7. A comparison between the final results and predictions based on raw data showed that outcomes in six states were contrary to the predictions. These states had very close vote counts for Clinton and Trump in the forecasts. Using adjusted data for predictions might yield results closer to the actual outcomes.
+
+In summary, it can be concluded that for certain states' election results, predictions based on adjusted data may be more accurate. Sample size is not the sole determinant of prediction quality; other factors such as data quality and analysis methods should also be considered. Additionally, a state-specific analysis contributes to a more comprehensive understanding of election outcomes.
+
 # References
