@@ -62,6 +62,29 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \newenvironment{cols}[1][]{}{}
 
 \newenvironment{col}[1]{\begin{minipage}{#1}\ignorespaces}{%
@@ -212,7 +235,7 @@ adjusted poll result missing, and McMullin had 99.29\% and 99.29\%
 missing. Due to the fact that these two candidate didn't make to the
 final election, and the percentage of missing values is too high to be
 considered in the analysis, we chose to ignore their data in some of the
-analysis.
+analysis below.
 
 \hypertarget{section-2-variable-exploration}{%
 \section{Section 2: Variable
@@ -228,26 +251,29 @@ contains the national value named ``U.S.'' and some of other values like
 ``Maine CD-1'':
 
 \begin{verbatim}
-##  [1] "U.S."                 "New Mexico"           "Virginia"            
-##  [4] "Iowa"                 "Wisconsin"            "North Carolina"      
-##  [7] "Georgia"              "Florida"              "Oregon"              
-## [10] "Ohio"                 "South Carolina"       "New York"            
-## [13] "Michigan"             "Pennsylvania"         "Missouri"            
-## [16] "New Hampshire"        "Arizona"              "Nevada"              
-## [19] "Colorado"             "California"           "Washington"          
-## [22] "Texas"                "Utah"                 "Illinois"            
-## [25] "Indiana"              "Tennessee"            "Connecticut"         
-## [28] "Massachusetts"        "New Jersey"           "Kansas"              
-## [31] "Kentucky"             "Minnesota"            "Oklahoma"            
-## [34] "Maryland"             "Alabama"              "Nebraska"            
-## [37] "Louisiana"            "Maine"                "Arkansas"            
-## [40] "Alaska"               "Vermont"              "Idaho"               
-## [43] "Mississippi"          "West Virginia"        "South Dakota"        
-## [46] "Montana"              "Hawaii"               "Maine CD-1"          
-## [49] "Maine CD-2"           "Rhode Island"         "Nebraska CD-3"       
-## [52] "Nebraska CD-1"        "Delaware"             "North Dakota"        
-## [55] "District of Columbia" "Nebraska CD-2"        "Wyoming"
+## [1] "Ohio"                 "District of Columbia" "Maine"               
+## [4] "Maine CD-1"           "Nebraska CD-3"        "Indiana"
 \end{verbatim}
+
+Maine CD-1 refers to the 1st Congressional District of the state of
+Maine in the United States. In the U.S., each state is divided into
+congressional districts for the purpose of electing members to the House
+of Representatives, which is one of the two chambers of the U.S.
+Congress. Maine, like most states, is divided into multiple
+congressional districts, and these districts are numbered.
+
+Maine has two congressional districts: CD-1 and CD-2. CD-1 represents
+the 1st Congressional District while CD-2 represents the 2nd
+Congressional District. Each district elects one member to the U.S.
+House of Representatives. This district, like others across the country,
+participates in the election of a U.S. Representative who will represent
+the interests of the constituents living within that particular district
+in the federal government.
+
+In our analysis, the votes from these distinct districts might or might
+not be presented separately to the main State. Sometimes for simplicity
+we will combine all votes in the state to represent the overall poll
+opinion.
 
 \hypertarget{start-and-end-date}{%
 \subsubsection{Start and End Date}\label{start-and-end-date}}
@@ -288,8 +314,15 @@ We suppose that there are two possible reasons for these missing data:
 one is that there are some errors of data in the original file; the
 other is that fivethirtyeight has not rated these pollsters yet. So we
 searched online and found a more detailed and authoritative file about
-the pollsters' grade from the fivethirtyeight website. Here is the link:
-\url{https://projects.fivethirtyeight.com/pollster-ratings/}.
+the pollsters' grade from the fivethirtyeight
+website.(\protect\hyperlink{ref-MissingD}{2023})
+
+If one had omitted the NA from the grade by rows, then the available
+data from other variables would be omitted as well, which affects the
+final result and may yield incorrect inference to the data. Therefore,
+we will only delete a variable entirely if it has most of its values
+missing. Dividing the variable (column) will not affect values in other
+variables like omitting NA by rows.
 
 \vspace{18pt}
 
@@ -298,7 +331,8 @@ with no grade in the origin data set actually have the grades like
 ``A/B'', ``B/C'', ``C/D'', ``B'', ``B-''; otherwise, the rest 31
 pollsters without grades haven't been scored yet. Based on these
 information, we updated the ``grade'' column of the origin data set. We
-replace ``NA'' with the actual grades and none.
+replace ``NA'' with the actual grades and ``none''. The result was
+presented in Table 2.
 
 \end{col}
 
@@ -311,42 +345,40 @@ replace ``NA'' with the actual grades and none.
 
 \small
 
-\begin{longtable}[]{@{}llc@{}}
+\begin{longtable}[]{@{}lc@{}}
 \caption{Updating the missing data}\tabularnewline
 \toprule()
-& pollster & grade \\
+pollster & grade \\
 \midrule()
 \endfirsthead
 \toprule()
-& pollster & grade \\
+pollster & grade \\
 \midrule()
 \endhead
-23 & Remington & B \\
-27 & Morning Consult & B- \\
-35 & Saguaro Strategies & B/C \\
-37 & Insights West & B/C \\
-44 & BK Strategies & B/C \\
-59 & Data Orbital & A/B \\
-65 & Starboard Communications & B/C \\
-69 & Strategic National & B/C \\
-84 & Bendixen \& Amandi International & B/C \\
-86 & Associated Industries of Florida & B/C \\
-97 & Centre College & B/C \\
-98 & Public Religion Research Institute & A/B \\
-101 & Praecones Analytica & B/C \\
-106 & Craciun Research & B/C \\
-108 & University of Colorado & B/C \\
-112 & Baldwin Wallace University & B/C \\
-122 & University of Wyoming & C/D \\
-131 & HighGround & B/C \\
-133 & Michigan State University & A/B \\
-140 & Echelon Insights & A/B \\
-152 & Meredith College & B/C \\
-155 & Mercyhurst University & B/C \\
-167 & Strategy Research & B/C \\
-176 & Hickman Analytics & B/C \\
-184 & Data Targeting & B/C \\
-196 & Ogden \& Fry & B/C \\
+Saguaro Strategies & B/C \\
+Insights West & B/C \\
+BK Strategies & B/C \\
+Data Orbital & A/B \\
+Starboard Communications & B/C \\
+Strategic National & B/C \\
+Bendixen \& Amandi International & B/C \\
+Associated Industries of Florida & B/C \\
+Centre College & B/C \\
+Public Religion Research Institute & A/B \\
+Praecones Analytica & B/C \\
+Craciun Research & B/C \\
+University of Colorado & B/C \\
+Baldwin Wallace University & B/C \\
+University of Wyoming & C/D \\
+HighGround & B/C \\
+Michigan State University & A/B \\
+Echelon Insights & A/B \\
+Meredith College & B/C \\
+Mercyhurst University & B/C \\
+Strategy Research & B/C \\
+Hickman Analytics & B/C \\
+Data Targeting & B/C \\
+Ogden \& Fry & B/C \\
 \bottomrule()
 \end{longtable}
 
@@ -369,21 +401,22 @@ uniqueness for each pollster to make sure there was no error in data
 entry, we plotted a pie chart to gain initial understanding of the grade
 variable.
 
-From the ``Pie Chart of Pollsters' Grades'' below, we could see that the
-unrated pollsters make up the largest percentage, about 15.8\% of the
-total; pollsters with grades ``B'' and ``C+'' account for the second and
-third most, 12.8\% and 12.2\% respectively; ``D'' grade has the smallest
-percentage of pollsters, only about 0.51\%. Besides, B-level grades,
-including ``B+'', ``B'' and ``B-'', are around 34.7\%, almost one-third
-of the total; C-level and A-level grades are about 21.89\% and 14.79\%
-respectively. For those without explicit grades, whose grades are
-``A/B'', ``B/C'' and ``C/D'', they account only for 12.24\%, ``B'' grade
-pollsters make up the majority of this part especially, almost 9.69\%.
+From Figure 1: Pollster's Grade Distribution below, we could see that
+the unrated pollsters make up the largest percentage, about 15.8\% of
+the total; pollsters with grades ``B'' and ``C+'' account for the second
+and third most, 12.8\% and 12.2\% respectively; ``D'' grade has the
+smallest percentage of pollsters, only about 0.51\%. Besides, B-level
+grades, including ``B+'', ``B'' and ``B-'', are around 34.7\%, almost
+one-third of the total; C-level and A-level grades are about 21.89\% and
+14.79\% respectively. For those without explicit grades, whose grades
+are ``A/B'', ``B/C'' and ``C/D'', they account only for 12.24\%, ``B''
+grade pollsters make up the majority of this part especially, almost
+9.69\%.
 
 \begin{figure}
 \centering
-\includegraphics{./Figures/piechart.png}
-\caption{Pollster's Grade distribution}
+\includegraphics[width=\textwidth,height=0.6\textheight]{./Figures/piechart.png}
+\caption{Pollster's Grade Distribution}
 \end{figure}
 
 \hypertarget{sample-size}{%
@@ -391,7 +424,8 @@ pollsters make up the majority of this part especially, almost 9.69\%.
 
 Checking the sample size alone does not inform us much about the poll
 result. Instead, we take a look at the distribution of the sample size
-with regards to the grade:
+with regards to the grade. We sum up the sample size based on each grade
+level and made a bar plot:
 
 \begin{minipage}[t]{0.5\textwidth}
 \begin{figure}
@@ -400,18 +434,23 @@ with regards to the grade:
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
 \vspace{0pt}
-Here for description of Figure 2
+As one can see, grade A-, B, C- have the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who has its own sample size. Due to the fact that we sum up the sample size, we can conclude that the proportion of the pollsters who receive grade A-, B and C- are greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore does not contribute towards the rating of pollsters. We think that this can reflect the efficiency of the poll. A low portion of the sample size for the grade "none" indicates that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
 \end{minipage}
 
 \hypertarget{population}{%
 \subsubsection{Population}\label{population}}
 
 We now take a look at the population type for which the poll was
-sampled.
+sampled. We saw that the population type ``lv'', which stands for likely
+voters, count for most of the sample sizes. This is in accordence with
+FiveThirtyEight's explanation in their website ``Because the database
+covers the final three weeks of the campaign and almost all polling
+firms publish likely voter polls by that time, almost all polls in the
+database should be likely voter surveys.''.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\textwidth,height=\textheight]{./Figures/popChart.png}
+\includegraphics{./Figures/popChart.png}
 \caption{Population Type with Size for Grades}
 \end{figure}
 
@@ -470,7 +509,7 @@ We now look at the time series of the adjusted poll proportion:
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-We immediately noticed that some of the poll rate for Johnson fell below zero. 
+We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this makes us to question the validity of the adjusted poll result done by FiveThirtyEight. For other candidates the adjustment was not posing the negativeness issue, so we want to explore if the adjusted data can be ignored or if it actually brings some improvements than the raw poll data.
 \end{minipage}
 
 Since the final two candidates in Election 2016 are Clinton and Trump,
@@ -487,10 +526,9 @@ We saw that there's little difference between the distribution of the
 raw and the adjusted data. However, the mean of each grade of the
 adjusted poll result was a little closer to zero than that of the raw
 poll result. This indicated that the adjustment that FiveThirtyEight
-made was an improvement because the raw poll difference of each grade
-was mostly above zero, which clearly showed that the poll result was
-more in favour of Clinton yet Trump was the final winner of the
-election.
+made was a slight improvement because the raw poll difference of each
+grade was mostly above zero, which showed that the poll result was more
+in favour of Clinton yet Trump was the final winner of the election.
 
 However, due to the fact that FiveThirtyEight's adjustment to the poll
 result yields negative values, we think it is therefore unreasonable to
@@ -508,7 +546,7 @@ are polling far behind Clinton and Trump.
 \caption{Cumulative Mean of Raw Poll Result}
 \end{figure}
 
-From the plot above we see that the overal national poll result
+From the plot above we see that the overall national poll result
 indicates that Clinton should be the winner of the election. However,
 some of the individual states resulted the opposite conclusion. It it
 therefore hard to tell which candidate is leading by examining the
@@ -521,15 +559,22 @@ To make state-by-state polling results more visible, we've reflected the
 candidates' polling shares on a map of the United States. In the contour
 plot below, blue indicates that Clinton is polling proportionally
 greater than Trump, and red indicates that Trump is polling
-proportionally greater than Clinton. The darker the color, the more
-overwhelming the proportions. For states that are nearly white, the
-margin of victory is nearly half between Trump and Clinton.
+proportionally greater than Clinton. The darker the color, the higher
+the proportions are. For states that are nearly white, the margin of
+victory is nearly half between Trump and Clinton.
 
 \begin{figure}
 \centering
 \includegraphics{./Figures/mapchart_1_2.png}
 \caption{Map Chart of Vote Shares of Candidates by States}
 \end{figure}
+
+We again saw that there was little difference between the results using
+the raw poll data and the adjusted poll data, which further support our
+opinion that the adjustment made by FiveThirtyEight must be carefully
+justified by readers because of its negative values. We then saw from
+the map in Figure 9 that Clinton seems to dominate the public opinions
+because the colors of states are a bit closer to white and pale red.
 
 Furthermore, we want to find out exactly the states which Clinton or
 Trump captured all of the electoral votes. The visualization below shows
@@ -542,16 +587,45 @@ the net polls generated by each state for Clinton and Trump.
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Based on RawPoll data, Figure 10 shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska. It is not difficult to see from Figure 10 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes,
+Based on raw poll data, Figure 10 shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska. It is not difficult to see from Figure 10 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes,
 \end{minipage}
 
 and the remaining electoral votes will be allocated to the presidential
 candidate who wins each district. Moreover, DC have three electoral
 votes as an independent district.
 
+Finally, we take a look at the map chart of the electoral votes based on
+raw poll result. We use the poll opinion to generate a map showing the
+predicted election result, and we compare it with the counterpart
+showing the actual final election result.
+
+The Electoral College in the United States consists of 538 electoral
+votes. These electoral votes are distributed among the 50 states and the
+District of Columbia based on the total number of members in Congress,
+which includes both the House of Representatives and the Senate. There
+are 435 members in the U.S. House of Representatives. Each state is
+given a number of electoral votes equal to its total number of
+representatives in the House and it is based on the state's population.
+The minimum number of electoral votes a state can have is 3. Then there
+are 100 members in the U.S. Senate, with each state having two senators
+regardless of its population. Therefore, each state is allocated two
+additional electoral votes based on its Senate representation. Finally
+we have the District of Columbia. Although the District of Columbia is
+not a state, it is granted three electoral votes as if it were a state
+of the U.S.. In total, the number of electoral votes is 435 (House of
+Representatives) + 100 (Senate) + 3 (District of Columbia) = 538
+electoral votes.
+
+To win the U.S. presidential election, a candidate must secure a
+majority of these electoral votes, which is currently 270 electoral
+votes. This system often leads to a focus on swing states or
+battleground states where the outcome is less predictable, as candidates
+aim to accumulate enough electoral votes to win the election. In our
+Figure 9 map chart, these states tend to have a pale colour due to its
+swing opinion.
+
 We obtained the final election result from
-\url{https://www.nytimes.com/elections/2016/results/president} and
-compared it with our poll prediction result:
+(\protect\hyperlink{ref-Final}{2017}).
 
 \begin{figure}
 \centering
@@ -559,10 +633,40 @@ compared it with our poll prediction result:
 \caption{Map Chart of Election Result 2016}
 \end{figure}
 
-From the above plots we can see that the actual final election outcome
-was almost the entire opposite to the predicted result.
+From the Figure 11 we can see that the actual final election outcome was
+almost the entire opposite to the predicted result. In 2016, Trump won
+304 votes compared to 227 votes for Hillary Clinton, which was not
+predicted by the election poll result. Therefore, readers must be
+careful about the election poll. There have been some criticisms on the
+usefulness of these polls (\protect\hyperlink{ref-Critic2}{2022b}). From
+the previous analysis in Figure 1, we were also able to find out that
+over half of the pollster ratings were between B+ to C and none. This
+might suggests that public opinion polls are not as reliable as one
+would expect due to the quality of the pollsters.
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-Final}{}}%
+2017. \url{https://www.nytimes.com/elections/2016/results/president}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Critic2}{}}%
+2022b.
+\url{https://thehill.com/homenews/campaign/3718434-optimistic-democrats-insist-the-polls-are-wrong/}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Critic}{}}%
+2022a.
+\url{https://gelliottmorris.substack.com/p/the-polling-website-where-republicans}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-MissingD}{}}%
+2023. \url{https://projects.fivethirtyeight.com/pollster-ratings/}.
+
+\end{CSLReferences}
 
 \end{document}
