@@ -10,10 +10,6 @@ output:
     keep_tex: true
     includes:
       in_header: columns.tex
-  beamer_presentation: 
-    keep_tex: true
-    includes:
-      in_header: columns.tex
 fontsize: 12pt
 header-includes: 
   - \renewcommand{\and}{\\}

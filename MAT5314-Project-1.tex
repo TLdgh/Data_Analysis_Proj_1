@@ -6,19 +6,16 @@
   12pt,
 ]{article}
 \usepackage{amsmath,amssymb}
+\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -104,7 +101,7 @@
 \fi
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
+\urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   pdftitle={MAT5314 Project 1: Data Visualization},
   pdfauthor={Teng Li(7373086); Shiya Gao(300381032); Chuhan Yue(300376046); Yang Lyu(8701121)},
@@ -190,8 +187,8 @@ what it represents. The data dictionary is listed in Table 1:
 \textbf{Variables} & \textbf{Size} & \textbf{Type} & \textbf{Example} & \textbf{Number.Unique} & \textbf{Number.Missing} & \textbf{Comment}\\
 \midrule
 \cellcolor{gray!6}{state} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{U.S., New Mexico, Virginia} & \cellcolor{gray!6}{57} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{The name of the state (or national) where the election is held}\\
-startdate & 4208 & character & 2016/11/3, 2016/11/1, 2016/11/2 & 352 & 0 & Start date of poll\\
-\cellcolor{gray!6}{enddate} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{2016/11/6, 2016/11/7, 2016/11/5} & \cellcolor{gray!6}{345} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{End date of poll}\\
+startdate & 4208 & character & 2016-11-03, 2016-11-01, 2016-11-02 & 352 & 0 & Start date of poll\\
+\cellcolor{gray!6}{enddate} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{2016-11-06, 2016-11-07, 2016-11-05} & \cellcolor{gray!6}{345} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{End date of poll}\\
 pollster & 4208 & character & ABC News/Washington Post, Google Consumer Surveys, Ipsos & 196 & 0 & Organization name that conducts or analyzes opinion polls\\
 \cellcolor{gray!6}{grade} & \cellcolor{gray!6}{4208} & \cellcolor{gray!6}{character} & \cellcolor{gray!6}{A+, B, A-} & \cellcolor{gray!6}{11} & \cellcolor{gray!6}{429} & \cellcolor{gray!6}{Grade assigned by Fivethirtyeight to pollster}\\
 \addlinespace
@@ -271,10 +268,10 @@ not just omit them because there were data in other columns. For
 example:
 
 \begin{verbatim}
-##         state startdate   enddate                 pollster grade samplesize
-## 9  New Mexico 2016/11/6 2016/11/6                 Zia Poll  <NA>       8439
-## 17       U.S. 2016/11/5 2016/11/7 The Times-Picayune/Lucid  <NA>       2521
-## 24       U.S. 2016/11/1 2016/11/7    USC Dornsife/LA Times  <NA>       2972
+##         state  startdate    enddate                 pollster grade samplesize
+## 9  New Mexico 2016-11-06 2016-11-06                 Zia Poll  <NA>       8439
+## 17       U.S. 2016-11-05 2016-11-07 The Times-Picayune/Lucid  <NA>       2521
+## 24       U.S. 2016-11-01 2016-11-07    USC Dornsife/LA Times  <NA>       2972
 ##    population rawpoll_clinton rawpoll_trump rawpoll_johnson rawpoll_mcmullin
 ## 9          lv           46.00         44.00               6               NA
 ## 17         lv           45.00         40.00               5               NA
@@ -317,16 +314,14 @@ replace ``NA'' with the actual grades and none.
 
 \begin{longtable}[]{@{}llc@{}}
 \caption{Updating the missing data}\tabularnewline
-\toprule\noalign{}
+\toprule()
 & pollster & grade \\
-\midrule\noalign{}
+\midrule()
 \endfirsthead
-\toprule\noalign{}
+\toprule()
 & pollster & grade \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 23 & Remington & B \\
 27 & Morning Consult & B- \\
 35 & Saguaro Strategies & B/C \\
@@ -353,6 +348,7 @@ replace ``NA'' with the actual grades and none.
 176 & Hickman Analytics & B/C \\
 184 & Data Targeting & B/C \\
 196 & Ogden \& Fry & B/C \\
+\bottomrule()
 \end{longtable}
 
 \end{col}
