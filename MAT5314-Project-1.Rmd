@@ -107,7 +107,7 @@ head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), ])
 
 :::::: {.cols data-latex=""}
 
-::: {.col data-latex="{0.55\textwidth}"}
+::: {.col data-latex="{0.45\textwidth}"}
 We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. And we cannot just delete them, because it will cause a lot of missing data in other columns. We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website. Here is the link: https://projects.fivethirtyeight.com/pollster-ratings/.
 
 \vspace{18pt} 
@@ -121,7 +121,7 @@ According to the fivethirtyeight website, we found that 26 pollsters with no gra
 a column separator -->
 :::
 
-::: {.col data-latex="{0.4\textwidth}"}
+::: {.col data-latex="{0.5\textwidth}"}
 
 ```{r}
 pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade"))) #Extract two columns:"pollster" and "grade" from the Electionpoll

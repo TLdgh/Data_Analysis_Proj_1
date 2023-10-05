@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 %
 \documentclass[
+  12pt,
 ]{article}
 \usepackage{amsmath,amssymb}
 \usepackage{iftex}
@@ -82,6 +83,8 @@
 }
 \makeatother
 \renewcommand{\and}{\\}
+\usepackage{float}
+\floatplacement{figure}{H}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -123,37 +126,58 @@ A data set of the 2016 US election polls was given. In this project we
 aim to understand the data structure by creating various visualizations.
 
 First, we would like to give a brief introduction to the U.S. election
-system, because it is crucial to understand the background of the data.
-Voters in each state vote to choose the President of the United States.
-The candidate who wins the majority of the votes will receive all the
+system as it is crucial to understand the background of the data. Voters
+in each state vote to choose the President of the United States. The
+candidate who wins the majority of the votes will receive all the
 electoral votes in that state. Then the sum of the electoral votes in
 each state is calculated. The total number of electoral votes is 538.
 The candidate who wins half of the votes plus 1 will win and become the
-new President of the United States.
+new President of the United States. Since each state has a different
+number of electoral votes, it is crucial for electors to win in several
+key states. The reason is that if a candidate wins a certain state, he
+will win all the electoral votes in that state. Texas, for example,
+counts for 38 electoral votes during the election, it is therefore a
+tight competition in states with more votes.
 
-Secondly, we want to analyze the key factors for the candidate's
-victory. Since each state has a different number of electoral votes, it
-is crucial for electors to win in several key states. The reason is that
-if a candidate wins a certain state, he will win all the electoral votes
-in that state. So there will be tight competition in states with more
-votes.
-
-The data set was published by FiveThirtyEight to illustrate the
-reliability and quality of each pollster to which a letter grade ranging
-from A+ to D- was given.
+Analysis on poll result can be very difficult due to the fact that
+carrying out a public opinion poll is generally difficult. The
+experimental design plays a profound rule in these surveys, as sometimes
+it is hard to achieve an unbiased sample. On the other hand, one might
+not be able to obtain the final result that can be compared with the
+poll result. Finally it can be very expensive to carry out a qualitative
+poll under budget constrains. However, election poll result is a
+desirable measurement we can study. Large institutions design the survey
+and gather public opinions. Moreover, we immediately know with high
+accuracy and details on who wins the election at the end. It is
+therefore worthy to analyze the poll results and make some inferences,
+perhaps even compare results between each election. Thus, we want to
+analyze some of the key factors given by our poll result data and
+compare with the actual election result for the candidate's victory.
 
 \hypertarget{method}{%
 \section{Method}\label{method}}
 
-We use various R packages to present the data set and to plot the
-graphs.
+The data set was published by FiveThirtyEight to illustrate the
+reliability and quality of each pollster to which a letter grade ranging
+from A+ to D- was given. We first analyzed key individual variables in
+the data, then we sought to draw conclusions on the relationship between
+some of the key variables. To achieve this, we use various R packages to
+present the data set and to plot the graphs.
 
-\hypertarget{result}{%
-\section{Result}\label{result}}
+\hypertarget{section-1-data-dictionary}{%
+\section{Section 1: Data Dictionary}\label{section-1-data-dictionary}}
 
 We first created a data variable definition table to give an initial
-understanding of the data. As one can see, there were a few variables
-with missing values:
+understanding of the data. We formed the table by collecting each
+variable from the data, listed in the Variables column. We then looked
+at the size and the data type of each variable to understand its nature.
+An example consisting of a few variable values was given to illustrate
+what the variable might look like. We then calculated the number of
+unique and missing values in each variable. As one can see, there were a
+few variables with high percentage of missing values, for which we have
+discussed further in details in the subsequent sections. Finally, we
+gave a comment for each variable to briefly explains what it means and
+what it represents. The data dictionary is listed in Table 1:
 
 \begin{table}[!h]
 
@@ -190,24 +214,90 @@ Note that the poll results for Johnson and McMullin had lots of missing
 values. In particular, Johnson had 33.48\% raw poll result and 33.48\%
 adjusted poll result missing, and McMullin had 99.29\% and 99.29\%
 missing. Due to the fact that these two candidate didn't make to the
-final election, we chose to ignore their data in some of the analysis.
+final election, and the percentage of missing values is too high to be
+considered in the analysis, we chose to ignore their data in some of the
+analysis.
 
-Since the final two candidates in Election 2016 are Clinton and Trump,
-we plotted box plots of the difference of their poll results, one for
-the raw poll and one for the adjusted poll. We saw that there's little
-difference between the distribution of the raw and the adjusted data.
-However, the mean of each grade of the adjusted poll result was a little
-closer to zero than that of the raw poll result. This indicated that the
-adjustment that FiveThirtyEight made was an improvement because the raw
-poll difference of each grade was mostly above zero, which clearly
-showed that the poll result was more in favour of Clinton yet Trump was
-the final winner of the election.\\
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-4-1.png}
+\hypertarget{section-2-variable-exploration}{%
+\section{Section 2: Variable
+Exploration}\label{section-2-variable-exploration}}
+
+We first took an initial look at each variable.
+
+\hypertarget{state}{%
+\subsubsection{State}\label{state}}
+
+The state variable consists of each state in the U.S., but it also
+contains the national value named ``U.S.'' and some of other values like
+``Maine CD-1'':
+
+\begin{verbatim}
+##  [1] "U.S."                 "New Mexico"           "Virginia"            
+##  [4] "Iowa"                 "Wisconsin"            "North Carolina"      
+##  [7] "Georgia"              "Florida"              "Oregon"              
+## [10] "Ohio"                 "South Carolina"       "New York"            
+## [13] "Michigan"             "Pennsylvania"         "Missouri"            
+## [16] "New Hampshire"        "Arizona"              "Nevada"              
+## [19] "Colorado"             "California"           "Washington"          
+## [22] "Texas"                "Utah"                 "Illinois"            
+## [25] "Indiana"              "Tennessee"            "Connecticut"         
+## [28] "Massachusetts"        "New Jersey"           "Kansas"              
+## [31] "Kentucky"             "Minnesota"            "Oklahoma"            
+## [34] "Maryland"             "Alabama"              "Nebraska"            
+## [37] "Louisiana"            "Maine"                "Arkansas"            
+## [40] "Alaska"               "Vermont"              "Idaho"               
+## [43] "Mississippi"          "West Virginia"        "South Dakota"        
+## [46] "Montana"              "Hawaii"               "Maine CD-1"          
+## [49] "Maine CD-2"           "Rhode Island"         "Nebraska CD-3"       
+## [52] "Nebraska CD-1"        "Delaware"             "North Dakota"        
+## [55] "District of Columbia" "Nebraska CD-2"        "Wyoming"
+\end{verbatim}
+
+\hypertarget{start-and-end-date}{%
+\subsubsection{Start and End Date}\label{start-and-end-date}}
+
+The startdate and enddate variables correspond to the dates on which the
+public opinion poll was initiated and finalized respectively. Individual
+pollster might start or end their poll at different date than other
+pollsters.
+
+\hypertarget{grade}{%
+\subsubsection{Grade}\label{grade}}
+
+We then took a look at the grade variable. We noticed that there are 57
+pollsters (almost 30\% of the total number of pollsters) whose grades
+are missing in this data set. Although the grades were missing, we could
+not just omit them because there were data in other columns. For
+example:
+
+\begin{verbatim}
+##           state startdate   enddate                 pollster grade samplesize
+## 9    New Mexico 2016/11/6 2016/11/6                 Zia Poll  <NA>       8439
+## 17         U.S. 2016/11/5 2016/11/7 The Times-Picayune/Lucid  <NA>       2521
+## 24         U.S. 2016/11/1 2016/11/7    USC Dornsife/LA Times  <NA>       2972
+## 31     Virginia 2016/11/1 2016/11/2                Remington  <NA>       3076
+## 35    Wisconsin 2016/11/1 2016/11/2                Remington  <NA>       2720
+## 36 Pennsylvania 2016/11/1 2016/11/2                Remington  <NA>       2683
+##    population rawpoll_clinton rawpoll_trump rawpoll_johnson rawpoll_mcmullin
+## 9          lv           46.00         44.00               6               NA
+## 17         lv           45.00         40.00               5               NA
+## 24         lv           43.61         46.84              NA               NA
+## 31         lv           46.00         44.00              NA               NA
+## 35         lv           49.00         41.00              NA               NA
+## 36         lv           46.00         45.00              NA               NA
+##    adjpoll_clinton adjpoll_trump adjpoll_johnson adjpoll_mcmullin
+## 9         44.82594      41.59978        7.870127               NA
+## 17        45.13966      42.26495        3.679914               NA
+## 24        45.32156      43.38579              NA               NA
+## 31        45.27399      41.91459              NA               NA
+## 35        48.22713      38.86464              NA               NA
+## 36        45.30896      42.94988              NA               NA
+\end{verbatim}
 
 \begin{cols}
 
-\begin{col}{0.55\textwidth}
-We notice that there are 57 pollsters (almost 30\% of the total number
+\begin{col}{0.45\textwidth}
+We noticed that there are 57 pollsters (almost 30\% of the total number
 of pollsters) whose grades are missing in this data set. And we cannot
 just delete them, because it will cause a lot of missing data in other
 columns. We suppose that there are two possible reasons for these
@@ -234,7 +324,7 @@ replace ``NA'' with the actual grades and none.
 
 \end{col}
 
-\begin{col}{0.4\textwidth}
+\begin{col}{0.5\textwidth}
 
 \begin{longtable}[]{@{}llc@{}}
 \caption{Updating the missing data}\tabularnewline
@@ -290,6 +380,11 @@ grade. The result is as follow:
 ## the column of number_of_grades only contains one type of value: 1
 \end{verbatim}
 
+After cleaning the missing values for the grade variable and checked its
+uniqueness for each pollster to make sure there was no error in data
+entry, we plotted a pie chart to gain initial understanding of the grade
+variable.
+
 From the ``Pie Chart of Pollsters' Grades'' below, we could see that the
 unrated pollsters make up the largest percentage, about 15.8\% of the
 total; pollsters with grades ``B'' and ``C+'' account for the second and
@@ -301,17 +396,47 @@ respectively. For those without explicit grades, whose grades are
 ``A/B'', ``B/C'' and ``C/D'', they account only for 12.24\%, ``B'' grade
 pollsters make up the majority of this part especially, almost 9.69\%.
 
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-7-1.png}
+\begin{figure}
+\centering
+\includegraphics{./Figures/piechart.png}
+\caption{Pollster's Grade distribution}
+\end{figure}
 
-\hypertarget{polls-trend-by-time}{%
-\subsection{Polls trend by time}\label{polls-trend-by-time}}
+\hypertarget{sample-size}{%
+\subsubsection{Sample Size}\label{sample-size}}
 
-Using the end date as the standard, we drew a scatter plot of the
-changes in the support rates of the four candidates over time.
+Checking the sample size alone does not inform us much about the poll
+result. Instead, we take a look at the distribution of the sample size
+with regards to the grade:
 
 \begin{figure}
 \centering
 \includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-9-1.pdf}
+\caption{Distribution of Sample Size for Grades}
+\end{figure}
+
+\hypertarget{population}{%
+\subsubsection{Population}\label{population}}
+
+We now take a look at the population type for which the poll was
+sampled.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth,height=\textheight]{./Figures/popChart.png}
+\caption{Population Type with Size for Grades}
+\end{figure}
+
+\hypertarget{poll-rate}{%
+\subsubsection{Poll Rate}\label{poll-rate}}
+
+We now turn our attention to the actual poll rate for each candidate.
+Using the end date as the standard, we first drew a time series made of
+scatter plot of the raw poll rates of the four candidates over time.
+
+\begin{figure}
+\centering
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-12-1.pdf}
 \caption{Raw Poll Proportion by Time.}
 \end{figure}
 
@@ -322,21 +447,18 @@ the vote draws to a close. This shows that as the voting deadline
 approaches, people's intentions are more inclined to one of Clinton or
 Trump. Voting is also more polarized. A low poll rate for one candidate
 also implies that other candidates may have received high poll rates.
-This creates differences in pollsters or states.
+This creates differences in each state. Therefore, we tried to compare
+each candidate's poll result in each state.
 
-\hypertarget{comparison-of-candidates-polls-in-each-state}{%
-\subsection{Comparison of candidates' polls in each
-state}\label{comparison-of-candidates-polls-in-each-state}}
-
-We want to process the metadata by counting the polls received by each
-of the four candidates in each state. This result is easier to obtain by
-multiplying the given size and the proportion. Regardless of the various
-pollsters, we combine the number of polls for each candidate received in
-each state although the polls may come from different pollsters. In this
-case, we treat NA as 0.
+We processed the metadata by counting the polls received by each of the
+four candidates in each state. This result was easier to obtain by
+multiplying the given sample size and the proportion. Regardless of the
+various pollsters, we combined the number of polls for each candidate
+received in each state although the polls may come from different
+pollsters. In this case, we treated NA as 0.
 
 The visualization of the poll proportion of the four candidates in each
-state as follows.
+state was presented below:
 
 \begin{figure}
 \centering
@@ -358,20 +480,108 @@ South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia,
 Wyoming, Trump clearly leads Clinton. This helps us tally who would win
 all of the state's electoral votes.
 
+We now look at the time series of the adjusted poll proportion:
+
+\begin{figure}
+\centering
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-15-1.pdf}
+\caption{Adjusted Poll Percentage by States}
+\end{figure}
+
+We immediately noticed that some of the poll rate for Johnson fell below
+zero.
+
+Since the final two candidates in Election 2016 are Clinton and Trump,
+we plotted box plots of the difference of their poll results, one for
+the raw poll and one for the adjusted poll.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight]{./Figures/boxchart.png}
+\caption{Boxchart of Difference between Polls}
+\end{figure}
+
+We saw that there's little difference between the distribution of the
+raw and the adjusted data. However, the mean of each grade of the
+adjusted poll result was a little closer to zero than that of the raw
+poll result. This indicated that the adjustment that FiveThirtyEight
+made was an improvement because the raw poll difference of each grade
+was mostly above zero, which clearly showed that the poll result was
+more in favour of Clinton yet Trump was the final winner of the
+election.
+
+However, due to the fact that FiveThirtyEight's adjustment to the poll
+result yields negative values, we think it is therefore unreasonable to
+do such adjustment. It gives the reader a difficulty in interpreting
+this adjustment.
+
+Finally we plot the cumulative mean of the raw poll result for the final
+two candidates, Trump and Clinton. We selected the Clinton and Trump
+polls and ignore the other candidates' poll since the other candidates
+are polling far behind Clinton and Trump.
+
+\begin{figure}
+\centering
+\includegraphics{./Figures/cMeanchart.png}
+\caption{Cumulative Mean of Raw Poll Result}
+\end{figure}
+
+From the plot above we see that the overal national poll result
+indicates that Clinton should be the winner of the election. However,
+some of the individual states resulted the opposite conclusion. It it
+therefore hard to tell which candidate is leading by examining the
+individual state poll result.
+
+\hypertarget{map-chart-of-data}{%
+\subsubsection{Map Chart of Data}\label{map-chart-of-data}}
+
 To make state-by-state polling results more visible, we've reflected the
-candidates' polling shares on a map of the United States. Since the
-other candidates are polling far behind Clinton and Trump, we select the
-Clinton and Trump polls and ignore the other candidates' polls. In the
-contour plot below, blue indicates that Clinton is polling
-proportionally greater than Trump, and red indicates that Trump is
-polling proportionally greater than Clinton. The darker the color, the
-more overwhelming the proportions. For states that are nearly white, the
+candidates' polling shares on a map of the United States. In the contour
+plot below, blue indicates that Clinton is polling proportionally
+greater than Trump, and red indicates that Trump is polling
+proportionally greater than Clinton. The darker the color, the more
+overwhelming the proportions. For states that are nearly white, the
 margin of victory is nearly half between Trump and Clinton.
 
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-19-1.png}
+\begin{figure}
+\centering
+\includegraphics{./Figures/mapchart_1_2.png}
+\caption{Map Chart of Vote Shares of Candidates by States}
+\end{figure}
 
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+Furthermore, we want to find out exactly the states which Clinton or
+Trump captured all of the electoral votes. The visualization below shows
+the net polls generated by each state for Clinton and Trump.
+
+\begin{figure}
+\centering
+\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-20-1.pdf}
+\caption{Net Polls by States.}
+\end{figure}
+
+It is not difficult to see from Figure 3 that Maine and Nebraska have
+two and three additional electoral district respectively in addition to
+their own states. The candidate with the most votes in Maine and
+Nebraska will receive two electoral votes, and the remaining electoral
+votes will be allocated to the presidential candidate who wins each
+district. Moreover, DC have three electoral votes as an independent
+district. Based on RawPoll data, the chart above shows Clinton won 27
+constituencies including 25 states, one additional Maine district and
+DC. Trump won 25 states plus one additional district in Maine and three
+additional districts in Nebraska.
+
+We obtained the final election result from
+\url{https://www.nytimes.com/elections/2016/results/president} and
+compared it with our poll prediction result:
+
+\begin{figure}
+\centering
+\includegraphics{./Figures/mapchart_3_4.png}
+\caption{Map Chart of Election Result 2016}
+\end{figure}
+
+From the above plots we can see that the actual final election outcome
+was almost the entire opposite to the predicted result.
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
