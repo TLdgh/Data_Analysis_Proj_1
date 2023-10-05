@@ -16,5 +16,5 @@ Data_Analysis_Proj_1.Rproj
 *.html
 *.log
 *.pdf
-
+*.tex
 Figures/*_files/
