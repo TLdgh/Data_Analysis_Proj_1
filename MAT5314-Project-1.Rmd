@@ -102,13 +102,13 @@ The startdate and enddate variables correspond to the dates on which the public 
 We then took a look at the grade variable. We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
 
 ```{r}
-head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), ])
+head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), ], 3)
 ```
 
 :::::: {.cols data-latex=""}
 
 ::: {.col data-latex="{0.45\textwidth}"}
-We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. And we cannot just delete them, because it will cause a lot of missing data in other columns. We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website. Here is the link: https://projects.fivethirtyeight.com/pollster-ratings/.
+We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website. Here is the link: https://projects.fivethirtyeight.com/pollster-ratings/.
 
 \vspace{18pt} 
 
@@ -123,7 +123,7 @@ a column separator -->
 
 ::: {.col data-latex="{0.5\textwidth}"}
 
-```{r}
+```{r, results='asis'}
 pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade"))) #Extract two columns:"pollster" and "grade" from the Electionpoll
 pollster_grade$grade[is.na(pollster_grade$grade)] <- "none" #Replace NA in the "grade" column with none
 condition1 <- pollster_grade$pollster %in% c("Associated Industries of Florida", "BK Strategies", "Baldwin Wallace University", "Bendixen & Amandi International", "Centre College", "Craciun Research", "Data Targeting", "Hickman Analytics", "HighGround", "Insights West", "Mercyhurst University", "Meredith College", "Ogden & Fry", "Praecones Analytica", "Saguaro Strategies", "Starboard Communications", "Strategic National", "Strategy Research", "University of Colorado") #Replace the right grades with none
@@ -137,6 +137,7 @@ pollster_grade$grade[condition4] <- "B"
 condition5 <- pollster_grade$pollster %in% c("University of Wyoming")
 pollster_grade$grade[condition5] <- "C/D"
 A <- pollster_grade[pollster_grade$grade == "A/B" | pollster_grade$grade == "B/C" | pollster_grade$grade == "C/D" | pollster_grade$pollster == "Morning Consult" | pollster_grade$pollster == "Remington", ]
+cat("\\small")
 kable(A, format = "markdown", 
       caption = "Updating the missing data",
       align = c("l", "c", "c")) %>%
@@ -183,7 +184,6 @@ piechart <- piechart %>% layout(title = "Pie Chart of Pollsters' Grades",
 saveWidget(widget = piechart, file = "./Figures/piechart.html")
 shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 4, vheight = 500)
 ```
-
 ![Pollster's Grade distribution](./Figures/piechart.png)
 
 ### Sample Size
