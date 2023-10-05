@@ -309,13 +309,15 @@ example:
 
 \begin{cols}
 
-\begin{col}{0.45\textwidth}
+\begin{col}{0.53\textwidth}
 We suppose that there are two possible reasons for these missing data:
 one is that there are some errors of data in the original file; the
 other is that fivethirtyeight has not rated these pollsters yet. So we
 searched online and found a more detailed and authoritative file about
 the pollsters' grade from the fivethirtyeight
 website.(\protect\hyperlink{ref-MissingD}{2023})
+
+\vspace{13pt}
 
 If one had omitted the NA from the grade by rows, then the available
 data from other variables would be omitted as well, which affects the
@@ -324,7 +326,7 @@ we will only delete a variable entirely if it has most of its values
 missing. Dividing the variable (column) will not affect values in other
 variables like omitting NA by rows.
 
-\vspace{18pt}
+\vspace{13pt}
 
 According to the fivethirtyeight website, we found that 26 pollsters
 with no grade in the origin data set actually have the grades like
@@ -336,12 +338,12 @@ presented in Table 2.
 
 \end{col}
 
-\begin{col}{0.05\textwidth}
+\begin{col}{0.02\textwidth}
 ~
 
 \end{col}
 
-\begin{col}{0.5\textwidth}
+\begin{col}{0.45\textwidth}
 
 \small
 
@@ -401,6 +403,9 @@ uniqueness for each pollster to make sure there was no error in data
 entry, we plotted a pie chart to gain initial understanding of the grade
 variable.
 
+\begin{cols}
+
+\begin{col}{0.48\textwidth}
 From Figure 1: Pollster's Grade Distribution below, we could see that
 the unrated pollsters make up the largest percentage, about 15.8\% of
 the total; pollsters with grades ``B'' and ``C+'' account for the second
@@ -413,11 +418,19 @@ are ``A/B'', ``B/C'' and ``C/D'', they account only for 12.24\%, ``B''
 grade pollsters make up the majority of this part especially, almost
 9.69\%.
 
-\begin{figure}
-\centering
+\end{col}
+
+\begin{col}{0.02\textwidth}
+~
+
+\end{col}
+
+\begin{col}{0.5\textwidth}
 \includegraphics[width=\textwidth,height=0.3\textheight]{./Figures/piechart.png}
-\caption{Pollster's Grade Distribution}
-\end{figure}
+
+\end{col}
+
+\end{cols}
 
 \hypertarget{sample-size}{%
 \subsubsection{Sample Size}\label{sample-size}}
@@ -427,15 +440,22 @@ result. Instead, we take a look at the distribution of the sample size
 with regards to the grade. We sum up the sample size based on each grade
 level and made a bar plot:
 
-\begin{minipage}[t]{0.5\textwidth}
+\begin{minipage}[t]{0.55\textwidth}
 \begin{figure}
 \includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-9-1} \caption{Distribution of Sample Size for Grades}\label{fig:unnamed-chunk-9}
 \end{figure}
 \end{minipage}
-\begin{minipage}[t]{0.5\textwidth}
+\begin{minipage}[t]{0.45\textwidth}
 \vspace{0pt}
-As one can see, grade A-, B, C- have the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who has its own sample size. Due to the fact that we sum up the sample size, we can conclude that the proportion of the pollsters who receive grade A-, B and C- are greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore does not contribute towards the rating of pollsters. We think that this can reflect the efficiency of the poll. A low portion of the sample size for the grade "none" indicates that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
+As one can see, grade A-, B, C- have the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who has its own sample size. Due to the fact that we sum up the sample size, we can conclude that the proportion of the pollsters who receive grade A-, B and C- are greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore does not contribute towards the rating of pollsters. We think that this can reflect the efficiency of the poll. A low portion of the sample size 
 \end{minipage}
+
+for the grade ``none'' indicates that the number of pollsters who
+gathered those samples and wasn't successfully rated was low. On the
+other hand, if the sample size for the grade ``none'' was big, for
+example if one had most of the samples with ``none'', then it would mean
+that the rating mechanism was not successful or the quality of the poll
+was too low to be used for rating pollsters.
 
 \hypertarget{population}{%
 \subsubsection{Population}\label{population}}
@@ -468,15 +488,15 @@ scatter plot of the raw poll rates of the four candidates over time.
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state.
+Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each 
 \end{minipage}
 
-Therefore, we try to compare each candidate's poll result in each state.
-We processed the metadata by counting the polls of four candidates in
-each state respectively. Result is easy to obtain by multiplying the
-given sample size and proportion. Regardless of the various pollsters,
-we combine the number of polls for each candidate received in each
-state. In this case, we treat NA as 0.
+state. Therefore, we try to compare each candidate's poll result in each
+state. We processed the metadata by counting the polls of four
+candidates in each state respectively. Result is easy to obtain by
+multiplying the given sample size and proportion. Regardless of the
+various pollsters, we combine the number of polls for each candidate
+received in each state. In this case, we treat NA as 0.
 
 The visualization of the poll proportion of the four candidates in each
 state was presented below:
