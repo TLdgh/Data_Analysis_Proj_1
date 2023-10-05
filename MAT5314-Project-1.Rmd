@@ -188,8 +188,8 @@ shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png",
 
 ### Sample Size
 Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade:
-
-```{r, warning=FALSE, fig.cap = "Distribution of Sample Size for Grades", fig.width=4, fig.height=4}
+\begin{minipage}[t]{0.5\textwidth}
+```{r, warning=FALSE, out.width="100%", fig.cap = "Distribution of Sample Size for Grades"}
 GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
 
 sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
@@ -198,6 +198,11 @@ sampleDist<-ggplot(GradeVsSize, aes(x=grade, y=Size))+
 
 print(sampleDist)
 ```
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\vspace{0pt}
+Here for description of Figure 2
+\end{minipage}
 
 ### Population
 We now take a look at the population type for which the poll was sampled.
@@ -247,7 +252,8 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-```{r, warning=FALSE, fig.cap = "Raw Poll Proportion by Time.", fig.width=6, fig.height=4, fig.pos="H"}
+\begin{minipage}[t]{0.7\textwidth}
+```{r, warning=FALSE, out.width="100%", fig.cap = "Raw Poll Proportion by Time"}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -268,10 +274,12 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   theme(legend.position = "bottom")
 print(g_2)
 ```
-
-Figure 1 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is also more polarized. A low poll rate for one candidate also implies that other candidates may have received high poll rates. This creates differences in each state. Therefore, we tried to compare each candidate's poll result in each state. 
-
-We processed the metadata by counting the polls received by each of the four candidates in each state. This result was easier to obtain by multiplying the given sample size and the proportion. Regardless of the various pollsters, we combined the number of polls for each candidate received in each state although the polls may come from different pollsters. In this case, we treated NA as 0.
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state.
+\end{minipage}
+Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
 
 ```{r}
 #Create frame contained state, poll number for each candidate
@@ -311,7 +319,8 @@ NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 
 The visualization of the poll proportion of the four candidates in each state was presented below:  
 
-```{r, fig.cap = "Poll Percentage by States.", fig.width=6, fig.height=4, fig.pos="H"}
+\begin{minipage}[t]{0.7\textwidth}
+```{r, out.width="100%", fig.cap = "Poll Percentage by States"}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
   labs(x = "State", y = "Proportion", 
@@ -326,12 +335,16 @@ g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate))
   theme(legend.position = "bottom")
 print(g_11)
 ```
-
-Figure 2 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us tally who would win all of the state's electoral votes.
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. 
+\end{minipage}
+Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us explore the leading candidates in each state.
 
 We now look at the time series of the adjusted poll proportion:
-
-```{r, fig.cap = "Adjusted Poll Percentage by States", fig.width=6, fig.height=4}
+\begin{minipage}[t]{0.7\textwidth}
+```{r, warning=FALSE, out.width="100%", fig.cap = "Adjusted Poll Percentage by States"}
 #Create frame contained time, rawpoll
 poll_by_time <- ElectionPoll%>%transmute(end_time=as.POSIXct(enddate),
                                          clinton=adjpoll_clinton, trump=adjpoll_trump, johnson=adjpoll_johnson, mcmullin=adjpoll_mcmullin )%>%arrange(end_time)
@@ -344,8 +357,7 @@ g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_line(aes(y = mcmullin, color = "Mcmullin"), alpha = 0.6) +
   labs(x = "Date", y = "Proportion of rawpoll (%)", 
        title = "Raw Poll Proportion by Time",
-       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin",
-       caption = "Data: poll_by_time (with missing values)") +
+       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
   scale_x_datetime(date_breaks = "2 month") +
   theme(axis.text.x = element_text(angle = 50, size = 7, vjust = 0.5)) + 
@@ -357,9 +369,11 @@ g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
   theme(legend.position = "bottom")
 print(g_1)
 ```
-
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
 We immediately noticed that some of the poll rate for Johnson fell below zero. 
-
+\end{minipage}
 
 Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
 
@@ -584,8 +598,8 @@ shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1
 ![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart_1_2.png)
 
 Furthermore, we want to find out exactly the states which Clinton or Trump captured all of the electoral votes. The visualization below shows the net polls generated by each state for Clinton and Trump. 
-
-```{r, fig.cap = "Net Polls by States.", fig.pos="H"}
+\begin{minipage}[t]{0.7\textwidth}
+```{r, out.width="100%", fig.cap = "Net Polls by States."}
 # Calculate net polls
 poll_gap <- NumVoteState%>%filter(candidate %in% c("Clinton", "Trump"))%>%
   group_by(state, candidate)%>%summarize(numP=sum(PollNumber), .groups="drop")%>%
@@ -610,8 +624,12 @@ g_13 <- ggplot(data = poll_gap, aes(x = state, y = gap, fill = pos)) +
   theme(legend.position = c(1, 1), legend.justification = c(1, 1))
 g_13
 ```
-
-It is not difficult to see from Figure 3 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes, and the remaining electoral votes will be allocated to the presidential candidate who wins each district. Moreover, DC have three electoral votes as an independent district. Based on RawPoll data, the chart above shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska.
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Based on RawPoll data, Figure 10 shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska. It is not difficult to see from Figure 10 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes,
+\end{minipage}
+and the remaining electoral votes will be allocated to the presidential candidate who wins each district. Moreover, DC have three electoral votes as an independent district.
 
 We obtained the final election result from https://www.nytimes.com/elections/2016/results/president and compared it with our poll prediction result:
 

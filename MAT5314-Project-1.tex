@@ -288,15 +288,11 @@ example:
 \begin{cols}
 
 \begin{col}{0.45\textwidth}
-We noticed that there are 57 pollsters (almost 30\% of the total number
-of pollsters) whose grades are missing in this data set. And we cannot
-just delete them, because it will cause a lot of missing data in other
-columns. We suppose that there are two possible reasons for these
-missing data: one is that there are some errors of data in the original
-file; the other is that fivethirtyeight has not rated these pollsters
-yet. So we searched online and found a more detailed and authoritative
-file about the pollsters' grade from the fivethirtyeight website. Here
-is the link:
+We suppose that there are two possible reasons for these missing data:
+one is that there are some errors of data in the original file; the
+other is that fivethirtyeight has not rated these pollsters yet. So we
+searched online and found a more detailed and authoritative file about
+the pollsters' grade from the fivethirtyeight website. Here is the link:
 \url{https://projects.fivethirtyeight.com/pollster-ratings/}.
 
 \vspace{18pt}
@@ -402,11 +398,15 @@ Checking the sample size alone does not inform us much about the poll
 result. Instead, we take a look at the distribution of the sample size
 with regards to the grade:
 
+\begin{minipage}[t]{0.5\textwidth}
 \begin{figure}
-\centering
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-9-1.pdf}
-\caption{Distribution of Sample Size for Grades}
+\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-9-1} \caption{Distribution of Sample Size for Grades}\label{fig:unnamed-chunk-9}
 \end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\vspace{0pt}
+Here for description of Figure 2
+\end{minipage}
 
 \hypertarget{population}{%
 \subsubsection{Population}\label{population}}
@@ -427,62 +427,56 @@ We now turn our attention to the actual poll rate for each candidate.
 Using the end date as the standard, we first drew a time series made of
 scatter plot of the raw poll rates of the four candidates over time.
 
+\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\centering
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-12-1.pdf}
-\caption{Raw Poll Proportion by Time.}
+\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-12-1} \caption{Raw Poll Proportion by Time}\label{fig:unnamed-chunk-12}
 \end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state.
+\end{minipage}
 
-Figure 1 indicates that Clinton and Trump's approval ratings are
-significantly higher than those of Johnson and Mcmullin at the overall
-level. Another interesting demonstration is the divergence of support as
-the vote draws to a close. This shows that as the voting deadline
-approaches, people's intentions are more inclined to one of Clinton or
-Trump. Voting is also more polarized. A low poll rate for one candidate
-also implies that other candidates may have received high poll rates.
-This creates differences in each state. Therefore, we tried to compare
-each candidate's poll result in each state.
-
-We processed the metadata by counting the polls received by each of the
-four candidates in each state. This result was easier to obtain by
-multiplying the given sample size and the proportion. Regardless of the
-various pollsters, we combined the number of polls for each candidate
-received in each state although the polls may come from different
-pollsters. In this case, we treated NA as 0.
+Therefore, we try to compare each candidate's poll result in each state.
+We processed the metadata by counting the polls of four candidates in
+each state respectively. Result is easy to obtain by multiplying the
+given sample size and proportion. Regardless of the various pollsters,
+we combine the number of polls for each candidate received in each
+state. In this case, we treat NA as 0.
 
 The visualization of the poll proportion of the four candidates in each
 state was presented below:
 
+\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\centering
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-14-1.pdf}
-\caption{Poll Percentage by States.}
+\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-14-1} \caption{Poll Percentage by States}\label{fig:unnamed-chunk-14}
 \end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. 
+\end{minipage}
 
-Figure 2 shows the poll proportions of the four candidates in each state
-distinguished by colors. We can clearly observe which candidate is
-likely to win all the electoral votes in each state, which is helpful in
-estimating the outcome of the presidential election. From the chart
-above, we conclude that Clinton and Trump are clearly ahead of Johnson
-and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in
-California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey,
-New York, Oregon, Rhode Island, Vermont, and Washington. Another side,
-in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana,
-Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma,
-South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia,
-Wyoming, Trump clearly leads Clinton. This helps us tally who would win
-all of the state's electoral votes.
+Furthermore, Clinton is clearly ahead of Trump in California, DC,
+Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon,
+Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska,
+Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi,
+Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South
+Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming,
+Trump clearly leads Clinton. This helps us explore the leading
+candidates in each state.
 
 We now look at the time series of the adjusted poll proportion:
 
+\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\centering
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-15-1.pdf}
-\caption{Adjusted Poll Percentage by States}
+\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-15-1} \caption{Adjusted Poll Percentage by States}\label{fig:unnamed-chunk-15}
 \end{figure}
-
-We immediately noticed that some of the poll rate for Johnson fell below
-zero.
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+We immediately noticed that some of the poll rate for Johnson fell below zero. 
+\end{minipage}
 
 Since the final two candidates in Election 2016 are Clinton and Trump,
 we plotted box plots of the difference of their poll results, one for
@@ -546,22 +540,19 @@ Furthermore, we want to find out exactly the states which Clinton or
 Trump captured all of the electoral votes. The visualization below shows
 the net polls generated by each state for Clinton and Trump.
 
+\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\centering
-\includegraphics{MAT5314-Project-1_files/figure-latex/unnamed-chunk-20-1.pdf}
-\caption{Net Polls by States.}
+\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-20-1} \caption{Net Polls by States.}\label{fig:unnamed-chunk-20}
 \end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Based on RawPoll data, Figure 10 shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska. It is not difficult to see from Figure 10 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes,
+\end{minipage}
 
-It is not difficult to see from Figure 3 that Maine and Nebraska have
-two and three additional electoral district respectively in addition to
-their own states. The candidate with the most votes in Maine and
-Nebraska will receive two electoral votes, and the remaining electoral
-votes will be allocated to the presidential candidate who wins each
-district. Moreover, DC have three electoral votes as an independent
-district. Based on RawPoll data, the chart above shows Clinton won 27
-constituencies including 25 states, one additional Maine district and
-DC. Trump won 25 states plus one additional district in Maine and three
-additional districts in Nebraska.
+and the remaining electoral votes will be allocated to the presidential
+candidate who wins each district. Moreover, DC have three electoral
+votes as an independent district.
 
 We obtained the final election result from
 \url{https://www.nytimes.com/elections/2016/results/president} and
