@@ -481,31 +481,31 @@ We now turn our attention to the actual poll rate for each candidate.
 Using the end date as the standard, we first drew a time series made of
 scatter plot of the raw poll rates of the four candidates over time.
 
+\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\includegraphics[width=1\linewidth,height=0.3\textheight]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-12-1} \caption{Raw Poll Proportion by Time}\label{fig:unnamed-chunk-12}
+\includegraphics[height=0.3\textheight]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-12-1} \caption{Raw Poll Proportion by Time}\label{fig:unnamed-chunk-12}
 \end{figure}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump.
+\end{minipage}
 
-Figure 4 indicates that Clinton and Trump's approval ratings are
-significantly higher than those of Johnson and Mcmullin at the overall
-level. Another interesting demonstration is the divergence of support as
-the vote draws to a close. This shows that as the voting deadline
-approaches, people's intentions are more inclined to one of Clinton or
-Trump. Voting is more polarized. A low poll rate for one candidate also
-implies that other candidates may have high poll rates. This creates
-differences in each \textbackslash end\{minipage\} state. Therefore, we
-try to compare each candidate's poll result in each state. We processed
-the metadata by counting the polls of four candidates in each state
-respectively. Result is easy to obtain by multiplying the given sample
-size and proportion. Regardless of the various pollsters, we combine the
-number of polls for each candidate received in each state. In this case,
-we treat NA as 0.
+Voting is more polarized. A low poll rate for one candidate also implies
+that other candidates may have high poll rates. This creates differences
+in each state. Therefore, we try to compare each candidate's poll result
+in each state. We processed the metadata by counting the polls of four
+candidates in each state respectively. Result is easy to obtain by
+multiplying the given sample size and proportion. Regardless of the
+various pollsters, we combine the number of polls for each candidate
+received in each state. In this case, we treat NA as 0.
 
 The visualization of the poll proportion of the four candidates in each
 state was presented below:
 
 \begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-14-1} \caption{Poll Percentage by States}\label{fig:unnamed-chunk-14}
+\includegraphics[width=1\linewidth,height=0.7\textheight]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-14-1} \caption{Poll Percentage by States}\label{fig:unnamed-chunk-14}
 \end{figure}
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
@@ -513,30 +513,31 @@ state was presented below:
 Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. 
 \end{minipage}
 
-Furthermore, Clinton is clearly ahead of Trump in California, DC,
-Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon,
-Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska,
-Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi,
-Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South
-Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming,
-Trump clearly leads Clinton. This helps us explore the leading
-candidates in each state.
+Furthermore, Clinton is clearly ahead of Trump in states like
+California, DC and Hawaii etc. On the nother side, Trump is ahead of
+Clinton in Alabama, Alaska and Idaho etc. This helps us explore the
+leading candidates in each state.
 
-We now look at the time series of the adjusted poll proportion:
+We now look at the time series of the adjusted poll proportion in Figure
+5 below.
 
-\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\includegraphics[width=1\linewidth]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-15-1} \caption{Adjusted Poll Percentage by States}\label{fig:unnamed-chunk-15}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight]{./Figures/TsChart.png}
+\caption{Adjusted Poll Percentage by Time}
 \end{figure}
-\end{minipage}
-\begin{minipage}[t]{0.3\textwidth}
-\vspace{0pt}
-We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this makes us to question the validity of the adjusted poll result done by FiveThirtyEight. For other candidates the adjustment was not posing the negativeness issue, so we want to explore if the adjusted data can be ignored or if it actually brings some improvements than the raw poll data.
-\end{minipage}
 
-Since the final two candidates in Election 2016 are Clinton and Trump,
-we plotted box plots of the difference of their poll results, one for
-the raw poll and one for the adjusted poll.
+We immediately noticed that some of the poll rate for Johnson fell below
+zero. We did not find a detailed justification to the adjustment they
+have made from their website, therefore, this makes us to question the
+validity of the adjusted poll result done by FiveThirtyEight.
+
+For other candidates the adjustment was not posing the negativeness
+issue, so we want to explore if the adjusted data can be ignored or if
+it actually brings some improvements than the raw poll data. Since the
+final two candidates in Election 2016 are Clinton and Trump, we plotted
+box plots of the difference of their poll results, one for the raw poll
+and one for the adjusted poll.
 
 \begin{figure}
 \centering

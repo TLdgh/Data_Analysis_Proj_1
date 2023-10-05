@@ -279,7 +279,8 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-```{r, warning=FALSE, out.width="100%", out.height="30%", fig.cap = "Raw Poll Proportion by Time"}
+\begin{minipage}[t]{0.7\textwidth}
+```{r, warning=FALSE, out.height="30%", fig.cap = "Raw Poll Proportion by Time"}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -287,8 +288,7 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_johnson, color = "Johnson"), size = 1, alpha = 0.3) +
   geom_point(aes(y = prop_raw_mcmullin, color = "Mcmullin"), size = 1, alpha = 0.3) +
   labs(x = "Date", y = "Proportion of rawpoll (%)", 
-       title = "Raw Poll Proportion by Time", 
-       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin") +
+       title = "Raw Poll Proportion by Time") +
   scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
   scale_x_datetime(date_breaks = "2 month") +
   theme(axis.text.x = element_text(angle = 0, size = 7, vjust = 0.5)) + 
@@ -300,10 +300,12 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   theme(legend.position = "bottom")
 print(g_2)
 ```
-
-Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump. Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each 
 \end{minipage}
-state. Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
+\begin{minipage}[t]{0.3\textwidth}
+\vspace{0pt}
+Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump.
+\end{minipage}
+Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state. Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
 
 ```{r}
 #Create frame contained state, poll number for each candidate
@@ -344,7 +346,7 @@ NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 The visualization of the poll proportion of the four candidates in each state was presented below:  
 
 \begin{minipage}[t]{0.7\textwidth}
-```{r, out.width="100%", fig.cap = "Poll Percentage by States"}
+```{r, out.width="100%", out.height="70%", fig.cap = "Poll Percentage by States"}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
   geom_col(aes(y = PollNumber),position='fill') +
   labs(x = "State", y = "Proportion", 
@@ -364,11 +366,11 @@ print(g_11)
 \vspace{0pt}
 Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. 
 \end{minipage}
-Furthermore, Clinton is clearly ahead of Trump in California, DC, Hawaii, Illinois, Maryland, Massachusetts, New Jersey, New York, Oregon, Rhode Island, Vermont, and Washington. Another side, in Alabama, Alaska, Idaho, Indiana, Iowa, Kansas, Kentucky, Louisiana, Mississippi, Missouri, Montana, Nebraska, North Dakota, Ohio, Oklahoma, South Carolina, South Dakota, Tennessee, Texas, Utah, West Virginia, Wyoming, Trump clearly leads Clinton. This helps us explore the leading candidates in each state.
+Furthermore, Clinton is clearly ahead of Trump in states like California, DC and Hawaii etc. On the nother side, Trump is ahead of Clinton in Alabama, Alaska and Idaho etc. This helps us explore the leading candidates in each state.
 
-We now look at the time series of the adjusted poll proportion:
-\begin{minipage}[t]{0.7\textwidth}
-```{r, warning=FALSE, out.width="100%", fig.cap = "Adjusted Poll Percentage by States"}
+We now look at the time series of the adjusted poll proportion in Figure 5 below.
+
+```{r, warning=FALSE}
 #Create frame contained time, rawpoll
 poll_by_time <- ElectionPoll%>%transmute(end_time=as.POSIXct(enddate),
                                          clinton=adjpoll_clinton, trump=adjpoll_trump, johnson=adjpoll_johnson, mcmullin=adjpoll_mcmullin )%>%arrange(end_time)
@@ -380,26 +382,26 @@ g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_line(aes(y = johnson, color = "Johnson"), alpha = 0.6) +
   geom_line(aes(y = mcmullin, color = "Mcmullin"), alpha = 0.6) +
   labs(x = "Date", y = "Proportion of rawpoll (%)", 
-       title = "Raw Poll Proportion by Time",
-       subtitle = "Clinton vs. Trump vs. Johnson vs. Mcmullin") +
-  scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "green", "Mcmullin" = "yellow")) +
+       title = "Adjusted Poll Proportion by Time") +
+  scale_color_manual(values = c("Clinton" = "blue", "Trump" = "red", "Johnson" = "darkgreen", "Mcmullin" = "yellow")) +
   scale_x_datetime(date_breaks = "2 month") +
-  theme(axis.text.x = element_text(angle = 50, size = 7, vjust = 0.5)) + 
+  theme(axis.text.x = element_text(angle = 0, size = 7, vjust = 0.5)) + 
   theme(axis.title.x = element_text(size = 9, vjust = 0),
         axis.title.y = element_text(size = 9, vjust = 3)) +
   theme(plot.title = element_text(size = 12, face = "bold", 
                                   margin = margin(0, 0, 0, 0))) +
-  theme(legend.title = element_blank()) +
-  theme(legend.position = "bottom")
-print(g_1)
-```
-\end{minipage}
-\begin{minipage}[t]{0.3\textwidth}
-\vspace{0pt}
-We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this makes us to question the validity of the adjusted poll result done by FiveThirtyEight. For other candidates the adjustment was not posing the negativeness issue, so we want to explore if the adjusted data can be ignored or if it actually brings some improvements than the raw poll data.
-\end{minipage}
+  theme(legend.title = element_blank())
+g_1<-ggplotly(g_1)
 
-Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
+saveWidget(widget = g_1, file = "./Figures/TsChart.html")
+shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", delay = 1, zoom = 1, vheight = 300)
+```
+
+![Adjusted Poll Percentage by Time](./Figures/TsChart.png){height=50%}
+
+We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this makes us to question the validity of the adjusted poll result done by FiveThirtyEight. 
+
+For other candidates the adjustment was not posing the negativeness issue, so we want to explore if the adjusted data can be ignored or if it actually brings some improvements than the raw poll data. Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
 
 ```{r}
 fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
