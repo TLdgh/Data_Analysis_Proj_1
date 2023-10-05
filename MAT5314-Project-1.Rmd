@@ -1,5 +1,6 @@
 ---
-title: "MAT5314 Project 1: Data Visualization"
+title: |
+  | \vspace{-4em}MAT5314 Project 1: Data Visualization
 author: 
   - Teng Li(7373086)
   - Shiya Gao(300381032) 
