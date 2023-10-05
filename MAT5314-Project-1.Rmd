@@ -391,13 +391,13 @@ g_1 <- ggplot(poll_by_time, aes(x = end_time)) +
   theme(plot.title = element_text(size = 12, face = "bold", 
                                   margin = margin(0, 0, 0, 0))) +
   theme(legend.title = element_blank())
-g_1<-ggplotly(g_1)
+g_1<-ggplotly(g_1)%>%layout(margin=list(l=0, r=0, b=0, t=30))
 
 saveWidget(widget = g_1, file = "./Figures/TsChart.html")
-shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", delay = 1, zoom = 1, vheight = 300)
+shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", delay = 1, zoom = 2, vheight = 280)
 ```
 
-![Adjusted Poll Percentage by Time](./Figures/TsChart.png){height=50%}
+![Adjusted Poll Percentage by Time](./Figures/TsChart.png)
 
 We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this makes us to question the validity of the adjusted poll result done by FiveThirtyEight. 
 
