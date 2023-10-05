@@ -11,7 +11,7 @@ output:
     keep_tex: true
     includes:
       in_header: columns.tex
-fontsize: 12pt
+fontsize: 11pt
 header-includes: 
   - \renewcommand{\and}{\\}
   - \usepackage{float}
@@ -109,7 +109,7 @@ The startdate and enddate variables correspond to the dates on which the public 
 We then took a look at the grade variable. We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
 
 ```{r}
-head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), ], 3)
+head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), c("state", "grade", "rawpoll_clinton")], 2)
 ```
 
 :::::: {.cols data-latex=""}
@@ -249,7 +249,7 @@ popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population,
          plot_bgcolor = 'lightgrey')
 
 saveWidget(widget = popChart, file = "./Figures/popChart.html")
-shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 1, vheight = 350, vwidth = 950)
+shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 1, vheight = 330, vwidth = 950)
 ```
 
 ![Population Type with Size for Grades](./Figures/popChart.png)
@@ -279,8 +279,7 @@ poll_by_time <- data.frame(
 poll_by_time <- poll_by_time[order(poll_by_time$end_time, decreasing = FALSE),]
 ```
 
-\begin{minipage}[t]{0.7\textwidth}
-```{r, warning=FALSE, out.height="30%", fig.cap = "Raw Poll Proportion by Time"}
+```{r, warning=FALSE}
 # Plot trend with all four candidates's uncleaned data
 g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   geom_point(aes(y = prop_raw_clinton, color = "Clinton"),size = 1, alpha = 0.3) +
@@ -297,14 +296,18 @@ g_2 <- ggplot(poll_by_time, aes(x = end_time)) +
   theme(plot.title = element_text(size = 12, face = "bold", 
                                   margin = margin(0, 0, 0, 0))) + 
   theme(legend.title = element_blank()) +
-  theme(legend.position = "bottom")
-print(g_2)
+  theme(legend.position = "right")
+
+g_2<-ggplotly(g_2)%>%layout(margin=list(l=0, r=0, b=0, t=30))
+
+saveWidget(widget = g_2, file = "./Figures/dotChart.html")
+shots<-webshot(url = "./Figures/dotChart.html", file = "./Figures/dotChart.png", delay = 1, zoom = 2, vheight = 290)
 ```
-\end{minipage}
-\begin{minipage}[t]{0.3\textwidth}
-\vspace{0pt}
+
+![Raw Poll Proportion by Time](./Figures/dotChart.png)
+
 Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump.
-\end{minipage}
+
 Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state. Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
 
 ```{r}
@@ -343,8 +346,6 @@ NumVoteState <- as.data.frame(NumVote_State) %>%
 NumVoteState$PollNumber <- as.numeric(NumVoteState$PollNumber)
 ```
 
-The visualization of the poll proportion of the four candidates in each state was presented below:  
-
 \begin{minipage}[t]{0.7\textwidth}
 ```{r, out.width="100%", out.height="70%", fig.cap = "Poll Percentage by States"}
 g_11 <- ggplot(data = NumVoteState, mapping = aes( x = state, fill = candidate)) +
@@ -364,9 +365,9 @@ print(g_11)
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. 
+Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in states like California, DC and Hawaii etc. On the nother side, Trump is ahead of Clinton in Alabama, Alaska and Idaho etc. This helps us explore the leading candidates in each state.
 \end{minipage}
-Furthermore, Clinton is clearly ahead of Trump in states like California, DC and Hawaii etc. On the nother side, Trump is ahead of Clinton in Alabama, Alaska and Idaho etc. This helps us explore the leading candidates in each state.
+
 
 We now look at the time series of the adjusted poll proportion in Figure 5 below.
 

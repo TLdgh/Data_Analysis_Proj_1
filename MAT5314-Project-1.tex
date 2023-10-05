@@ -3,7 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 %
 \documentclass[
-  12pt,
+  11pt,
 ]{article}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -293,18 +293,9 @@ not just omit them because there were data in other columns. For
 example:
 
 \begin{verbatim}
-##         state  startdate    enddate                 pollster grade samplesize
-## 9  New Mexico 2016-11-06 2016-11-06                 Zia Poll  <NA>       8439
-## 17       U.S. 2016-11-05 2016-11-07 The Times-Picayune/Lucid  <NA>       2521
-## 24       U.S. 2016-11-01 2016-11-07    USC Dornsife/LA Times  <NA>       2972
-##    population rawpoll_clinton rawpoll_trump rawpoll_johnson rawpoll_mcmullin
-## 9          lv           46.00         44.00               6               NA
-## 17         lv           45.00         40.00               5               NA
-## 24         lv           43.61         46.84              NA               NA
-##    adjpoll_clinton adjpoll_trump adjpoll_johnson adjpoll_mcmullin
-## 9         44.82594      41.59978        7.870127               NA
-## 17        45.13966      42.26495        3.679914               NA
-## 24        45.32156      43.38579              NA               NA
+##         state grade rawpoll_clinton
+## 9  New Mexico  <NA>              46
+## 17       U.S.  <NA>              45
 \end{verbatim}
 
 \begin{cols}
@@ -481,15 +472,18 @@ We now turn our attention to the actual poll rate for each candidate.
 Using the end date as the standard, we first drew a time series made of
 scatter plot of the raw poll rates of the four candidates over time.
 
-\begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
-\includegraphics[height=0.3\textheight]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-12-1} \caption{Raw Poll Proportion by Time}\label{fig:unnamed-chunk-12}
+\centering
+\includegraphics{./Figures/dotChart.png}
+\caption{Raw Poll Proportion by Time}
 \end{figure}
-\end{minipage}
-\begin{minipage}[t]{0.3\textwidth}
-\vspace{0pt}
-Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump.
-\end{minipage}
+
+Figure 4 indicates that Clinton and Trump's approval ratings are
+significantly higher than those of Johnson and Mcmullin at the overall
+level. Another interesting demonstration is the divergence of support as
+the vote draws to a close. This shows that as the voting deadline
+approaches, people's intentions are more inclined to one of Clinton or
+Trump.
 
 Voting is more polarized. A low poll rate for one candidate also implies
 that other candidates may have high poll rates. This creates differences
@@ -500,9 +494,6 @@ multiplying the given sample size and proportion. Regardless of the
 various pollsters, we combine the number of polls for each candidate
 received in each state. In this case, we treat NA as 0.
 
-The visualization of the poll proportion of the four candidates in each
-state was presented below:
-
 \begin{minipage}[t]{0.7\textwidth}
 \begin{figure}
 \includegraphics[width=1\linewidth,height=0.7\textheight]{MAT5314-Project-1_files/figure-latex/unnamed-chunk-14-1} \caption{Poll Percentage by States}\label{fig:unnamed-chunk-14}
@@ -510,13 +501,8 @@ state was presented below:
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. 
+Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in states like California, DC and Hawaii etc. On the nother side, Trump is ahead of Clinton in Alabama, Alaska and Idaho etc. This helps us explore the leading candidates in each state.
 \end{minipage}
-
-Furthermore, Clinton is clearly ahead of Trump in states like
-California, DC and Hawaii etc. On the nother side, Trump is ahead of
-Clinton in Alabama, Alaska and Idaho etc. This helps us explore the
-leading candidates in each state.
 
 We now look at the time series of the adjusted poll proportion in Figure
 5 below.
