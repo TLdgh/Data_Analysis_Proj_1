@@ -28,7 +28,7 @@ First, we would like to give a brief introduction to the U.S. election system as
 Analysis on poll result can be very difficult due to the fact that carrying out a public opinion poll is generally difficult. The experimental design plays a profound rule in these surveys, as sometimes it is hard to achieve an unbiased sample. On the other hand, one might not be able to obtain the final result that can be compared with the poll result. Finally it can be very expensive to carry out a qualitative poll under budget constrains. However, election poll result is a desirable measurement we can study. Large institutions design the survey and gather public opinions. Moreover, we immediately know with high accuracy and details on who wins the election at the end. It is therefore worthy to analyze the poll results and make some inferences, perhaps even compare results between each election. Thus, we want to analyze some of the key factors given by our poll result data and compare with the actual election result for the candidate’s victory.
 
 # Method
-The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D- was given. We first analyzed key individual variables in the data, then we sought to draw conclusions on the relationship between some of the key variables. To achieve this, we use various R packages to present the data set and to plot the graphs.
+The data set was published by FiveThirtyEight to illustrate the reliability and quality of each pollster to which a letter grade ranging from A+ to D was given. We first analyzed key individual variables in the data, then we sought to draw conclusions on the relationship between some of the key variables. To achieve this, we used various R packages to present the data set and to plot the graphs.
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
@@ -99,14 +99,13 @@ Maine CD-1 refers to the 1st Congressional District of the state of Maine in the
 
 Maine has two congressional districts: CD-1 and CD-2. CD-1 represents the 1st Congressional District while CD-2 represents the 2nd Congressional District. Each district elects one member to the U.S. House of Representatives. This district, like others across the country, participates in the election of a U.S. Representative who will represent the interests of the constituents living within that particular district in the federal government. 
 
-In our analysis, the votes from these distinct districts might or might not be presented separately to the main State. Sometimes for simplicity we will combine all votes in the state to represent the overall poll opinion.
-
+In our analysis, the votes from these distinct districts might or might not be presented separately to the main State. Sometimes for simplicity we combined all votes in the state to represent the overall poll opinion.
 
 ### Start and End Date
 The startdate and enddate variables correspond to the dates on which the public opinion poll was initiated and finalized respectively. Individual pollster might start or end their poll at different date than other pollsters.
 
 ### Grade
-We then took a look at the grade variable. We noticed that there are 57 pollsters (almost 30% of the total number of pollsters) whose grades are missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
+We then took a look at the grade variable. We noticed that there were 57 pollsters (almost 30% of the total number of pollsters) whose grades were missing in this data set. Although the grades were missing, we could not just omit them because there were data in other columns. For example:
 
 ```{r}
 head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), c("state", "grade", "rawpoll_clinton")], 2)
@@ -115,15 +114,15 @@ head(ElectionPoll[which(is.na(ElectionPoll$grade)==TRUE), c("state", "grade", "r
 :::::: {.cols data-latex=""}
 
 ::: {.col data-latex="{0.53\textwidth}"}
-We suppose that there are two possible reasons for these missing data: one is that there are some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website.[@MissingD]
+We supposed that there were two possible reasons for these missing data: one is that there were some errors of data in the original file; the other is that fivethirtyeight has not rated these pollsters yet. So we searched online and found a more detailed and authoritative file about the pollsters' grade from the fivethirtyeight website.[@MissingD]
 
 \vspace{13pt}
 
-If one had omitted the NA from the grade by rows, then the available data from other variables would be omitted as well, which affects the final result and may yield incorrect inference to the data. Therefore, we will only delete a variable entirely if it has most of its values missing. Dividing the variable (column) will not affect values in other variables like omitting NA by rows.
+If one had omitted the NA from the grade by rows, then the available data from other variables would be omitted as well, which would affect the final result and may yield incorrect inference to the data. Therefore, we  only deleted a variable entirely if it had most of its values missing. Dividing the variable (column) will not affect values in other variables like omitting NA by rows.
 
 \vspace{13pt}
 
-According to the fivethirtyeight website, we found that 26 pollsters with no grade in the origin data set actually have the grades like "A/B", "B/C", "C/D", "B", "B-"; otherwise, the rest 31 pollsters without grades haven't been scored yet. Based on these information, we updated the "grade" column of the origin data set. We replace "NA" with the actual grades and "none". The result was presented in Table 2.
+According to the fivethirtyeight website, we found that 26 pollsters with no grade in the origin data set actually have the grades like "A/B", "B/C", "C/D", "B", "B-"; otherwise, the rest 31 pollsters without grades haven't been scored yet. Based on these information, we updated the "grade" column of the origin data set. We replaced "NA" with the actual grades and "none". The result was presented in Table 2.
 :::
 
 ::: {.col data-latex="{0.02\textwidth}"}
@@ -158,8 +157,8 @@ kable(A, format = "markdown",
 
 \vspace{18pt} 
 
-Because some pollsters are repeated in different rows of the data set, so we want to verify that each pollster corresponds to only one kind of grade. 
-The result is as follow:
+Because some pollsters were repeated in different rows of the data set, so we wanted to verify that each pollster corresponds to only one kind of grade. 
+The result was presented as follows:
 ```{r}
 #Calculate the different grades corresponding to each pollster
 pollster_grade <- distinct(subset(ElectionPoll, select = c("pollster","grade"))) #Extract two columns:"pollster" and "grade" from the Electionpoll
@@ -179,7 +178,7 @@ After cleaning the missing values for the grade variable and checked its uniquen
 :::::: {.cols data-latex=""}
 
 ::: {.col data-latex="{0.48\textwidth}"}
-From Figure 1: Pollster's Grade Distribution below, we could see that the unrated pollsters make up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" account for the second and third most, 12.8% and 12.2% respectively; "D" grade has the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", are around 34.7%, almost one-third of the total; C-level and A-level grades are about 21.89% and 14.79% respectively. For those without explicit grades, whose grades are "A/B", "B/C" and "C/D", they account only for 12.24%, "B" grade pollsters make up the majority of this part especially, almost 9.69%.
+From Figure 1: Pollster's Grade Distribution below, we could see that the unrated pollsters maked up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" accounted for the second and third most, 12.8% and 12.2% respectively; "D" grade had the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", were around 34.7%, almost one-third of the total; C-level and A-level grades were about 21.89% and 14.79% respectively. For those without explicit grades, whose grades were "A/B", "B/C" and "C/D", they accounted only for 12.24%, "B" grade pollsters maked up the majority of this part especially, almost 9.69%.
 :::
 
 ::: {.col data-latex="{0.02\textwidth}"}
@@ -207,12 +206,14 @@ saveWidget(widget = piechart, file = "./Figures/piechart.html")
 shots<-webshot(url = "./Figures/piechart.html", file = "./Figures/piechart.png", delay = 1, zoom = 2, vheight = 400, vwidth = 500)
 ```
 
-![Pollster's Grade Distribution](./Figures/piechart.png){width=40%, height=30%}
+```{r, echo=FALSE, fig.align='center', fig.cap = "Pollster's Grade Distribution"}
+knitr::include_graphics("./Figures/piechart.png")
+```
 :::
 ::::::
 
 ### Sample Size
-Checking the sample size alone does not inform us much about the poll result. Instead, we take a look at the distribution of the sample size with regards to the grade. We sum up the sample size based on each grade level and made a bar plot:
+Checking the sample size alone did not inform us much about the poll result. Instead, we took a look at the distribution of the sample size with regards to the grade. We summed up the sample size based on each grade level and made a bar plot:
 \begin{minipage}[t]{0.55\textwidth}
 ```{r, warning=FALSE, out.width="100%", fig.cap = "Distribution of Sample Size for Grades"}
 GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
@@ -227,12 +228,12 @@ print(sampleDist)
 \end{minipage}
 \begin{minipage}[t]{0.45\textwidth}
 \vspace{0pt}
-As one can see, grade A-, B, C- have the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who has its own sample size. Due to the fact that we sum up the sample size, we can conclude that the proportion of the pollsters who receive grade A-, B and C- are greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore does not contribute towards the rating of pollsters. We think that this can reflect the efficiency of the poll. A low portion of the sample size 
+As one can see, grade A-, B, C- had the biggest sample size than other grades. The grades were calculated by FiveThirtyEight for each pollster who had its own sample size. Due to the fact that we summed up the sample size, we could conclude that the proportion of the pollsters who receive grade A-, B and C- were greater than those who receive other grades. In addition, we saw that there was a good portion of the sample size that was contributed to the missing grade "none". This portion of the sample therefore did not contribute towards the rating of pollsters. We thought that this could reflect the efficiency of the poll. A low portion of the sample size 
 \end{minipage}
-for the grade "none" indicates that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
+for the grade "none" indicated that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
  
 ### Population
-We now take a look at the population type for which the poll was sampled. We saw that the population type "lv", which stands for likely voters, count for most of the sample sizes. This is in accordence with FiveThirtyEight's explanation in their website "Because the database covers the final three weeks of the campaign and almost all polling firms publish likely voter polls by that time, almost all polls in the database should be likely voter surveys.".
+We then took a look at the population type for which the poll was sampled. We saw that the population type "lv", which stands for likely voters, counted for most of the sample sizes. This was in accordance with FiveThirtyEight's explanation in their website "Because the database covers the final three weeks of the campaign and almost all polling firms publish likely voter polls by that time, almost all polls in the database should be likely voter surveys.".
 
 ```{r, warning=FALSE}
 GradeVsPop<-ElectionPoll%>%select(grade, population, samplesize)%>%
@@ -249,13 +250,15 @@ popChart <- plot_ly(GradeVsPop, x = ~grade, y = ~population,
          plot_bgcolor = 'lightgrey')
 
 saveWidget(widget = popChart, file = "./Figures/popChart.html")
-shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 1, vheight = 330, vwidth = 950)
+shots<-webshot(url = "./Figures/popChart.html", file = "./Figures/popChart.png", delay = 1, zoom = 2, vheight = 330, vwidth = 950)
 ```
 
-![Population Type with Size for Grades](./Figures/popChart.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Population Type with Size for Grades"}
+knitr::include_graphics("./Figures/popChart.png")
+```
 
 ### Poll Rate
-We now turn our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
+We turned our attention to the actual poll rate for each candidate. Using the end date as the standard, we first drew a time series made of scatter plot of the raw poll rates of the four candidates over time.
 
 ```{r}
 #Create frame contained time, rawpoll
@@ -304,11 +307,13 @@ saveWidget(widget = g_2, file = "./Figures/dotChart.html")
 shots<-webshot(url = "./Figures/dotChart.html", file = "./Figures/dotChart.png", delay = 1, zoom = 2, vheight = 290)
 ```
 
-![Raw Poll Proportion by Time](./Figures/dotChart.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Raw Poll Proportion by Time"}
+knitr::include_graphics("./Figures/dotChart.png")
+```
 
-Figure 4 indicates that Clinton and Trump’s approval ratings are significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration is the divergence of support as the vote draws to a close. This shows that as the voting deadline approaches, people's intentions are more inclined to one of Clinton or Trump.
+Figure 4 indicated that Clinton and Trump’s approval ratings were significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration was the divergence of support as the vote draws to a close. This showed that as the voting deadline approaches, people's intentions were more inclined to one of Clinton or Trump.
 
-Voting is more polarized. A low poll rate for one candidate also implies that other candidates may have high poll rates. This creates differences in each state. Therefore, we try to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result is easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combine the number of polls for each candidate received in each state. In this case, we treat NA as 0.
+Voting was more polarized. A low poll rate for one candidate also implied that other candidates may have had high poll rates. This created differences in each state. Therefore, we tried to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result wass easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combined the number of polls for each candidate received in each state. In this case, we treated NA as 0.
 
 ```{r}
 #Create frame contained state, poll number for each candidate
@@ -365,11 +370,11 @@ print(g_11)
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Figure 5 shows the poll proportions of the four candidates in each state distinguished by colors. We can clearly observe which candidate is likely to win all the electoral votes in each state, which is helpful in estimating the outcome of the presidential election. From the chart above, we conclude that Clinton and Trump are clearly ahead of Johnson and Mcmullin. Furthermore, Clinton is clearly ahead of Trump in states like California, DC and Hawaii etc. On the nother side, Trump is ahead of Clinton in Alabama, Alaska and Idaho etc. This helps us explore the leading candidates in each state.
+Figure 5 showed the poll proportions of the four candidates in each state distinguished by colors. We could clearly observe which candidate was likely to win all the electoral votes in each state, which was helpful in estimating the outcome of the presidential election. From the chart above, we concluded that Clinton and Trump were clearly ahead of Johnson and Mcmullin. Furthermore, Clinton was clearly ahead of Trump in states like California, DC and Hawaii etc. On the other side, Trump was ahead of Clinton in Alabama, Alaska and Idaho etc. This helped us to explore the leading candidates in each state.
 \end{minipage}
 
 
-We now look at the time series of the adjusted poll proportion in Figure 5 below.
+We looked at the time series of the adjusted poll proportion in Figure 5 below.
 
 ```{r, warning=FALSE}
 #Create frame contained time, rawpoll
@@ -398,11 +403,13 @@ saveWidget(widget = g_1, file = "./Figures/TsChart.html")
 shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", delay = 1, zoom = 2, vheight = 290)
 ```
 
-![Adjusted Poll Percentage by Time](./Figures/TsChart.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Adjusted Poll Percentage by Time"}
+knitr::include_graphics("./Figures/TsChart.png")
+```
 
-We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this makes us to question the validity of the adjusted poll result done by FiveThirtyEight. 
+We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this maked us to question the validity of the adjusted poll result done by FiveThirtyEight. 
 
-For other candidates the adjustment was not posing the negativeness issue, so we want to explore if the adjusted data can be ignored or if it actually brings some improvements than the raw poll data. Since the final two candidates in Election 2016 are Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
+For other candidates the adjustment was not posing the negativeness issue, so we wanted to explore if the adjusted data can be ignored or if it actually brought some improvements than the raw poll data. Since the final two candidates in Election 2016 were Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
 
 ```{r}
 fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
@@ -419,13 +426,15 @@ saveWidget(widget = boxchart, file = "./Figures/boxchart.html")
 shots<-webshot(url = "./Figures/boxchart.html", file = "./Figures/boxchart.png", delay = 1, zoom = 2, vheight = 500)
 ```
 
-![Boxchart of Difference between Polls](./Figures/boxchart.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Boxchart of Difference between Polls"}
+knitr::include_graphics("./Figures/boxchart.png")
+```
 
-We saw that there's little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was a slight improvement because the raw poll difference of each grade was mostly above zero, which showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
+We saw that there was little difference between the distribution of the raw and the adjusted data. However, the mean of each grade of the adjusted poll result was a little closer to zero than that of the raw poll result. This indicated that the adjustment that FiveThirtyEight made was a slight improvement because the raw poll difference of each grade was mostly above zero, which showed that the poll result was more in favour of Clinton yet Trump was the final winner of the election.
 
-However, due to the fact that FiveThirtyEight's adjustment to the poll result yields negative values, we think it is therefore unreasonable to do such adjustment. It gives the reader a difficulty in interpreting this adjustment.
+However, due to the fact that FiveThirtyEight's adjustment to the poll result yielded negative values, we thought it was therefore unreasonable to do such adjustment. It gave the reader a difficulty in interpreting this adjustment.
 
-Finally we plot the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignore the other candidates' poll since the other candidates are polling far behind Clinton and Trump. From Figure 7 below we see that the overall national poll result indicates that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It it therefore hard to tell which candidate is leading by examining the individual state poll result.
+Finally we plotted the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignored the other candidates' poll since the other candidates were polling far behind Clinton and Trump. From Figure 7 below we saw that the overall national poll result indicated that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It was therefore hard to tell which candidate was leading by examining the individual state poll result.
 
 
 ```{r}
@@ -511,7 +520,9 @@ saveWidget(widget = cMeanchart, file = "./Figures/cMeanchart.html")
 shots<-webshot(url = "./Figures/cMeanchart.html", file = "./Figures/cMeanchart.png", delay = 1, zoom = 2, vheight = 400)
 ```
 
-![Cumulative Mean of Raw Poll Result](./Figures/cMeanchart.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Cumulative Mean of Raw Poll Result"}
+knitr::include_graphics("./Figures/cMeanchart.png")
+```
 
 ### Map Chart of Data
 
@@ -621,10 +632,12 @@ mapchart_1_2<-subplot(mapchart1, mapchart2, nrows = 2)%>%
            )), showlegend=FALSE)
 
 saveWidget(widget = mapchart_1_2, file = "./Figures/mapchart_1_2.html") 
-shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 2, zoom = 2, vheight = 600, vwidth = 500)
+shots<-webshot(url = "./Figures/mapchart_1_2.html", file = "./Figures/mapchart_1_2.png", delay = 2, zoom = 3, vheight = 480, vwidth = 500)
 ```
 
-![Map Chart of Vote Shares of Candidates by States](./Figures/mapchart_1_2.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Map Chart of Vote Shares of Candidates by States"}
+knitr::include_graphics("./Figures/mapchart_1_2.png")
+```
 :::
 
 ::: {.col data-latex="{0.02\textwidth}"}
@@ -634,15 +647,15 @@ a column separator -->
 :::
 
 ::: {.col data-latex="{0.38\textwidth}"}
-In the contour plot Figure 9 on the left, blue indicates that Clinton is polling proportionally greater than Trump, and red indicates that Trump is polling proportionally greater than Clinton. The darker the color, the higher the proportions are. For states that are nearly white, the margin of victory is nearly half between Trump and Clinton.
+In the contour plot Figure 9 on the left, blue indicated that Clinton was polling proportionally greater than Trump, and red indicated that Trump was polling proportionally greater than Clinton. The darker the color, the higher the proportions were. For states that were nearly white, the margin of victory was nearly half between Trump and Clinton.
 
 \vspace{13pt}
 
-We again saw that there was little difference between the results using the raw poll data and the adjusted poll data, which further support our opinion that the adjustment made by FiveThirtyEight must be carefully justified by readers because of its negative values. We then saw from the map in Figure 9 that Clinton seems to dominate the public opinions because the colors of states are a bit closer to white and pale red.
+We again saw that there was little difference between the results using the raw poll data and the adjusted poll data, which further supported our opinion that the adjustment made by FiveThirtyEight must be carefully justified by readers because of its negative values. We then saw from the map in Figure 9 that Clinton seemed to dominate the public opinions because the colors of states were a bit closer to white and pale red.
 :::
 ::::::
 
-Furthermore, we want to find out exactly the states which Clinton or Trump captured all of the electoral votes. The visualization below shows the net polls generated by each state for Clinton and Trump. 
+Furthermore, we wanted to find out exactly the states which Clinton or Trump captured all of the electoral votes. The visualization below showed the net polls generated by each state for Clinton and Trump. 
 \begin{minipage}[t]{0.7\textwidth}
 ```{r, out.width="100%", fig.cap = "Net Polls by States."}
 # Calculate net polls
@@ -672,11 +685,11 @@ g_13
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Based on raw poll data, Figure 10 shows Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska. It is not difficult to see from Figure 10 that Maine and Nebraska have two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska will receive two electoral votes,
+Based on raw poll data, Figure 10 showed Clinton won 27 constituencies including 25 states, one additional Maine district and DC. Trump won 25 states plus one additional district in Maine and three additional districts in Nebraska. It was not difficult to see from Figure 10 that Maine and Nebraska had two and three additional electoral district respectively in addition to their own states. The candidate with the most votes in Maine and Nebraska received two electoral votes,
 \end{minipage}
-and the remaining electoral votes will be allocated to the presidential candidate who wins each district. Moreover, DC have three electoral votes as an independent district.
+and the remaining electoral votes was allocated to the presidential candidate who won each district. Moreover, DC have three electoral votes as an independent district.
 
-Finally, we take a look at the map chart of the electoral votes based on raw poll result. We use the poll opinion to generate a map showing the predicted election result, and we compare it with the counterpart showing the actual final election result. 
+Finally, we took a look at the map chart of the electoral votes based on raw poll result. We used the poll opinion to generate a map showing the predicted election result, and we compared it with the counterpart showing the actual final election result. 
 
 The Electoral College in the United States consists of 538 electoral votes. These electoral votes are distributed among the 50 states and the District of Columbia based on the total number of members in Congress, which includes both the House of Representatives and the Senate. There are 435 members in the U.S. House of Representatives. Each state is given a number of electoral votes equal to its total number of representatives in the House and it is based on the state's population. The minimum number of electoral votes a state can have is 3. Then there are 100 members in the U.S. Senate, with each state having two senators regardless of its population. Therefore, each state is allocated two additional electoral votes based on its Senate representation. Finally we have the District of Columbia. Although the District of Columbia is not a state, it is granted three electoral votes as if it were a state of the U.S.. In total, the number of electoral votes is 435 (House of Representatives) + 100 (Senate) + 3 (District of Columbia) = 538 electoral votes.
 
@@ -745,10 +758,12 @@ mapchart_3_4<-subplot(mapchart3, mapchart4, nrows=2)%>%
          showlegend=FALSE)
 
 saveWidget(widget = mapchart_3_4, file = "./Figures/mapchart_3_4.html") 
-shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3_4.png", delay = 2, zoom = 2, vheight = 400, vwidth = 500)
+shots<-webshot(url = "./Figures/mapchart_3_4.html", file = "./Figures/mapchart_3_4.png", delay = 2, zoom = 3, vheight = 400, vwidth = 500)
 ```
 
-![Map Chart of Election Result 2016](./Figures/mapchart_3_4.png)
+```{r, echo=FALSE, fig.align='center', fig.cap = "Map Chart of Election Result 2016"}
+knitr::include_graphics("./Figures/mapchart_3_4.png")
+```
 :::
 
 ::: {.col data-latex="{0.02\textwidth}"}
@@ -758,28 +773,11 @@ a column separator -->
 :::
 
 ::: {.col data-latex="{0.38\textwidth}"}
-From the Figure 11 we can see that the actual final election outcome was almost the entire opposite to the predicted result. In 2016, Trump won 304 votes compared to 227 votes for Hillary Clinton, which was not predicted by the election poll result. Therefore, readers must be careful about the election poll. There have been some criticisms on the usefulness of these polls [@Critic, @Critic2]. From the previous analysis in Figure 1, we were also able to find out that over half of the pollster ratings were between B+ to C and none. This might suggests that public opinion polls are not as reliable as one would expect due to the quality of the pollsters.
+From the Figure 11 we could see that the actual final election outcome was almost the entire opposite to the predicted result. In 2016, Trump won 304 votes compared to 227 votes for Hillary Clinton, which was not predicted by the election poll result. Therefore, readers must be careful about the election poll. There have been some criticisms on the usefulness of these polls [@Critic, @Critic2]. From the previous analysis in Figure 1, we were also able to find out that over half of the pollster ratings were between B+ to C and none. This might suggest that public opinion polls are not as reliable as one would expect due to the quality of the pollsters.
 :::
 ::::::
 
-
 # Conclusion
-In the visual analysis, the following key observations and conclusions were made:
-
-1. Regarding the overall prediction results, grades ranging from A+ to B- accounted for nearly half of the total, while samples with no ratings constituted just over 15%. This indicates a reasonably distributed outcome across different grade levels in the predictions.
-
-2. The sample size alone does not determine the quality of predictions. Other factors, such as data quality and analysis methods, also play a crucial role in prediction accuracy.
-
-3. The analysis revealed that the support rates for Clinton and Trump were significantly higher than those for Johnson and McMullin. Consequently, the subsequent analysis focused on the top two candidates.
-
-4. The mean of the adjusted voting results was closer to zero than that of the raw voting results. This suggests that data adjustments can reduce biases and enhance the accuracy of the analysis.
-
-5. The majority of predictions across different states in the U.S. indicated a likely victory for Clinton, reflecting a prevailing trend in the forecasts.
-
-6. When examining the adjusted data, it was found that states predicting a Trump victory showed a clear advantage for Trump in the actual voting results. Similarly, states predicting a Clinton victory reflected a narrow win for Clinton in the actual vote.
-
-7. A comparison between the final results and predictions based on raw data showed that outcomes in six states were contrary to the predictions. These states had very close vote counts for Clinton and Trump in the forecasts. Using adjusted data for predictions might yield results closer to the actual outcomes.
-
-In summary, it can be concluded that for certain states' election results, predictions based on adjusted data may be more accurate. Sample size is not the sole determinant of prediction quality; other factors such as data quality and analysis methods should also be considered. Additionally, a state-specific analysis contributes to a more comprehensive understanding of election outcomes.
+In the visual analysis, we made the several key observations and conclusions. Regarding the overall prediction results, grades ranging from A+ to B- accounted for nearly half of the total; whereas samples with no ratings constituted just over 15%. This indicated a reasonably distributed outcome across different grade levels. Our analysis revealed that the poll rates for Clinton and Trump were significantly higher than those for Johnson and McMullin. Consequently, our subsequent analysis focused on the top two candidates. The mean of the adjusted poll results was closer to zero than that of the raw poll results. This suggested that data adjustments can reduce biases and enhance the accuracy of the analysis. However due to its negative values, readers should decide if the adjustment was reasonable and truly needed. The majority of predictions across different states in the U.S. indicated a likely victory for Clinton. However, a comparison between the final results and predictions based on raw data showed that outcomes in six states were contrary to the predictions. These states had very close vote counts for Clinton and Trump in the forecasts. Using adjusted data for predictions might yield results closer to the actual outcomes. In summary, it can be concluded that for certain states' election results, predictions based on adjusted data may be more accurate. Additionally, a state-specific analysis contributed to a more comprehensive understanding of election outcomes.
 
 # References
