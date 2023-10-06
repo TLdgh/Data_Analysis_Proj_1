@@ -374,7 +374,7 @@ Figure 5 showed the poll proportions of the four candidates in each state distin
 \end{minipage}
 
 
-We looked at the time series of the adjusted poll proportion in Figure 5 below.
+We looked at the time series of the adjusted poll proportion in Figure 6 below.
 
 ```{r, warning=FALSE}
 #Create frame contained time, rawpoll
