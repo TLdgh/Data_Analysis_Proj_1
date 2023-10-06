@@ -178,7 +178,7 @@ After cleaning the missing values for the grade variable and checked its uniquen
 :::::: {.cols data-latex=""}
 
 ::: {.col data-latex="{0.48\textwidth}"}
-From Figure 1: Pollster's Grade Distribution below, we could see that the unrated pollsters maked up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" accounted for the second and third most, 12.8% and 12.2% respectively; "D" grade had the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", were around 34.7%, almost one-third of the total; C-level and A-level grades were about 21.89% and 14.79% respectively. For those without explicit grades, whose grades were "A/B", "B/C" and "C/D", they accounted only for 12.24%, "B" grade pollsters maked up the majority of this part especially, almost 9.69%.
+From Figure 1: Pollster's Grade Distribution below, we could see that the unrated pollsters made up the largest percentage, about 15.8% of the total; pollsters with grades "B" and "C+" accounted for the second and third most, 12.8% and 12.2% respectively; "D" grade had the smallest percentage of pollsters, only about 0.51%. Besides, B-level grades, including "B+", "B" and "B-", were around 34.7%, almost one-third of the total; C-level and A-level grades were about 21.89% and 14.79% respectively. For those without explicit grades, whose grades were "A/B", "B/C" and "C/D", they accounted only for 12.24%, "B/C" grade pollsters made up the majority of this part especially, almost 9.69%.
 :::
 
 ::: {.col data-latex="{0.02\textwidth}"}
