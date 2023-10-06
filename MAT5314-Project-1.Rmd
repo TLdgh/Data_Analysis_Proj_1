@@ -213,7 +213,7 @@ knitr::include_graphics("./Figures/piechart.png")
 ::::::
 
 ### Sample Size
-Checking the sample size alone did not inform us much about the poll result. Instead, we took a look at the distribution of the sample size with regards to the grade. We summed up the sample size based on each grade level and made a bar plot:
+Checking the sample size alone did not inform us much about the poll result. Instead, we took a look at the distribution of the sample size with regards to the grade. We summed up the sample size based on each grade level and made a bar plot shown in Figure 2.
 \begin{minipage}[t]{0.55\textwidth}
 ```{r, warning=FALSE, out.width="100%", fig.cap = "Distribution of Sample Size for Grades"}
 GradeVsSize<-ElectionPoll%>%group_by(grade)%>%summarise(Size=sum(samplesize))
@@ -233,7 +233,7 @@ As one can see, grade A-, B, C- had the biggest sample size than other grades. T
 for the grade "none" indicated that the number of pollsters who gathered those samples and wasn't successfully rated was low. On the other hand, if the sample size for the grade "none" was big, for example if one had most of the samples with "none", then it would mean that the rating mechanism was not successful or the quality of the poll was too low to be used for rating pollsters.
  
 ### Population
-We then took a look at the population type for which the poll was sampled. We saw that the population type "lv", which stands for likely voters, counted for most of the sample sizes. This was in accordance with FiveThirtyEight's explanation in their website "Because the database covers the final three weeks of the campaign and almost all polling firms publish likely voter polls by that time, almost all polls in the database should be likely voter surveys.".
+We then took a look at the population type for which the poll was sampled. We plotted the population type VS. grade and adjusted the size of bubbles by the sample size in Figure 3. We saw that the population type "lv", which stands for likely voters, counted for most of the sample sizes. This was in accordance with FiveThirtyEight's explanation in their website "Because the database covers the final three weeks of the campaign and almost all polling firms publish likely voter polls by that time, almost all polls in the database should be likely voter surveys.".
 
 ```{r, warning=FALSE}
 GradeVsPop<-ElectionPoll%>%select(grade, population, samplesize)%>%
@@ -313,7 +313,7 @@ knitr::include_graphics("./Figures/dotChart.png")
 
 Figure 4 indicated that Clinton and Trump’s approval ratings were significantly higher than those of Johnson and Mcmullin at the overall level. Another interesting demonstration was the divergence of support as the vote draws to a close. This showed that as the voting deadline approaches, people's intentions were more inclined to one of Clinton or Trump.
 
-Voting was more polarized. A low poll rate for one candidate also implied that other candidates may have had high poll rates. This created differences in each state. Therefore, we tried to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result wass easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combined the number of polls for each candidate received in each state. In this case, we treated NA as 0.
+Voting was more polarized. A low poll rate for one candidate also implied that other candidates may have had high poll rates. This created differences in each state. Therefore, we tried to compare each candidate's poll result in each state. We processed the metadata by counting the polls of four candidates in each state respectively. Result was easy to obtain by multiplying the given sample size and proportion. Regardless of the various pollsters, we combined the number of polls for each candidate received in each state. In this case, we treated NA as 0.
 
 ```{r}
 #Create frame contained state, poll number for each candidate
@@ -370,7 +370,7 @@ print(g_11)
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \vspace{0pt}
-Figure 5 showed the poll proportions of the four candidates in each state distinguished by colors. We could clearly observe which candidate was likely to win all the electoral votes in each state, which was helpful in estimating the outcome of the presidential election. From the chart above, we concluded that Clinton and Trump were clearly ahead of Johnson and Mcmullin. Furthermore, Clinton was clearly ahead of Trump in states like California, DC and Hawaii etc. On the other side, Trump was ahead of Clinton in Alabama, Alaska and Idaho etc. This helped us to explore the leading candidates in each state.
+Figure 5 showed the poll proportions of the four candidates in each state distinguished by colors. We could clearly observe which candidate was likely to win all the electoral votes in each state, which was helpful in estimating the outcome of the presidential election. From the chart on the left, we concluded that Clinton and Trump were clearly ahead of Johnson and Mcmullin. Furthermore, Clinton was clearly ahead of Trump in states like California, DC and Hawaii etc. On the other side, Trump was ahead of Clinton in Alabama, Alaska and Idaho etc. This helped us to explore the leading candidates in each state.
 \end{minipage}
 
 
@@ -407,9 +407,9 @@ shots<-webshot(url = "./Figures/TsChart.html", file = "./Figures/TsChart.png", d
 knitr::include_graphics("./Figures/TsChart.png")
 ```
 
-We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this maked us to question the validity of the adjusted poll result done by FiveThirtyEight. 
+We immediately noticed that some of the poll rate for Johnson fell below zero. We did not find a detailed justification to the adjustment they have made from their website, therefore, this made us to question the validity of the adjusted poll result done by FiveThirtyEight. 
 
-For other candidates the adjustment was not posing the negativeness issue, so we wanted to explore if the adjusted data can be ignored or if it actually brought some improvements than the raw poll data. Since the final two candidates in Election 2016 were Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. 
+For other candidates the adjustment was not posing the negativeness issue, so we wanted to explore if the adjusted data can be ignored or if it actually brought some improvements than the raw poll data. Since the final two candidates in Election 2016 were Clinton and Trump, we plotted box plots of the difference of their poll results, one for the raw poll and one for the adjusted poll. The result was shown in Figure 7 below.
 
 ```{r}
 fig1<-ElectionPoll%>%mutate(Diffs=rawpoll_clinton - rawpoll_trump)%>%plot_ly(y=~Diffs, color = ~grade, type = "box")%>%layout()
@@ -434,7 +434,7 @@ We saw that there was little difference between the distribution of the raw and 
 
 However, due to the fact that FiveThirtyEight's adjustment to the poll result yielded negative values, we thought it was therefore unreasonable to do such adjustment. It gave the reader a difficulty in interpreting this adjustment.
 
-Finally we plotted the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignored the other candidates' poll since the other candidates were polling far behind Clinton and Trump. From Figure 7 below we saw that the overall national poll result indicated that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It was therefore hard to tell which candidate was leading by examining the individual state poll result.
+Finally we plotted the cumulative mean of the raw poll result for the final two candidates, Trump and Clinton. We selected the Clinton and Trump polls and ignored the other candidates' poll since the other candidates were polling far behind Clinton and Trump. From Figure 8 below we saw that the overall national poll result indicated that Clinton should be the winner of the election. However, some of the individual states resulted the opposite conclusion. It was therefore hard to tell which candidate was leading by examining the individual state poll result.
 
 
 ```{r}
@@ -651,7 +651,7 @@ In the contour plot Figure 9 on the left, blue indicated that Clinton was pollin
 
 \vspace{13pt}
 
-We again saw that there was little difference between the results using the raw poll data and the adjusted poll data, which further supported our opinion that the adjustment made by FiveThirtyEight must be carefully justified by readers because of its negative values. We then saw from the map in Figure 9 that Clinton seemed to dominate the public opinions because the colors of states were a bit closer to white and pale red.
+We again saw that there was little difference between the results using the raw poll data and the adjusted poll data, which further supported our opinion that the adjustment made by FiveThirtyEight must be carefully justified by readers because of its negative values. We then saw from the map in Figure 9 that Clinton seemed to lead the public opinions a little bit more because the colors of states were closer to white and pale red.
 :::
 ::::::
 
@@ -773,11 +773,11 @@ a column separator -->
 :::
 
 ::: {.col data-latex="{0.38\textwidth}"}
-From the Figure 11 we could see that the actual final election outcome was almost the entire opposite to the predicted result. In 2016, Trump won 304 votes compared to 227 votes for Hillary Clinton, which was not predicted by the election poll result. Therefore, readers must be careful about the election poll. There have been some criticisms on the usefulness of these polls [@Critic, @Critic2]. From the previous analysis in Figure 1, we were also able to find out that over half of the pollster ratings were between B+ to C and none. This might suggest that public opinion polls are not as reliable as one would expect due to the quality of the pollsters.
+From the Figure 11 we could see that the actual final election outcome was opposite to the predicted result, since in the final election Trump won five states with influential number of votes. In 2016, Trump won 304 votes compared to 227 votes for Hillary Clinton, which was not predicted by the election poll result. Therefore, readers must be careful about the election poll. There have been some criticisms on the usefulness of these polls [@Critic, @Critic2]. From the previous analysis in Figure 1, we were also able to find out that over half of the pollster ratings were between B+ to C and none. This might suggest that public opinion polls are not as reliable as one would expect due to the quality of the pollsters.
 :::
 ::::::
 
 # Conclusion
-In the visual analysis, we made the several key observations and conclusions. Regarding the overall prediction results, grades ranging from A+ to B- accounted for nearly half of the total; whereas samples with no ratings constituted just over 15%. This indicated a reasonably distributed outcome across different grade levels. Our analysis revealed that the poll rates for Clinton and Trump were significantly higher than those for Johnson and McMullin. Consequently, our subsequent analysis focused on the top two candidates. The mean of the adjusted poll results was closer to zero than that of the raw poll results. This suggested that data adjustments can reduce biases and enhance the accuracy of the analysis. However due to its negative values, readers should decide if the adjustment was reasonable and truly needed. The majority of predictions across different states in the U.S. indicated a likely victory for Clinton. However, a comparison between the final results and predictions based on raw data showed that outcomes in six states were contrary to the predictions. These states had very close vote counts for Clinton and Trump in the forecasts. Using adjusted data for predictions might yield results closer to the actual outcomes. In summary, it can be concluded that for certain states' election results, predictions based on adjusted data may be more accurate. Additionally, a state-specific analysis contributed to a more comprehensive understanding of election outcomes.
+In the visual analysis, we made the several key observations and conclusions. Regarding the overall prediction results, grades ranging from A+ to B- accounted for nearly half of the total; whereas samples with no ratings constituted just over 15%. This indicated a reasonably distributed outcome across different grade levels. Our analysis revealed that the poll rates for Clinton and Trump were significantly higher than those for Johnson and McMullin. Consequently, our subsequent analysis focused on the top two candidates. The mean of the adjusted poll results was closer to zero than that of the raw poll results. This suggested that data adjustments can reduce biases and enhance the accuracy of the analysis. However due to its negative values, readers should decide if the adjustment was reasonable and truly needed. A small bias towards Clinton in terms of poll results across different states indicated a likely victory for Clinton. However, a comparison between the final results and predictions based on raw data showed that outcomes in five states were contrary to the predictions. Using adjusted data for predictions might yield results closer to the actual outcomes. In summary, it can be concluded that for certain states' election results, predictions based on adjusted data may be more accurate. Additionally, a state-specific analysis contributed to a more comprehensive understanding of election outcomes.
 
 # References
