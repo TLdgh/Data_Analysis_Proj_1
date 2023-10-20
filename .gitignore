@@ -15,6 +15,7 @@ polls_us_election_2016.csv
 Data_Analysis_Proj_1.Rproj
 *.html
 *.log
-*.pdf
+
 *.tex
 Figures/*_files/
+*.pdf
